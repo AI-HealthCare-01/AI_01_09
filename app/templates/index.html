@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uponati Health Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body>
+    <aside>
+        <div class="logo">
+            <i data-lucide="activity"></i> Uponati
+        </div>
+        <nav>
+            <a href="#" class="active" onclick="showView('home', this)"><i data-lucide="home"></i> 대시보드</a>
+            <a href="#" onclick="showView('guide', this)"><i data-lucide="file-text"></i> 맞춤형 가이드</a>
+            <a href="#" onclick="showView('chat', this)"><i data-lucide="message-square"></i> 건강 챗봇</a>
+            <a href="#" onclick="showView('ocr', this)"><i data-lucide="camera"></i> 의료 OCR</a>
+            <a href="#" onclick="showView('media', this)"><i data-lucide="film"></i> 콘텐츠 변환</a>
+            <a href="#" onclick="showView('notification', this)"><i data-lucide="bell"></i> 알림 관리</a>
+        </nav>
+    </aside>
+
+    <main>
+        <!-- Home View -->
+        <section id="home-view" class="view-section active">
+            <header>
+                <h1>반갑습니다, 어포나티 대시보드입니다 🩺</h1>
+                <p style="color: var(--text-muted); margin-top: 8px;">진료 기록 기반 지능형 복약 및 관리 가이드 시스템</p>
+            </header>
+
+            <div class="dashboard-grid">
+                <div class="card">
+                    <h3>필수 1: 맞춤형 가이드</h3>
+                    <p>사용자의 진료 내역과 복약 정보를 분석하여 LLM이 개인화된 건강 생활 지침을 생성합니다.</p>
+                </div>
+                <div class="card">
+                    <h3>필수 2: 24/7 챗봇</h3>
+                    <p>궁금한 건강 질문에 대해 실시간으로 상담하고 이전 대화 맥락을 기억하는 AI 챗봇입니다.</p>
+                </div>
+                <div class="card">
+                    <h3>필수 3: 처방전 OCR</h3>
+                    <p>어려운 처방전 이미지나 약봉투를 찍어 올리면 텍스트를 인식해 정보를 추출합니다.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Guide View -->
+        <section id="guide-view" class="view-section">
+            <header>
+                <h1>맞춤형 가이드 생성</h1>
+            </header>
+            <div class="card" style="max-width: 600px;">
+                <div class="input-group">
+                    <label>진료 기록 / 증상</label>
+                    <textarea id="guide-medical" rows="4" placeholder="예: 어지러움증이 있고 당뇨 수치가 높게 나왔음..."></textarea>
+                </div>
+                <div class="input-group">
+                    <label>현재 복용 중인 약품</label>
+                    <input type="text" id="guide-medication" placeholder="예: 메트포르민 500mg">
+                </div>
+                <button class="btn-primary" onclick="generateGuide()">가이드 생성하기 (LLM)</button>
+                <div id="guide-result"
+                    style="margin-top: 24px; white-space: pre-wrap; padding: 16px; background: var(--primary-light); border-radius: 12px; display: none;">
+                </div>
+            </div>
+        </section>
+
+        <!-- Chat View -->
+        <section id="chat-view" class="view-section">
+            <header>
+                <h1>건강 챗봇 상담</h1>
+            </header>
+            <div class="chat-window">
+                <div id="chat-messages" class="chat-messages">
+                    <div style="background: var(--bg-main); padding: 12px; border-radius: 8px; margin-bottom: 10px;">
+                        의료 전문 AI 챗봇입니다. 증상이나 건강 관리법에 대해 물어보세요!
+                    </div>
+                </div>
+                <div class="chat-input">
+                    <input type="text" id="chat-input-field" placeholder="메시지를 입력하세요..." style="flex: 1">
+                    <button class="btn-primary" style="width: auto;" onclick="sendChatMessage()">전송</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- OCR View -->
+        <section id="ocr-view" class="view-section">
+            <header>
+                <h1>의료 기록 OCR 인식</h1>
+            </header>
+            <div class="card">
+                <input type="file" id="ocr-file" accept="image/*,.pdf">
+                <button class="btn-primary" style="margin-top: 16px;" onclick="uploadOCR()">이미지 분석 시작</button>
+                <div id="ocr-result" style="margin-top: 20px; font-family: monospace; font-size: 0.9rem;"></div>
+            </div>
+        </section>
+
+        <!-- Other Views (Stubs) -->
+        <section id="media-view" class="view-section">
+            <header>
+                <h1>콘텐츠 변환 (TTS/CardNews)</h1>
+            </header>
+            <p>가이드를 음성이나 카드뉴스로 바꿉니다 (준비 중..)</p>
+        </section>
+        <section id="notification-view" class="view-section">
+            <header>
+                <h1>알림 관리</h1>
+            </header>
+            <p>복약 알림 스케줄을 설정합니다 (준비 중..)</p>
+        </section>
+    </main>
+
+    <script>
+        lucide.createIcons();
+
+        function showView(viewId, el) {
+            document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+
+            document.getElementById(viewId + '-view').classList.add('active');
+            el.classList.add('active');
+        }
+
+        async function sendChatMessage() {
+            const input = document.getElementById('chat-input-field');
+            const box = document.getElementById('chat-messages');
+            if (!input.value) return;
+
+            const userText = input.value;
+            box.innerHTML += `<div style="text-align: right; margin-bottom: 12px;"><span style="background: var(--primary); color: white; padding: 8px 12px; border-radius: 12px;">${userText}</span></div>`;
+            input.value = '';
+
+            const response = await fetch('/api/v1/chat/message', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_id: 1, messages: [{ role: 'user', content: userText }] })
+            });
+            const data = await response.json();
+            box.innerHTML += `<div style="margin-bottom: 12px;"><span style="background: var(--border); padding: 8px 12px; border-radius: 12px;">${data.reply}</span></div>`;
+            box.scrollTop = box.scrollHeight;
+        }
+
+        async function generateGuide() {
+            const medRes = document.getElementById('guide-medical').value;
+            const drugRes = document.getElementById('guide-medication').value;
+            const resultBox = document.getElementById('guide-result');
+
+            resultBox.style.display = 'block';
+            resultBox.innerText = 'LLM 가이드 생성 중...';
+
+            const response = await fetch('/api/v1/guide/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_id: 1, medical_records: medRes, medication_info: drugRes })
+            });
+            const data = await response.json();
+            resultBox.innerText = data.guide_text;
+        }
+
+        async function uploadOCR() {
+            const resBox = document.getElementById('ocr-result');
+            resBox.innerText = '이미지를 분석 중입니다 (필수 3 테스트)...';
+            // 실제 구현 시 FormData 전송 로직 필요
+            const response = await fetch('/api/v1/ocr/extract_record', { method: 'POST', body: new FormData() });
+            const data = await response.json();
+            resBox.innerText = JSON.stringify(data, null, 2);
+        }
+    </script>
+</body>
+
+</html>
