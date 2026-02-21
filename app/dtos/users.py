@@ -4,38 +4,24 @@ from typing import Annotated
 from pydantic import BaseModel, EmailStr, Field
 
 from app.dtos.base import BaseSerializerModel
-from app.models.users import Gender
-from app.validators.common import optional_after_validator
-from app.validators.user_validators import validate_birthday, validate_phone_number
-
+from app.validators.user_validators import validate_phone_number
+from pydantic import AfterValidator, BaseModel, EmailStr, Field
 
 class UserUpdateRequest(BaseModel):
-    name: Annotated[str | None, Field(None, min_length=2, max_length=20)]
-    email: Annotated[
-        EmailStr | None,
-        Field(None, max_length=40),
-    ]
-    phone_number: Annotated[
-        str | None,
-        Field(None, description="Available Format: +8201011112222, 01011112222, 010-1111-2222"),
-        optional_after_validator(validate_phone_number),
-    ]
-    birthday: Annotated[
-        date | None,
-        Field(None, description="Date Format: YYYY-MM-DD"),
-        optional_after_validator(validate_birthday),
-    ]
-    gender: Annotated[
-        Gender | None,
-        Field(None, description="'MALE' or 'FEMALE'"),
-    ]
-
+    nickname: Annotated[str | None, Field(None, min_length=2, max_length=40)]
+    phone_number:  Annotated[str, AfterValidator(validate_phone_number)]
+    password: Annotated[str | None, Field(None, max_length=128)]
+    is_marketing_agreed: bool = Field(default=False)
+    chronic_disease: str = None # 추가
 
 class UserInfoResponse(BaseSerializerModel):
-    id: int
     name: str
-    email: str
+    email: EmailStr
     phone_number: str
-    birthday: date
-    gender: Gender
-    created_at: datetime
+    nickname: str
+    id_card: str
+    is_marketing_agreed: str
+    chronic_disease:str = None
+
+    class Config:
+        from_attributes = True # ORM 객체를 자동으로 DTO로 변환 가능케 함

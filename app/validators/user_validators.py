@@ -2,30 +2,36 @@ import re
 from datetime import date, datetime
 
 from dateutil.relativedelta import relativedelta
-
+from fastapi.exceptions import HTTPException
+from starlette import status
 from app.core import config
 
 
 def validate_password(password: str) -> str:
     if len(password) < 8:
-        raise ValueError("비밀번호는 8자 이상이어야 합니다.")
+        text = "비밀번호는 8자 이상이어야 합니다."
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=text)
 
     # 대문자를 포함하고 있는지
     if not re.search(r"[A-Z]", password):
-        raise ValueError("비밀번호에는 대문자, 소문자, 특수문자, 숫자가 각 하나씩 포함되어야 합니다.")
+        text = "비밀번호에는 대문자, 소문자, 특수문자, 숫자가 각 하나씩 포함되어야 합니다."
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=text)
 
     # 소문자를 포함하고 있는지
     if not re.search(r"[a-z]", password):
-        raise ValueError("비밀번호에는 대문자, 소문자, 특수문자, 숫자가 각 하나씩 포함되어야 합니다.")
+        text = "비밀번호에는 대문자, 소문자, 특수문자, 숫자가 각 하나씩 포함되어야 합니다."
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=text)
 
     # 숫자를 포함하고 있는지
     if not re.search(r"[0-9]", password):
-        raise ValueError("비밀번호에는 대문자, 소문자, 특수문자, 숫자가 각 하나씩 포함되어야 합니다.")
-
+        text = "비밀번호에는 대문자, 소문자, 특수문자, 숫자가 각 하나씩 포함되어야 합니다."
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=text)
+    
     # 특수문자를 포함하고 있는지
     if not re.search(r"[^a-zA-Z0-9]", password):
-        raise ValueError("비밀번호에는 대문자, 소문자, 특수문자, 숫자가 각 하나씩 포함되어야 합니다.")
-
+        text = "비밀번호에는 대문자, 소문자, 특수문자, 숫자가 각 하나씩 포함되어야 합니다."
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=text)
+    
     return password
 
 
@@ -37,20 +43,22 @@ def validate_phone_number(phone_number: str) -> str:
     ]
 
     if not any(re.fullmatch(p, phone_number) for p in patterns):
-        raise ValueError("유효하지 않은 휴대폰 번호 형식입니다.")
-
+        text = "유효하지 않은 휴대폰 번호 형식입니다."
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=text)
+    
     return phone_number
 
+def validate_id_card(value: str) -> str:
+    if len(value) != 14:
+        raise ValueError("주민번호는 14자리여야 합니다.")
+    
+    if "-" not in value:
+        raise ValueError("주민번호 형식이 올바르지 않습니다. (xxxxxx-xxxxxxx)")
+    
+    return value
 
-def validate_birthday(birthday: date | str) -> date:
-    if isinstance(birthday, str):
-        try:
-            birthday = date.fromisoformat(birthday)
-        except ValueError as e:
-            raise ValueError("올바르지 않은 날짜 형식입니다. format: YYYY-MM-DD") from e
+def validate_password(value: str) -> str:
+    if len(value) <= 8:
+        raise ValueError("패스워드는 8자이 이상 이여 합니다.")
 
-    is_over_14 = birthday < datetime.now(tz=config.TIMEZONE).date() - relativedelta(years=14)
-    if not is_over_14:
-        raise ValueError("서비스 약관에 따라 만14세 미만은 회원가입이 불가합니다.")
-
-    return birthday
+    return value

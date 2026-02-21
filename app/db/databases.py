@@ -36,4 +36,4 @@ TORTOISE_ORM = {
 
 def initialize_tortoise(app: FastAPI) -> None:
     Tortoise.init_models(TORTOISE_APP_MODELS, "models")
-    register_tortoise(app, config=TORTOISE_ORM)
+    register_tortoise(app, config=TORTOISE_ORM, generate_schemas=True)

@@ -24,11 +24,18 @@ class Config(BaseSettings):
 
     DB_HOST: str = "localhost"
     DB_PORT: int = 3306
-    DB_USER: str = "root"
-    DB_PASSWORD: str = "pw1234"
-    DB_NAME: str = "ai_health"
+    DB_USER: str = ""
+    DB_PASSWORD: str = ""
+    DB_NAME: str = ""
     DB_CONNECT_TIMEOUT: int = 5
     DB_CONNECTION_POOL_MAXSIZE: int = 10
+
+    SMTP_USER: str = ""          # .env의 SMTP_USER와 매칭
+    SMTP_PASSWORD: str = ""      # .env의 SMTP_PASSWORD와 매칭
+    SMTP_HOST: str = "smtp.naver.com"
+    SMTP_PORT: int = 587
+    MAIL_STARTTLS: bool = True
+    MAIL_SSL_TLS: bool = False
 
     COOKIE_DOMAIN: str = "localhost"
 
