@@ -1,0 +1,46 @@
+import os
+import uuid
+import zoneinfo
+from dataclasses import field
+from enum import StrEnum
+from pathlib import Path
+
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class Env(StrEnum):
+    LOCAL = "local"
+    DEV = "dev"
+    PROD = "prod"
+
+
+class Config(BaseSettings):
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="allow")
+
+    ENV: Env = Env.LOCAL
+    SECRET_KEY: str = f"default-secret-key{uuid.uuid4().hex}"
+    TIMEZONE: zoneinfo.ZoneInfo = field(default_factory=lambda: zoneinfo.ZoneInfo("Asia/Seoul"))
+    TEMPLATE_DIR: str = os.path.join(Path(__file__).resolve().parent.parent, "templates")
+
+    DB_HOST: str = "localhost"
+    DB_PORT: int = 3306
+    DB_USER: str = ""
+    DB_PASSWORD: str = ""
+    DB_NAME: str = ""
+    DB_CONNECT_TIMEOUT: int = 5
+    DB_CONNECTION_POOL_MAXSIZE: int = 10
+
+    SMTP_USER: str = ""          # .env의 SMTP_USER와 매칭
+    SMTP_PASSWORD: str = ""      # .env의 SMTP_PASSWORD와 매칭
+    SMTP_HOST: str = "smtp.naver.com"
+    SMTP_PORT: int = 587
+    MAIL_STARTTLS: bool = True
+    MAIL_SSL_TLS: bool = False
+
+    COOKIE_DOMAIN: str = "localhost"
+
+    JWT_ALGORITHM: str = "HS256"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    REFRESH_TOKEN_EXPIRE_MINUTES: int = 30 * 24 * 60  # 자동로그인 체크 시 30일 유지
+    REFRESH_TOKEN_EXPIRE_MINUTES_SHORT: int = 60  # 자동로그인 체크 안 할 시 60분 유지
+    JWT_LEEWAY: int = 5
