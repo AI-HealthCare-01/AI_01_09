@@ -1,6 +1,7 @@
+from typing import Annotated
+
 from fastapi import APIRouter, Depends, status
 from fastapi.responses import JSONResponse as Response
-from typing import Annotated
 
 from app.dtos.guide import GuideRequest, GuideResponse
 from app.services.guide import GuideService

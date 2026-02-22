@@ -1,9 +1,11 @@
-import re
 import random
+import re
 import string
-from fastapi_mail import FastMail, MessageSchema, MessageType, ConnectionConfig
-from app.core import config
+
 import redis.asyncio as redis  # 비동기 redis 라이브러리
+from fastapi_mail import ConnectionConfig, FastMail, MessageSchema, MessageType
+
+from app.core import config
 
 redis_client = redis.from_url("redis://172.17.0.1:6379", decode_responses=True)
 
@@ -32,7 +34,7 @@ class Email:
     async def send_verification(self, email: str):
         # 6자리 랜덤 코드 생성
         code = "".join(random.choices(string.digits, k=6))
-        
+
         # 기존 인증코드 삭제 후 새로 저장
         await redis_client.setex(f"auth:{email}", 300, code)
 

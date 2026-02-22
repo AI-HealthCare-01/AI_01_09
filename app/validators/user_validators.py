@@ -1,10 +1,7 @@
 import re
-from datetime import date, datetime
 
-from dateutil.relativedelta import relativedelta
 from fastapi.exceptions import HTTPException
 from starlette import status
-from app.core import config
 
 
 def validate_password(password: str) -> str:
@@ -26,12 +23,12 @@ def validate_password(password: str) -> str:
     if not re.search(r"[0-9]", password):
         text = "비밀번호에는 대문자, 소문자, 특수문자, 숫자가 각 하나씩 포함되어야 합니다."
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=text)
-    
+
     # 특수문자를 포함하고 있는지
     if not re.search(r"[^a-zA-Z0-9]", password):
         text = "비밀번호에는 대문자, 소문자, 특수문자, 숫자가 각 하나씩 포함되어야 합니다."
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=text)
-    
+
     return password
 
 
@@ -45,20 +42,16 @@ def validate_phone_number(phone_number: str) -> str:
     if not any(re.fullmatch(p, phone_number) for p in patterns):
         text = "유효하지 않은 휴대폰 번호 형식입니다."
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=text)
-    
+
     return phone_number
 
 def validate_id_card(value: str) -> str:
     if len(value) != 14:
-        raise ValueError("주민번호는 14자리여야 합니다.")
-    
-    if "-" not in value:
-        raise ValueError("주민번호 형식이 올바르지 않습니다. (xxxxxx-xxxxxxx)")
-    
-    return value
+        text = "주민번호는 14자리여야 합니다."
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=text)
 
-def validate_password(value: str) -> str:
-    if len(value) <= 8:
-        raise ValueError("패스워드는 8자이 이상 이여 합니다.")
+    if "-" not in value:
+        text = "주민번호 형식이 올바르지 않습니다. (xxxxxx-xxxxxxx)"
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=text)
 
     return value

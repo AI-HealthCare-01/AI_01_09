@@ -1,12 +1,11 @@
+
 from fastapi import FastAPI, Request
-from fastapi.responses import ORJSONResponse, HTMLResponse
+from fastapi.responses import HTMLResponse, ORJSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from app.apis.v1 import v1_routers
 from app.db.databases import initialize_tortoise
-
-import logging
 
 app = FastAPI(
     default_response_class=ORJSONResponse, docs_url="/api/docs", redoc_url="/api/redoc", openapi_url="/api/openapi.json"
@@ -27,19 +26,19 @@ async def read_root(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 @app.get("/join", response_class=HTMLResponse)
-async def read_root(request: Request):
+async def read_join(request: Request):
     return templates.TemplateResponse("join.html", {"request": request})
 
 @app.get("/login", response_class=HTMLResponse)
-async def read_root(request: Request):
+async def read_login(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
 
 @app.get("/mypage", response_class=HTMLResponse)
-async def read_root(request: Request):
+async def read_mypage(request: Request):
     return templates.TemplateResponse("mypage.html", {"request": request})
 
 @app.get("/find-id-pw", response_class=HTMLResponse)
-async def read_root(request: Request):
+async def read_find_id_pw(request: Request):
     return templates.TemplateResponse("find_account.html", {"request": request})
 
 app.include_router(v1_routers)

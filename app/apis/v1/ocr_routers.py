@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, status, UploadFile, File
+from fastapi import APIRouter, Depends, File, UploadFile, status
 from fastapi.responses import JSONResponse as Response
 
 from app.dtos.ocr import OCRExtractResponse, PillAnalyzeResponse

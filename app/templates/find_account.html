@@ -1,35 +1,127 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <title>계정 찾기</title>
     <style>
-        body { font-family: sans-serif; display: flex; justify-content: center; padding: 20px; background-color: #f4f7f6; }
-        .container { width: 400px; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        
+        body {
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            background-color: #f4f7f6;
+        }
+
+        .container {
+            width: 400px;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
         /* 탭 스타일 */
-        .tab-menu { display: flex; margin-bottom: 25px; border-bottom: 2px solid #eee; }
-        .tab-btn { flex: 1; padding: 10px; text-align: center; cursor: pointer; color: #999; font-weight: bold; }
-        .tab-btn.active { color: #007bff; border-bottom: 2px solid #007bff; margin-bottom: -2px; }
-        
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
+        .tab-menu {
+            display: flex;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #eee;
+        }
 
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 0.9em; }
-        input { width: 100%; padding: 10px; box-sizing: border-box; border: 1px solid #ddd; border-radius: 4px; }
-        
-        .row { display: flex; gap: 5px; }
-        .row input { flex: 3; }
-        .row button { flex: 1; white-space: nowrap; font-size: 0.8em; background-color: #6c757d; margin: 0px;}
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            color: #999;
+            font-weight: bold;
+        }
 
-        button { width: 100%; padding: 12px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 1em; margin-top: 10px; }
-        button:hover { opacity: 0.9; }
+        .tab-btn.active {
+            color: #007bff;
+            border-bottom: 2px solid #007bff;
+            margin-bottom: -2px;
+        }
 
-        .result-box { display: none; margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px; text-align: center; border: 1px dashed #abc; }
-        .found-id { font-weight: bold; color: #007bff; font-size: 1.2em; margin: 10px 0; }
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .row {
+            display: flex;
+            gap: 5px;
+        }
+
+        .row input {
+            flex: 3;
+        }
+
+        .row button {
+            flex: 1;
+            white-space: nowrap;
+            font-size: 0.8em;
+            background-color: #6c757d;
+            margin: 0px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .result-box {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px dashed #abc;
+        }
+
+        .found-id {
+            font-weight: bold;
+            color: #007bff;
+            font-size: 1.2em;
+            margin: 10px 0;
+        }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="tab-menu">
@@ -50,7 +142,7 @@
                 </div>
                 <button type="button" onclick="handleFindId()">아이디 확인</button>
             </div>
-            
+
             <div id="idResultBox" class="result-box">
                 <p>가입하신 이메일 아이디입니다.</p>
                 <div id="emailResult" class="found-id"></div>
@@ -93,10 +185,10 @@
         function openTab(tabName) {
             const contents = document.querySelectorAll('.tab-content');
             const buttons = document.querySelectorAll('.tab-btn');
-            
+
             contents.forEach(content => content.classList.remove('active'));
             buttons.forEach(btn => btn.classList.remove('active'));
-            
+
             document.getElementById(tabName).classList.add('active');
             event.currentTarget.classList.add('active');
         }
@@ -106,11 +198,11 @@
             const name = document.getElementById('id_name').value;
             const phone = document.getElementById('id_phone').value;
 
-            if(!name || !phone) return alert("정보를 모두 입력해주세요.");
+            if (!name || !phone) return alert("정보를 모두 입력해주세요.");
 
             try {
                 // GET 요청으로 쿼리 파라미터 전달
-                const response = await fetch(`/auth/find-email?name=${name}&phone_number=${phone}`);
+                const response = await fetch(`/api/v1/users/find-email?name=${name}&phone_number=${phone}`);
                 const result = await response.json();
 
                 if (result.email) {
@@ -128,10 +220,10 @@
         // 비밀번호 찾기 - 인증번호 발송
         async function sendPwResetCode() {
             const email = document.getElementById('pw_email').value;
-            if(!email) return alert("이메일을 입력해주세요.");
+            if (!email) return alert("이메일을 입력해주세요.");
 
             try {
-                const response = await fetch('/auth/send-code', {
+                const response = await fetch('/api/v1/email/send-code', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email: email })
@@ -153,10 +245,10 @@
                 new_password: document.getElementById('pw_new').value
             };
 
-            if(Object.values(data).some(v => !v)) return alert("모든 항목을 입력해주세요.");
+            if (Object.values(data).some(v => !v)) return alert("모든 항목을 입력해주세요.");
 
             try {
-                const response = await fetch('/auth/reset-password', {
+                const response = await fetch('/api/v1/users/reset-password', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
@@ -164,7 +256,7 @@
 
                 if (response.ok) {
                     alert("비밀번호가 성공적으로 변경되었습니다.\n새로운 비밀번호로 로그인해주세요.");
-                    location.href = "/login.html";
+                    location.href = "/login";
                 } else {
                     const err = await response.json();
                     alert("오류: " + err.detail);
@@ -175,4 +267,5 @@
         }
     </script>
 </body>
+
 </html>
