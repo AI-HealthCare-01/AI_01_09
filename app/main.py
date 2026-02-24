@@ -1,4 +1,3 @@
-
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, ORJSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -24,22 +23,37 @@ templates = Jinja2Templates(directory="app/templates")
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
+    """
+    서비스의 메인 랜딩 페이지(Index)를 반환합니다.
+    """
     return templates.TemplateResponse("index.html", {"request": request})
 
 @app.get("/join", response_class=HTMLResponse)
 async def read_join(request: Request):
+    """
+    회원가입 페이지를 반환합니다.
+    """
     return templates.TemplateResponse("join.html", {"request": request})
 
 @app.get("/login", response_class=HTMLResponse)
 async def read_login(request: Request):
+    """
+    로그인 페이지를 반환합니다.
+    """
     return templates.TemplateResponse("login.html", {"request": request})
 
 @app.get("/mypage", response_class=HTMLResponse)
 async def read_mypage(request: Request):
+    """
+    사용자 마이페이지(정보 수정, 비밀번호 변경 등)를 반환합니다.
+    """
     return templates.TemplateResponse("mypage.html", {"request": request})
 
 @app.get("/find-id-pw", response_class=HTMLResponse)
 async def read_find_id_pw(request: Request):
+    """
+    아이디 및 비밀번호 찾기 페이지를 반환합니다.
+    """
     return templates.TemplateResponse("find_account.html", {"request": request})
 
 app.include_router(v1_routers)

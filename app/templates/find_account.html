@@ -145,7 +145,7 @@
 
             <div id="idResultBox" class="result-box">
                 <p>가입하신 이메일 아이디입니다.</p>
-                <div id="emailResult" class="found-id"></div>
+                <div id="idResult" class="found-id"></div>
                 <button onclick="location.href='/login.html'">로그인하러 가기</button>
             </div>
         </div>
@@ -155,7 +155,7 @@
             <div class="form-group">
                 <label>이메일</label>
                 <div class="row">
-                    <input type="email" id="pw_email" placeholder="가입한 이메일 입력">
+                    <input type="email" id="pw_id" placeholder="가입한 이메일 입력">
                     <button type="button" onclick="sendPwResetCode()">인증 요청</button>
                 </div>
             </div>
@@ -208,7 +208,7 @@
                 if (result.id) {
                     document.getElementById('idFormArea').style.display = 'none';
                     document.getElementById('idResultBox').style.display = 'block';
-                    document.getElementById('emailResult').innerText = result.id;
+                    document.getElementById('idResult').innerText = result.id;
                 } else {
                     alert("일치하는 회원 정보가 없습니다.");
                 }
@@ -219,14 +219,14 @@
 
         // 비밀번호 찾기 - 인증번호 발송
         async function sendPwResetCode() {
-            const email = document.getElementById('pw_email').value;
-            if (!email) return alert("이메일을 입력해주세요.");
+            const userId = document.getElementById('pw_id').value;
+            if (!userId) return alert("이메일을 입력해주세요.");
 
             try {
                 const response = await fetch('/api/v1/email/send-code', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email: email })
+                    body: JSON.stringify({ id: userId })
                 });
                 const result = await response.json();
                 alert(result.message || result.detail);
@@ -238,7 +238,7 @@
         // 비밀번호 재설정 완료 처리
         async function handleResetPw() {
             const data = {
-                id: document.getElementById('pw_email').value,
+                id: document.getElementById('pw_id').value,
                 code: document.getElementById('pw_code').value,
                 name: document.getElementById('pw_name').value,
                 phone_number: document.getElementById('pw_phone').value,

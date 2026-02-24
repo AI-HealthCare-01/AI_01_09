@@ -2,8 +2,8 @@ from pydantic import BaseModel, EmailStr
 
 
 class EmailRequest(BaseModel):
-    email: EmailStr
+    id: EmailStr
 
 class EmailCodeRequest(BaseModel):
-    email: EmailStr
+    id: EmailStr
     code: str

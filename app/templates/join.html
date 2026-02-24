@@ -223,7 +223,7 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ email: userId })
+                    body: JSON.stringify({ id: userId })
                 });
 
                 if (!response1.ok) {
@@ -253,7 +253,7 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ email: userId, code: code })
+                    body: JSON.stringify({ id: userId, code: code })
                 });
 
                 // 인증 틀림 (정상 처리)

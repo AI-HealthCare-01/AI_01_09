@@ -9,12 +9,19 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Env(StrEnum):
+    """
+    애플리케이션의 실행 환경(로컬, 개발, 운영)을 정의하는 열거형 클래스입니다.
+    """
     LOCAL = "local"
     DEV = "dev"
     PROD = "prod"
 
 
 class Config(BaseSettings):
+    """
+    애플리케이션의 모든 환경 변수 및 설정을 관리하는 클래스입니다.
+    Pydantic Settings를 기반으로 .env 파일 및 시스템 환경 변수를 로드합니다.
+    """
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="allow")
 
     ENV: Env = Env.LOCAL
@@ -44,3 +51,16 @@ class Config(BaseSettings):
     REFRESH_TOKEN_EXPIRE_MINUTES: int = 30 * 24 * 60  # 자동로그인 체크 시 30일 유지
     REFRESH_TOKEN_EXPIRE_MINUTES_SHORT: int = 60  # 자동로그인 체크 안 할 시 60분 유지
     JWT_LEEWAY: int = 5
+
+    # Naver Social Login
+    NAVER_CLIENT_ID: str = ""
+    NAVER_CLIENT_SECRET: str = ""
+    NAVER_REDIRECT_URI: str = "http://localhost:8000/api/v1/users/auth/naver/callback"
+
+    # Kakao Social Login
+    KAKAO_CLIENT_ID: str = ""
+    KAKAO_CLIENT_SECRET: str = ""
+    KAKAO_REDIRECT_URI: str = "http://localhost:8000/api/v1/users/auth/kakao/callback"
+
+    # Security & Encryption
+    AES_SECRET_KEY: str = f"aes-default-secret-{uuid.uuid4().hex[:16]}"

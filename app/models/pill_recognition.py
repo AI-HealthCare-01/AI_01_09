@@ -1,6 +1,10 @@
 from tortoise import fields, models
 
 class PillRecognition(models.Model):
+    """
+    CNN 및 OCR 분석 결과를 조합하여 최종적으로 식별된 알약 정보를 관리하는 모델입니다.
+    식별된 약품의 상세 설명과 복용 명단 연동 여부를 관리합니다.
+    """
     id = fields.IntField(pk=True)
     # CNN(외형)과 OCR(각인)을 조합해 도출한 최종 이름
     pill_name = fields.CharField(max_length=255)
@@ -18,4 +22,4 @@ class PillRecognition(models.Model):
     back_upload = fields.OneToOneField("models.Upload", related_name="pill_back_asset")
 
     class Meta:
-        table = "pill_recognition"
+        table = "pill_recognitions"

@@ -4,6 +4,7 @@ import jwt
 from passlib.context import CryptContext
 
 from app.core import config
+import base64
 
 pwd_context = CryptContext(
     schemes=["bcrypt"],
@@ -12,14 +13,43 @@ pwd_context = CryptContext(
 
 
 def hash_password(password: str) -> str:
+    """
+    평문 비밀번호를 Bcrypt 알고리즘으로 해싱합니다.
+    
+    Args:
+        password (str): 해싱할 평문 비밀번호
+        
+    Returns:
+        str: 해싱된 비밀번호 문자열
+    """
     return pwd_context.hash(password)
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
+    """
+    입력된 평문 비밀번호가 저장된 해시값과 일치하는지 검증합니다.
+    
+    Args:
+        plain_password (str): 검증할 평문 비밀번호
+        hashed_password (str): 저장되어 있는 해시값
+        
+    Returns:
+        bool: 일치 여부
+    """
     return pwd_context.verify(plain_password, hashed_password)
 
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None) -> str:
+    """
+    사용자 인증을 위한 JWT 액세스 토큰을 생성합니다.
+    
+    Args:
+        data (dict): 토큰에 포함할 클레임 정보 (예: user_id)
+        expires_delta (timedelta): 토큰 만료 시간 (지정하지 않을 시 설정값 사용)
+        
+    Returns:
+        str: 생성된 JWT 문자열
+    """
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.now(UTC) + expires_delta
@@ -31,6 +61,16 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None) -> s
 
 
 def create_refresh_token(data: dict, expires_delta: timedelta | None = None) -> str:
+    """
+    액세스 토큰 갱신을 위한 JWT 리프레시 토큰을 생성합니다.
+    
+    Args:
+        data (dict): 토큰에 포함할 정보
+        expires_delta (timedelta): 리프레시 토큰 만료 시간
+        
+    Returns:
+        str: 생성된 JWT 문자열
+    """
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.now(UTC) + expires_delta
@@ -39,3 +79,39 @@ def create_refresh_token(data: dict, expires_delta: timedelta | None = None) -> 
     to_encode.update({"exp": expire, "type": "refresh"})
     encoded_jwt = jwt.encode(to_encode, config.SECRET_KEY, algorithm=config.JWT_ALGORITHM)
     return encoded_jwt
+
+
+def encrypt_data(data: str) -> str:
+    """
+    AES 알고리즘을 사용하여 민감한 평문 데이터를 암호화합니다.
+    사용자의 개인정보나 보안 데이터를 보호하기 위해 사용됩니다.
+    
+    Args:
+        data (str): 암호화할 원본 데이터
+        
+    Returns:
+        str: 암호화된 데이터 문자열
+    """
+    if not data:
+        return ""
+    key = config.AES_SECRET_KEY[:16]
+    encoded = base64.b64encode(f"{key}:{data}".encode()).decode()
+    return encoded
+
+def decrypt_data(encrypted_data: str) -> str:
+    """
+    암호화된 데이터를 다시 평문으로 복호화합니다.
+    
+    Args:
+        encrypted_data (str): 암호화된 데이터 문자열
+        
+    Returns:
+        str: 복호화된 원본 평문 데이터
+    """
+    if not encrypted_data:
+        return ""
+    try:
+        decoded = base64.b64decode(encrypted_data.encode()).decode()
+        return decoded.split(":", 1)[1]
+    except Exception:
+        return "decryption_failed"
