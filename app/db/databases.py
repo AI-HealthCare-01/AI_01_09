@@ -16,10 +16,13 @@ TORTOISE_APP_MODELS = [
     "app.models.currentMed",
     "app.models.llmLifeGuide",
     "app.models.multimodalAsset",
-    "app.models.ocrResult",
+    "app.models.prescription",
+    "app.models.prescriptionDrug",
     "app.models.pillRecognition",
     "app.models.systemLog",
     "app.models.upload",
+    "app.models.ocrHistory",
+    "app.models.cnnHistory",
 ]
 
 TORTOISE_ORM = {

@@ -12,7 +12,6 @@ class User(models.Model):
     is_terms_agreed = fields.BooleanField(default=False, description="이용약관 (필수)")
     is_privacy_agreed = fields.BooleanField(default=False, description="개인정보 (필수)")
     is_marketing_agreed = fields.BooleanField(default=False, description="마케팅 (선택)")
-    chronic_disease = fields.TextField(null=True, description="만성 질환 정보")
 
     class Meta:
         table = "users"

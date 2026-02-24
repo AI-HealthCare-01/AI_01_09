@@ -6,14 +6,10 @@ from fastapi.responses import JSONResponse as Response
 from app.dtos.ocr import OCRExtractResponse, PillAnalyzeResponse
 from app.services.ocr import OCRService
 
-ocr_router = APIRouter(prefix="/ocr", tags=["ocr"])
+ocr_router = APIRouter(prefix="/ai", tags=["ai"])
 
-
-# ==========================================
-# [추가된 기능] 필수 3: OCR 기반 의료정보 인식
-# ==========================================
-@ocr_router.post("/extract_record", response_model=OCRExtractResponse, status_code=status.HTTP_200_OK)
-async def extract_medical_record(
+@ocr_router.post("/analyze-ocr", response_model=OCRExtractResponse, status_code=status.HTTP_200_OK)
+async def analyze_ocr(
     ocr_service: Annotated[OCRService, Depends(OCRService)],
     file: UploadFile = File(...),
 ) -> Response:
@@ -28,7 +24,7 @@ async def extract_medical_record(
 # ==========================================
 # [추가된 기능] 선택 2: 이미지 분류 기반 복약 분석
 # ==========================================
-@ocr_router.post("/analyze_pill", response_model=PillAnalyzeResponse, status_code=status.HTTP_200_OK)
+@ocr_router.post("/analyze-pill", response_model=PillAnalyzeResponse, status_code=status.HTTP_200_OK)
 async def analyze_pill(
     ocr_service: Annotated[OCRService, Depends(OCRService)],
     file: UploadFile = File(...),
@@ -39,3 +35,20 @@ async def analyze_pill(
     image_bytes = await file.read()
     response_dto = await ocr_service.analyze_pill_image(image_bytes)
     return Response(content=response_dto.model_dump(), status_code=status.HTTP_200_OK)
+
+
+@ocr_router.get("/prescriptions", status_code=status.HTTP_200_OK)
+async def get_prescriptions():
+    """
+    저장된 처방전 내역을 가져옵니다.
+    """
+    from app.models.prescription import Prescription
+    return await Prescription.all().prefetch_related("drugs")
+
+@ocr_router.get("/pills", status_code=status.HTTP_200_OK)
+async def get_pill_recognitions():
+    """
+    저장된 알약 식별 내역을 가져옵니다.
+    """
+    from app.models.pillRecognition import PillRecognition
+    return await PillRecognition.all()
