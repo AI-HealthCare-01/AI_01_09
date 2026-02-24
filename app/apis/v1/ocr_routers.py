@@ -50,5 +50,9 @@ async def get_pill_recognitions():
     """
     저장된 알약 식별 내역을 가져옵니다.
     """
+<<<<<<< HEAD
     from app.models.pill_recognition import PillRecognition
+=======
+    from app.models.pillRecognition import PillRecognition
+>>>>>>> d6e51ba2c169e21bc320f74bba97c5fa8af7826c
     return await PillRecognition.all()
