@@ -7,19 +7,22 @@ from app.core.config import Env
 
 TORTOISE_APP_MODELS = [
     "aerich.models",
-    "app.models.users",
+    "app.models.user",
     "app.models.alarm",
-    "app.models.alarmHistory",
+    "app.models.alarm_history",
     "app.models.allergy",
-    "app.models.chatMessage",
-    "app.models.chronicDisease",
-    "app.models.currentMed",
-    "app.models.llmLifeGuide",
-    "app.models.multimodalAsset",
-    "app.models.ocrResult",
-    "app.models.pillRecognition",
-    "app.models.systemLog",
+    "app.models.chat_message",
+    "app.models.chronic_disease",
+    "app.models.current_med",
+    "app.models.llm_life_guide",
+    "app.models.multimodal_asset",
+    "app.models.prescription",
+    "app.models.prescription_drug",
+    "app.models.pill_recognition",
+    "app.models.system_log",
     "app.models.upload",
+    "app.models.ocr_history",
+    "app.models.cnn_history",
 ]
 
 TORTOISE_ORM = {

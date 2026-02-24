@@ -18,7 +18,7 @@ from app.dtos.users import (
     UserInfoResponse,
     UserUpdateRequest,
 )
-from app.models.users import User
+from app.models.user import User
 from app.services.users import UserManageService
 from app.utils.security import create_access_token
 from app.utils.common import Email

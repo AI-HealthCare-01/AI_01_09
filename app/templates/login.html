@@ -169,7 +169,7 @@
         <form id="loginForm">
             <div class="form-group">
                 <label>이메일</label>
-                <input type="email" id="email" name="email" value="ejrtn153@naver.com" required
+                <input type="email" id="id" name="id" value="ejrtn153@naver.com" required
                     placeholder="example@mail.com">
             </div>
             <div class="form-group">
@@ -212,7 +212,7 @@
             e.preventDefault();
 
             const formData = new URLSearchParams();
-            formData.append('username', document.getElementById('email').value);
+            formData.append('username', document.getElementById('id').value);
             formData.append('password', document.getElementById('password').value);
             formData.append('remember_me', document.getElementById('remember_me').checked);
 
