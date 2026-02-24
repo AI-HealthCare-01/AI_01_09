@@ -1,7 +1,11 @@
 from typing import List, Annotated
 from fastapi import APIRouter, Depends, status
 from pydantic import BaseModel
+<<<<<<< HEAD
 from app.models.system_log import SystemLog
+=======
+from app.models.systemLog import SystemLog
+>>>>>>> d6e51ba2c169e21bc320f74bba97c5fa8af7826c
 
 system_router = APIRouter(prefix="/system", tags=["system"])
 

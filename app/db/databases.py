@@ -11,6 +11,7 @@ TORTOISE_APP_MODELS = [
     "app.models.alarm",
     "app.models.alarm_history",
     "app.models.allergy",
+<<<<<<< HEAD
     "app.models.chat_message",
     "app.models.chronic_disease",
     "app.models.current_med",
@@ -23,6 +24,20 @@ TORTOISE_APP_MODELS = [
     "app.models.upload",
     "app.models.ocr_history",
     "app.models.cnn_history",
+=======
+    "app.models.chatMessage",
+    "app.models.chronicDisease",
+    "app.models.currentMed",
+    "app.models.llmLifeGuide",
+    "app.models.multimodalAsset",
+    "app.models.prescription",
+    "app.models.prescriptionDrug",
+    "app.models.pillRecognition",
+    "app.models.systemLog",
+    "app.models.upload",
+    "app.models.ocrHistory",
+    "app.models.cnnHistory",
+>>>>>>> d6e51ba2c169e21bc320f74bba97c5fa8af7826c
 ]
 
 TORTOISE_ORM = {

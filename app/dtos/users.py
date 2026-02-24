@@ -43,7 +43,11 @@ class TokenRefreshResponse(BaseModel):
 class UserUpdateRequest(BaseModel):
     nickname: Annotated[str | None, Field(None, min_length=2, max_length=40)]
     phone_number:  Annotated[str, AfterValidator(validate_phone_number)]
+<<<<<<< HEAD
     resident_registration_number: Annotated[str, AfterValidator(validate_resident_registration_number)]
+=======
+    id_card: Annotated[str, AfterValidator(validate_resident_registration_number)]
+>>>>>>> d6e51ba2c169e21bc320f74bba97c5fa8af7826c
     is_marketing_agreed: bool = Field(default=False)
 
 class UserInfoResponse(BaseSerializerModel):
