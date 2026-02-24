@@ -22,6 +22,16 @@ conf = ConnectionConfig(
 )
 
 def normalize_phone_number(phone_number: str) -> str:
+    """
+    다양한 형식의 휴대폰 번호를 숫자만 포함된 표준 형식으로 정규화합니다.
+    국가번호(+82)를 0으로 변환하고 기호를 제거합니다.
+    
+    Args:
+        phone_number (str): 정규화되지 않은 휴대폰 번호 입력값
+        
+    Returns:
+        str: 숫자만 남은 정규화된 휴대폰 번호
+    """
     if phone_number.startswith("+82"):
         phone_number = "0" + phone_number[3:]
     phone_number = re.sub(r"\D", "", phone_number)
@@ -29,9 +39,22 @@ def normalize_phone_number(phone_number: str) -> str:
     return phone_number
 
 class Email:
+    """
+    SMTP 프로토콜을 사용하여 이메일 인증 코드를 발송하고 검증하는 클래스입니다.
+    """
 
     # 1. 이메일 인증 번호 발송
     async def send_verification(self, email: str):
+        """
+        6자리 랜덤 숫자를 생성하여 지정된 이메일 주소로 발송하고 Redis에 저장합니다.
+        유효 기간은 5분(300초)입니다.
+        
+        Args:
+            email (str): 인증 번호를 받을 이메일 주소
+            
+        Returns:
+            bool: 발송 성공 여부
+        """
         # 6자리 랜덤 코드 생성
         code = "".join(random.choices(string.digits, k=6))
 
@@ -53,6 +76,15 @@ class Email:
         return True
 
     async def verify_code(self, email: str, code: str) -> bool:
-        """사용자가 입력한 코드가 Redis에 있는 코드와 일치하는지 확인"""
+        """
+        사용자가 입력한 코드가 Redis에 저장된 코드와 일치하는지 확인합니다.
+        
+        Args:
+            email (str): 인증을 진행 중인 이메일 주소
+            code (str): 사용자가 입력한 6자리 코드
+            
+        Returns:
+            bool: 인증 일치 여부
+        """
         saved_code = await redis_client.get(f"auth:{email}")
         return saved_code == code

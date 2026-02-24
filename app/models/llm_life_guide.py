@@ -1,6 +1,10 @@
 from tortoise import fields, models
 
 class LLMLifeGuide(models.Model):
+    """
+    AI가 생성한 환자 맞춤형 복약 및 생활 가이드 전문을 관리하는 모델입니다.
+    생성 당시의 환자 상태와 긴급 알림 포함 여부를 기록합니다.
+    """
     id = fields.IntField(pk=True)
     user = fields.ForeignKeyField("models.User", related_name="life_guides")
     guide_type = fields.CharField(max_length=50) # 가이드 성격 (복약주의, 생활습관 등)

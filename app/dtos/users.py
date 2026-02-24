@@ -40,14 +40,20 @@ class TokenRefreshResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
 
+class SocialLoginRequest(BaseModel):
+    id: EmailStr
+    name: str
+    nickname: str
+    phone_number: str
+    birthday: str | None = None
+    gender: str | None = None
+    social_id: str
+    provider: str = "naver"
+
 class UserUpdateRequest(BaseModel):
     nickname: Annotated[str | None, Field(None, min_length=2, max_length=40)]
     phone_number:  Annotated[str, AfterValidator(validate_phone_number)]
-<<<<<<< HEAD
     resident_registration_number: Annotated[str, AfterValidator(validate_resident_registration_number)]
-=======
-    id_card: Annotated[str, AfterValidator(validate_resident_registration_number)]
->>>>>>> d6e51ba2c169e21bc320f74bba97c5fa8af7826c
     is_marketing_agreed: bool = Field(default=False)
 
 class UserInfoResponse(BaseSerializerModel):

@@ -1,18 +1,17 @@
-from datetime import datetime
-
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 # ==========================================
 # [추가된 기능] 선택 3: 알림 기능
 # ==========================================
-class ScheduleNotificationRequest(BaseModel):
-    user_id: int = Field(..., description="사용자 ID")
-    title: str = Field(..., description="알림 제목 (예: 복약 시간 알림)")
-    message: str = Field(..., description="알림 내용")
-    schedule_time: datetime = Field(..., description="알림을 발송할 예정 시간")
+class AlarmCreateRequest(BaseModel):
+    user_id: str
+    drug_name: str
+    alarm_time: str # HH:MM
+    is_active: bool = True
 
-
-class ScheduleNotificationResponse(BaseModel):
-    notification_id: int = Field(..., description="등록된 알림 ID")
-    status: str = Field(..., description="등록 상태 (예: scheduled)")
+class AlarmResponse(BaseModel):
+    id: int
+    drug_name: str
+    alarm_time: str
+    is_active: bool

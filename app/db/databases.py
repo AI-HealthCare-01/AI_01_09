@@ -11,7 +11,6 @@ TORTOISE_APP_MODELS = [
     "app.models.alarm",
     "app.models.alarm_history",
     "app.models.allergy",
-<<<<<<< HEAD
     "app.models.chat_message",
     "app.models.chronic_disease",
     "app.models.current_med",
@@ -24,20 +23,6 @@ TORTOISE_APP_MODELS = [
     "app.models.upload",
     "app.models.ocr_history",
     "app.models.cnn_history",
-=======
-    "app.models.chatMessage",
-    "app.models.chronicDisease",
-    "app.models.currentMed",
-    "app.models.llmLifeGuide",
-    "app.models.multimodalAsset",
-    "app.models.prescription",
-    "app.models.prescriptionDrug",
-    "app.models.pillRecognition",
-    "app.models.systemLog",
-    "app.models.upload",
-    "app.models.ocrHistory",
-    "app.models.cnnHistory",
->>>>>>> d6e51ba2c169e21bc320f74bba97c5fa8af7826c
 ]
 
 TORTOISE_ORM = {
@@ -66,6 +51,12 @@ TORTOISE_ORM = {
 
 
 def initialize_tortoise(app: FastAPI) -> None:
+    """
+    FastAPI 애플리케이션에 Tortoise-ORM 설정을 등록하고 초기화합니다.
+    
+    Args:
+        app (FastAPI): 초기화할 FastAPI 인스턴스
+    """
     Tortoise.init_models(TORTOISE_APP_MODELS, "models")
     
     # 여기서 generate_schemas=False로 두고, startup에서만 제어합니다.
@@ -78,6 +69,10 @@ def initialize_tortoise(app: FastAPI) -> None:
 
     @app.on_event("startup")
     async def on_startup():
+        """
+        애플리케이션 시작 시 실행되는 이벤트 핸들러입니다.
+        로컬 환경일 경우 기존 테이블을 모두 삭제하고 스키마를 새로 생성하여 개발 편의성을 제공합니다.
+        """
         if config.ENV == Env.LOCAL:
             print(f"Current Environment: {config.ENV}. Resetting database...")
             
@@ -89,7 +84,6 @@ def initialize_tortoise(app: FastAPI) -> None:
             
             try:
                 # 3. Tortoise에 등록된 모든 모델의 테이블을 순회하며 DROP
-                # Tortoise.apps 딕셔너리에는 모든 앱과 모델 정보가 들어있습니다.
                 for app_name, models in Tortoise.apps.items():
                     for model_name, model_obj in models.items():
                         table_name = model_obj._meta.db_table
@@ -101,7 +95,7 @@ def initialize_tortoise(app: FastAPI) -> None:
                 
                 print("All tables dropped. Re-generating schemas...")
                 
-                # 5. 스키마 새로 생성 (이제 테이블이 없으므로 safe=False도 에러 안 남)
+                # 5. 스키마 새로 생성
                 await Tortoise.generate_schemas(safe=False)
                 print("Database schemas re-generated successfully.")
                 
