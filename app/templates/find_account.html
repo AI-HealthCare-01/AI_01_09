@@ -202,13 +202,13 @@
 
             try {
                 // GET 요청으로 쿼리 파라미터 전달
-                const response = await fetch(`/api/v1/users/find-email?name=${name}&phone_number=${phone}`);
+                const response = await fetch(`/api/v1/users/find-id?name=${name}&phone_number=${phone}`);
                 const result = await response.json();
 
-                if (result.email) {
+                if (result.id) {
                     document.getElementById('idFormArea').style.display = 'none';
                     document.getElementById('idResultBox').style.display = 'block';
-                    document.getElementById('emailResult').innerText = result.email;
+                    document.getElementById('emailResult').innerText = result.id;
                 } else {
                     alert("일치하는 회원 정보가 없습니다.");
                 }
@@ -238,7 +238,7 @@
         // 비밀번호 재설정 완료 처리
         async function handleResetPw() {
             const data = {
-                email: document.getElementById('pw_email').value,
+                id: document.getElementById('pw_email').value,
                 code: document.getElementById('pw_code').value,
                 name: document.getElementById('pw_name').value,
                 phone_number: document.getElementById('pw_phone').value,

@@ -6,6 +6,7 @@ from fastapi.templating import Jinja2Templates
 
 from app.apis.v1 import v1_routers
 from app.db.databases import initialize_tortoise
+from app.core.logger import logging
 
 app = FastAPI(
     default_response_class=ORJSONResponse, docs_url="/api/docs", redoc_url="/api/redoc", openapi_url="/api/openapi.json"
@@ -14,8 +15,8 @@ initialize_tortoise(app)
 
 
 # Tortoise-ORM의 SQL 로그를 활성화
-# logging.basicConfig(level=logging.DEBUG)
-# logging.getLogger("tortoise.db_client").setLevel(logging.DEBUG)
+logging.basicConfig(level=logging.DEBUG)
+logging.getLogger("tortoise.db_client").setLevel(logging.DEBUG)
 
 # [추가된 기능] 정적 파일 및 템플릿 설정
 app.mount("/static", StaticFiles(directory="app/static"), name="static")

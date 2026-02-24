@@ -8,12 +8,14 @@ from app.main import app
 class TestSignupAPI(TestCase):
     async def test_signup_success(self):
         signup_data = {
-            "email": "test@example.com",
+            "id": "test@example.com",
             "password": "Password123!",
             "name": "테스터",
-            "gender": "MALE",
-            "birth_date": "1990-01-01",
+            "nickname": "Tester",
             "phone_number": "01012345678",
+            "resident_registration_number": "900101-1234567",
+            "is_terms_agreed": True,
+            "is_privacy_agreed": True
         }
 
         async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
@@ -23,12 +25,14 @@ class TestSignupAPI(TestCase):
 
     async def test_signup_invalid_email(self):
         signup_data = {
-            "email": "invalid-email",
+            "id": "invalid-email",
             "password": "password123!",
             "name": "테스터",
-            "gender": "MALE",
-            "birth_date": "1990-01-01",
+            "nickname": "Tester",
             "phone_number": "01012345678",
+            "resident_registration_number": "900101-1234567",
+            "is_terms_agreed": True,
+            "is_privacy_agreed": True
         }
         async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             response = await client.post("/api/v1/auth/signup", json=signup_data)

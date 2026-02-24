@@ -179,8 +179,8 @@
             </div>
             <div class="form-group">
                 <label>주민번호</label>
-                <input type="text" name="id_card" id="id_card" maxlength="14" placeholder="900101-1234567"
-                    value="123456-1234567" required>
+                <input type="text" name="resident_registration_number" id="resident_registration_number" maxlength="14"
+                    placeholder="900101-1234567" value="123456-1234567" required>
             </div>
             <label>만성 질환 (보유 시 작성)</label>
             <textarea id="chronic_disease" class="chronic_disease" name="chronic_disease"
@@ -219,7 +219,7 @@
 
             try {
                 const response = await fetch(
-                    `/api/v1/users/email-check?email=${encodeURIComponent(email)}`, {
+                    `/api/v1/users/id-check?id=${encodeURIComponent(email)}`, {
                     method: 'GET'
                 });
 
@@ -326,7 +326,7 @@
                 alert("전화번호를 입력해주세요.")
                 return;
             }
-            if (document.getElementById('id_card').value == '') {
+            if (document.getElementById('resident_registration_number').value == '') {
                 alert("주민번호를 입력해주세요.")
                 return;
             }
@@ -338,12 +338,12 @@
             }
 
             const data = {
-                email: document.getElementById('email').value,
+                id: document.getElementById('email').value,
                 password: document.getElementById('password').value,
                 name: document.getElementById('name').value,
                 nickname: document.getElementById('nickname').value,
                 phone_number: document.getElementById('phone_number').value,
-                id_card: document.getElementById('id_card').value,
+                resident_registration_number: document.getElementById('resident_registration_number').value,
                 is_terms_agreed: document.getElementById('is_terms_agreed').checked,
                 is_privacy_agreed: document.getElementById('is_privacy_agreed').checked,
                 is_marketing_agreed: document.getElementById('is_marketing_agreed').checked,
