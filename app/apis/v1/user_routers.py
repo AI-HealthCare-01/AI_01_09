@@ -20,7 +20,7 @@ from app.dtos.users import (
 )
 from app.models.users import User
 from app.services.users import UserManageService
-from app.utils.security import create_access_token, verify_password
+from app.utils.security import create_access_token
 from app.utils.common import Email
 
 user_router = APIRouter(prefix="/users", tags=["users"])
@@ -41,15 +41,15 @@ async def login(
     auth_service: Annotated[UserManageService, Depends(UserManageService)],
     remember_me: Annotated[bool, Form()] = False,
 ) -> Response:
-    # OAuth2PasswordRequestForm expects 'username' (we use it as email) and 'password'
-    login_data = LoginRequest(email=form_data.username, password=form_data.password)
+    # OAuth2PasswordRequestForm expects 'username' (we use it as ID/email) and 'password'
+    login_data = LoginRequest(id=form_data.username, password=form_data.password)
     tokens = await auth_service.login(login_data, remember_me=remember_me)
 
     resp = Response(
         content=LoginResponse(
             access_token=tokens["access_token"],
             token_type=tokens["token_type"],
-            email=tokens["email"]
+            id=tokens["id"]
         ).model_dump(),
         status_code=status.HTTP_200_OK
     )
@@ -88,9 +88,9 @@ async def token_refresh(
             data={"user_id": user_id}, expires_delta=access_token_expires
         )
         
-        # Redis 세션 업데이트 (중요: 버그 수정)
+        # Redis 세션 업데이트
         await auth_service.update_session(
-            email=user_id, 
+            id=user_id, 
             access_token=str(new_access_token), 
             expires_in_seconds=int(access_token_expires.total_seconds())
         )
@@ -102,58 +102,58 @@ async def token_refresh(
         content=TokenRefreshResponse(access_token=str(new_access_token)).model_dump(), status_code=status.HTTP_200_OK
     )
 
-# 이메일 중복 체크
-@user_router.get("/email-check", status_code=status.HTTP_200_OK)
-async def email_check(
-    email: str,
+# ID 중복 체크
+@user_router.get("/id-check", status_code=status.HTTP_200_OK)
+async def id_check(
+    id: str,
     auth_service: Annotated[UserManageService, Depends(UserManageService)]
 ) -> Response:
-    await auth_service.check_email_exists(email)
-    return Response(content={"detail": "사용 가능한 이메일입니다."}, status_code=status.HTTP_200_OK)
+    await auth_service.check_id_exists(id)
+    return Response(content={"detail": "사용 가능한 아이디입니다."}, status_code=status.HTTP_200_OK)
 # 아이디 찾기
-@user_router.get("/find-email", status_code=status.HTTP_200_OK)
-async def find_email(
+@user_router.get("/find-id", status_code=status.HTTP_200_OK)
+async def find_id(
     name: str,
     phone_number: str,
     auth_service: Annotated[UserManageService, Depends(UserManageService)]
 ) -> Response:
-    email = await auth_service.find_email(name, phone_number)
-    return Response(content={"email": email}, status_code=status.HTTP_200_OK)
+    id = await auth_service.find_id(name, phone_number)
+    return Response(content={"id": id}, status_code=status.HTTP_200_OK)
 
 # 비밀번호 재설정 (비인증 상태)
 @user_router.post("/reset-password", status_code=status.HTTP_200_OK)
 async def reset_password(
-    data: dict, # email, code, name, phone_number, new_password
+    data: dict, # id, code, name, phone_number, new_password
     auth_service: Annotated[UserManageService, Depends(UserManageService)],
     email_service: Annotated[Email, Depends(Email)]
 ) -> Response:
     # 1. 인증 코드 검증
-    is_valid = await email_service.verify_code(data["email"], data["code"])
+    is_valid = await email_service.verify_code(data["id"], data["code"])
     if not is_valid:
         raise HTTPException(status_code=400, detail="인증 번호가 틀렸거나 만료되었습니다.")
     
     # 2. 사용자 정보 검증
     await auth_service.verify_user_for_reset(
-        email=data["email"], 
+        id=data["id"], 
         name=data["name"], 
         phone_number=data["phone_number"]
     )
     
     # 3. 비밀번호 재설정
-    await auth_service.reset_password(data["email"], data["new_password"])
+    await auth_service.reset_password(data["id"], data["new_password"])
     
     return Response(content={"detail": "비밀번호가 성공적으로 변경되었습니다."}, status_code=status.HTTP_200_OK)
 
 # 내 정보 조회
 @user_router.get("/me", response_model=UserInfoResponse, status_code=status.HTTP_200_OK)
 async def get_my_info(
-    email: str,
+    id: str,
     user: Annotated[User, Depends(get_request_user)],
 ) -> User:
-    if user.email != email:
+    if user.id != id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="요청한 이메일과 로그인된 정보가 일치하지 않습니다."
+            detail="요청한 아이디와 로그인된 정보가 일치하지 않습니다."
         )
     return user
 
@@ -175,7 +175,7 @@ async def change_password(
     user_manage_service: Annotated[UserManageService, Depends(UserManageService)],
 ) -> Response:
     await user_manage_service.change_password(
-        email=user.email,
+        id=user.id,
         old_password=password_data.get("old_password", ""),
         new_password=password_data.get("new_password", "")
     )
@@ -188,7 +188,7 @@ async def withdraw_user(
     user: Annotated[User, Depends(get_request_user)],
     user_manage_service: Annotated[UserManageService, Depends(UserManageService)],
 ) -> Response:
-    await user_manage_service.delete_user(email=user.email, password=password_data.get("password", ""))
+    await user_manage_service.delete_user(id=user.id, password=password_data.get("password", ""))
     return Response(content=None, status_code=status.HTTP_204_NO_CONTENT)
 
 # 로그아웃
@@ -197,7 +197,7 @@ async def logout(
     user: Annotated[User, Depends(get_request_user)],
     user_manage_service: Annotated[UserManageService, Depends(UserManageService)],
 ) -> Response:
-    await user_manage_service.logout(user.email)
+    await user_manage_service.logout(user.id)
     
     resp = Response(content={"detail": "로그아웃 되었습니다."}, status_code=status.HTTP_200_OK)
     # 리프레시 토큰 쿠키 삭제

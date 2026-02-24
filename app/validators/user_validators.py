@@ -45,7 +45,7 @@ def validate_phone_number(phone_number: str) -> str:
 
     return phone_number
 
-def validate_id_card(value: str) -> str:
+def validate_resident_registration_number(value: str) -> str:
     if len(value) != 14:
         text = "주민번호는 14자리여야 합니다."
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=text)
