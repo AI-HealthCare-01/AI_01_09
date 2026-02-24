@@ -78,14 +78,6 @@
             background-color: #0069d9;
         }
 
-        .chronic_disease {
-            width: 100%;
-            height: 80px;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
 
         .agreement-section {
             margin-top: 20px;
@@ -125,15 +117,6 @@
             cursor: pointer;
             font-weight: 500;
         }
-
-        .chronic_disease {
-            width: 100%;
-            resize: none;
-            height: 75px;
-            padding: 10px;
-            box-sizing: border-box;
-            border: 1px solid #ddd;
-        }
     </style>
 </head>
 
@@ -144,7 +127,7 @@
             <div class="form-group">
                 <label>이메일 (ID)</label>
                 <div class="row">
-                    <input type="email" id="email" name="email" required placeholder="example@mail.com"
+                    <input type="email" id="id" name="id" required placeholder="example@mail.com"
                         value="ejrtn153@naver.com">
                     <button type="button" class="btn-verify" onclick="sendCode()">인증 요청</button>
                 </div>
@@ -182,9 +165,6 @@
                 <input type="text" name="resident_registration_number" id="resident_registration_number" maxlength="14"
                     placeholder="900101-1234567" value="123456-1234567" required>
             </div>
-            <label>만성 질환 (보유 시 작성)</label>
-            <textarea id="chronic_disease" class="chronic_disease" name="chronic_disease"
-                placeholder="예: 고혈압, 당뇨 등 (없으면 공란)">고혈압, 당뇨 등 (없으면 공란)</textarea>
             <div class="agreement-section">
                 <div class="agreement-item all-agree">
                     <input type="checkbox" id="checkAll"> 전체 동의하기
@@ -214,12 +194,12 @@
     <script>
         // 1. 인증번호 발송 함수
         async function sendCode() {
-            const email = document.getElementById('email').value;
-            if (!email) return alert("이메일을 입력해주세요.");
+            const userId = document.getElementById('id').value;
+            if (!userId) return alert("이메일을 입력해주세요.");
 
             try {
                 const response = await fetch(
-                    `/api/v1/users/id-check?id=${encodeURIComponent(email)}`, {
+                    `/api/v1/users/id-check?id=${encodeURIComponent(userId)}`, {
                     method: 'GET'
                 });
 
@@ -243,7 +223,7 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ email: email })
+                    body: JSON.stringify({ email: userId })
                 });
 
                 if (!response1.ok) {
@@ -260,8 +240,8 @@
             }
         }
         async function checkCode() {
-            const email = document.getElementById('email').value;
-            if (!email) return alert("이메일을 입력해주세요.");
+            const userId = document.getElementById('id').value;
+            if (!userId) return alert("이메일을 입력해주세요.");
 
             const code = document.getElementById('code').value;
             if (!code) return alert("인증번호를 입력해주세요.");
@@ -273,7 +253,7 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ email: email, code: code })
+                    body: JSON.stringify({ email: userId, code: code })
                 });
 
                 // 인증 틀림 (정상 처리)
@@ -302,7 +282,7 @@
         document.querySelector('#signupForm .ok').addEventListener("click", async (e) => {
             e.preventDefault();
 
-            if (document.getElementById('email').value == '') {
+            if (document.getElementById('id').value == '') {
                 alert("이메일을 입력해주세요.")
                 return;
             }
@@ -338,7 +318,7 @@
             }
 
             const data = {
-                id: document.getElementById('email').value,
+                id: document.getElementById('id').value,
                 password: document.getElementById('password').value,
                 name: document.getElementById('name').value,
                 nickname: document.getElementById('nickname').value,
@@ -347,7 +327,6 @@
                 is_terms_agreed: document.getElementById('is_terms_agreed').checked,
                 is_privacy_agreed: document.getElementById('is_privacy_agreed').checked,
                 is_marketing_agreed: document.getElementById('is_marketing_agreed').checked,
-                chronic_disease: document.getElementById('chronic_disease').value,
             }
 
             console.log(data)

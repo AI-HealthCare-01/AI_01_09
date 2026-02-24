@@ -8,7 +8,7 @@ from tortoise.transactions import in_transaction
 
 from app.core import config
 from app.dtos.users import LoginRequest, SignUpRequest, UserUpdateRequest
-from app.models.users import User
+from app.models.user import User
 from app.repositories.user_repository import UserRepository
 from app.utils.common import normalize_phone_number, redis_client
 from app.utils.security import create_access_token, create_refresh_token, hash_password, verify_password
@@ -148,7 +148,7 @@ class UserManageService:
     # 아이디 찾기 (이메일 찾기)
     async def find_id(self, name: str, phone_number: str) -> str:
         normalized_phone = normalize_phone_number(phone_number)
-        user = await self.user_repo.find_email_by_info(name=name, phone_number=normalized_phone)
+        user = await self.user_repo.find_id_by_info(name=name, phone_number=normalized_phone)
         if not user:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="일치하는 회원 정보가 없습니다.")
         return user.id

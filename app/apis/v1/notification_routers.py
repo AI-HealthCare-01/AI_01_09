@@ -22,3 +22,12 @@ async def schedule_notification(
     """
     response_dto = await notification_service.schedule_notification(request)
     return Response(content=response_dto.model_dump(), status_code=status.HTTP_200_OK)
+
+
+@notification_router.get("/", status_code=status.HTTP_200_OK)
+async def get_notifications():
+    """
+    설정된 복약 알림 목록을 확인합니다.
+    """
+    from app.models.alarm import Alarm
+    return await Alarm.all().order_by("-created_at")

@@ -15,11 +15,10 @@ class SignUpRequest(BaseModel):
     name: Annotated[str, Field(max_length=20)]
     nickname: Annotated[str, Field(max_length=20)]
     phone_number: Annotated[str, AfterValidator(validate_phone_number)]
-    id_card: Annotated[str, AfterValidator(validate_resident_registration_number)]
+    resident_registration_number: Annotated[str, AfterValidator(validate_resident_registration_number)]
     is_terms_agreed: bool = Field(..., description="이용약관 동의 여부")
     is_privacy_agreed: bool = Field(..., description="개인정보 처리방침 동의 여부")
     is_marketing_agreed: bool = Field(default=False, description="마케팅 동의 여부")
-    chronic_disease: Annotated[str, Field(None, description="만성 질환")]
 
 class LoginRequest(BaseModel):
     id: EmailStr
@@ -44,8 +43,7 @@ class TokenRefreshResponse(BaseModel):
 class UserUpdateRequest(BaseModel):
     nickname: Annotated[str | None, Field(None, min_length=2, max_length=40)]
     phone_number:  Annotated[str, AfterValidator(validate_phone_number)]
-    id_card: Annotated[str, AfterValidator(validate_resident_registration_number)]
-    chronic_disease: str = None
+    resident_registration_number: Annotated[str, AfterValidator(validate_resident_registration_number)]
     is_marketing_agreed: bool = Field(default=False)
 
 class UserInfoResponse(BaseSerializerModel):
@@ -57,7 +55,6 @@ class UserInfoResponse(BaseSerializerModel):
     is_terms_agreed: bool
     is_privacy_agreed: bool
     is_marketing_agreed: bool
-    chronic_disease: str | None = None
 
     class Config:
         from_attributes = True # ORM 객체를 자동으로 DTO로 변환 가능케 함

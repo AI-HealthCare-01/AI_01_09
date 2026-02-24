@@ -72,14 +72,6 @@
             border-top: 1px solid #eee;
         }
 
-        .chronic_disease {
-            width: 100%;
-            resize: none;
-            height: 75px;
-            padding: 10px;
-            box-sizing: border-box;
-            border: 1px solid #ddd;
-        }
 
         /* 약관 동의 관련 스타일 (join.html 참고) */
         .agreement-section {
@@ -147,7 +139,7 @@
             <form id="profileForm">
                 <div class="form-group">
                     <label>이메일 (ID)</label>
-                    <input type="email" id="email" readonly>
+                    <input type="email" id="id" readonly>
                 </div>
                 <div class="form-group">
                     <label>이름</label>
@@ -164,11 +156,6 @@
                 <div class="form-group">
                     <label>주민번호</label>
                     <input type="text" id="resident_registration_number" name="resident_registration_number" required>
-                </div>
-                <div class="form-group">
-                    <label>만성질환 (보유 시 작성)</label>
-                    <textarea id="chronic_disease" class="chronic_disease" name="chronic_disease"
-                        placeholder="예: 고혈압, 당뇨 등 (없으면 공란)"></textarea>
                 </div>
 
                 <div class="agreement-section">
@@ -278,12 +265,11 @@
                 if (!response || !response.ok) throw new Error("Fetch failed");
 
                 const user = await response.json();
-                document.getElementById('email').value = user.id;
+                document.getElementById('id').value = user.id;
                 document.getElementById('name').value = user.name;
                 document.getElementById('nickname').value = user.nickname;
                 document.getElementById('phone_number').value = user.phone_number;
                 document.getElementById('resident_registration_number').value = user.resident_registration_number;
-                document.getElementById('chronic_disease').value = user.chronic_disease;
 
                 // 약관 동의 상태 반영
                 document.getElementById('is_terms_agreed').checked = user.is_terms_agreed;
@@ -301,7 +287,6 @@
                 nickname: document.getElementById('nickname').value,
                 phone_number: document.getElementById('phone_number').value,
                 resident_registration_number: document.getElementById('resident_registration_number').value,
-                chronic_disease: document.getElementById('chronic_disease').value,
                 is_marketing_agreed: document.getElementById('is_marketing_agreed').checked,
             };
 

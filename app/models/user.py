@@ -8,11 +8,9 @@ class User(models.Model):
     password = fields.CharField(max_length=128, description="패스워드 (필수)")
     phone_number = fields.CharField(max_length=11, description="휴대폰 번호 (필수)")
     resident_registration_number = fields.CharField(max_length=14, description="주민번호 (필수)")
-
     is_terms_agreed = fields.BooleanField(default=False, description="이용약관 (필수)")
     is_privacy_agreed = fields.BooleanField(default=False, description="개인정보 (필수)")
     is_marketing_agreed = fields.BooleanField(default=False, description="마케팅 (선택)")
-    chronic_disease = fields.TextField(null=True, description="만성 질환 정보")
 
     class Meta:
         table = "users"

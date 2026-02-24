@@ -1,5 +1,5 @@
 
-from app.models.users import User
+from app.models.user import User
 
 
 class UserRepository:

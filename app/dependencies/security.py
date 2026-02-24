@@ -6,7 +6,7 @@ from fastapi.security import OAuth2PasswordBearer
 from jwt.exceptions import InvalidTokenError
 
 from app.core import config
-from app.models.users import User
+from app.models.user import User
 from app.repositories.user_repository import UserRepository
 from app.utils.common import redis_client
 
@@ -37,7 +37,7 @@ async def get_request_user(token: Annotated[str, Depends(oauth2_scheme)]) -> Use
     except InvalidTokenError as err:
         raise credentials_exception from err
 
-    user = await UserRepository().get_by_email(user_email)
+    user = await UserRepository().get_by_id(user_email)
     if user is None:
         raise credentials_exception
 
