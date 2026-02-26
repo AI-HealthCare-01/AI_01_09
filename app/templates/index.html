@@ -151,9 +151,9 @@ body { height: 100vh; background: #f7f7f7; }
   <!-- SIDEBAR -->
   <aside class="sidebar">
     <button class="dashboard-btn">대시보드</button>
-    <button class="guide-btn">처방전 및 약물</button>
-    <button class="alarm-btn">생활 안내 가이드</button>
-    <button class="upload-btn">복용 알람</button>
+    <button class="guide-btn">생활 안내 가이드</button>
+    <button class="alarm-btn">복용 알람</button>
+    <button class="upload-btn">처방전 및 약물</button>
 
     <div class="sidebar-footer">
       <button>👤 마이페이지</button>
@@ -250,7 +250,8 @@ body { height: 100vh; background: #f7f7f7; }
 
     <!-- ================= 처방전 / 약봉투 ================= -->
     <section class="upload">
-      <div class="page-title">처방전 / 약봉투 및 복용약</div>
+      <div>
+        <div class="page-title">처방전 / 약봉투 및 복용약</div>
 
       <div class="flex">
         <div class="column">
@@ -277,6 +278,39 @@ body { height: 100vh; background: #f7f7f7; }
             <button>아니오</button>
           </div>
         </div>
+        
+      </div>
+      </div>
+      <div>
+        <div class="page-title">처방전 / 약봉투 및 복용약</div>
+
+      <div class="flex">
+        <div class="column">
+          <div class="big-box"></div>
+          <select>
+            <option>JPG</option>
+            <option>PDF</option>
+          </select>
+          <button>업로드</button>
+        </div>
+
+        <div class="column">
+          <div class="box">
+            <h4>분석 결과</h4>
+            <p>✔ 타이레놀 (0.94)</p>
+            <p>✔ 게보린 (0.72)</p>
+            <p>✔ 판콜 (0.61)</p>
+          </div>
+
+          <div class="modal">
+            다음 약을 현재 복용 약물에 연동하시겠습니까?
+            <br>
+            <button>네, 연동하겠습니다</button>
+            <button>아니오</button>
+          </div>
+        </div>
+        
+      </div>
       </div>
     </section>
 
