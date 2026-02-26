@@ -1,196 +1,312 @@
 <!DOCTYPE html>
 <html lang="ko">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Uponati Health Dashboard</title>
-    <link rel="stylesheet" href="/static/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/lucide@latest"></script>
+<meta charset="UTF-8" />
+<title>Cloud9 Care</title>
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+body { height: 100vh; background: #f7f7f7; }
+
+/* ===== HEADER ===== */
+.header {
+  height: 64px;
+  border-bottom: 1px solid #ccc;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+}
+.header-left { font-size: 20px; font-weight: bold; }
+.header-right { display: flex; align-items: center; gap: 10px; }
+.search { border: 1px solid #aaa; border-radius: 20px; padding: 4px 10px; }
+
+/* ===== LAYOUT ===== */
+.container {
+  display: flex;
+  height: calc(100vh - 64px);
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+  width: 220px;
+  border-right: 1px solid #ccc;
+  background: #fff;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+}
+.sidebar button {
+  margin-bottom: 10px;
+  padding: 8px;
+  border: 1px solid #333;
+  background: #fff;
+  cursor: pointer;
+  width: 100%;
+}
+.sidebar-footer { margin-top: auto; }
+
+/* ===== MAIN ===== */
+.main {
+  flex: 1;
+  padding: 24px;
+  overflow-y: auto;
+}
+
+/* ===== COMMON ===== */
+.banner {
+      height: 260px;
+      border: 1px solid #999;
+      margin-bottom: 20px;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .card {
+      border: 1px solid #999;
+      padding: 12px;
+      height: 160px;
+      background: #fff;
+    }
+
+    .card h4 {
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .card p {
+      font-size: 13px;
+      color: #555;
+    }
+    .page { margin-bottom: 80px; }
+    .page-title { font-size: 22px; margin-bottom: 20px; }
+    .box { border: 1px solid #999; background: #fff; padding: 16px; margin-bottom: 16px; }
+    .flex { display: flex; gap: 20px; }
+    .column { flex: 1; }
+    .big-box { height: 200px; border: 1px solid #999; margin-bottom: 10px; }
+
+    /* ===== CARD ===== */
+    .card { border: 1px solid #999; padding: 12px; margin-bottom: 12px; }
+
+    /* ===== TOGGLE ===== */
+    .toggle {
+    width: 40px; height: 20px; border: 1px solid #666; border-radius: 10px;
+    }
+
+    /* ===== MODAL MOCK ===== */
+    .modal {
+    border: 1px solid #666;
+    padding: 12px;
+    background: #f1f1f1;
+    }
+    .modal button { margin-top: 8px; }
+
+    .dashboard{
+        display: none;
+    }
+    .dashboard.open{
+        display: block;
+    }
+    .guide{
+        display: none;
+    }
+    .guide.open{
+        display: block;
+    }
+    .alarm{
+        display: none;
+    }
+    .alarm.open{
+        display: block;
+    }
+    .upload{
+        display: none;
+    }
+    .upload.open{
+        display: block;
+    }
+</style>
 </head>
 
 <body>
-    <aside>
-        <div class="logo close">
-            <i data-lucide="activity"></i> Uponati
-        </div>
-        <nav>
-            <a href="#" class="active" onclick="showView('home', this)"><i data-lucide="home"></i> 대시보드</a>
-            <a href="#" onclick="showView('guide', this)"><i data-lucide="file-text"></i> 맞춤형 가이드</a>
-            <a href="#" onclick="showView('ocr', this)"><i data-lucide="camera"></i> 의료 OCR</a>
-            <a href="#" onclick="showView('notification', this)"><i data-lucide="bell"></i> 알림 관리</a>
-            <a href="#" onclick="showView('mypage', this)"><i data-lucide="user"></i> My Page</a>
-        </nav>
-        <div class="close_btn"></div>
-    </aside>
 
-    <main>
-        <!-- Home View -->
-        <section id="home-view" class="view-section active">
-            <header>
-                <h1>반갑습니다, 어포나티 대시보드입니다 🩺</h1>
-                <p style="color: var(--text-muted); margin-top: 8px;">진료 기록 기반 지능형 복약 및 관리 가이드 시스템</p>
-            </header>
+<!-- HEADER -->
+<header class="header">
+  <div class="header-left">☁️ Cloud9 Care</div>
+  <div class="header-right">
+    <input class="search" placeholder="search">
+    <button>Button</button>
+    <button>➕</button>
+    <button>👤</button>
+  </div>
+</header>
 
-            <div class="dashboard-grid">
-                <div class="card" onclick="showView('guide', this)">
-                    <h3>맞춤형 가이드</h3>
-                    <p>사용자의 진료 내역과 복약 정보를 분석하여 LLM이 개인화된 건강 생활 지침을 생성합니다.</p>
-                </div>
-                <!-- <div class="card" onclick="showView('chat', this)">
-                    <h3>챗봇</h3>
-                    <p>궁금한 건강 질문에 대해 실시간으로 상담하고 이전 대화 맥락을 기억하는 AI 챗봇입니다.</p>
-                </div> -->
-                <div class="card" onclick="showView('ocr', this)">
-                    <h3>OCR</h3>
-                    <p>어려운 처방전 이미지나 약봉투를 찍어 올리면 텍스트를 인식해 정보를 추출합니다.</p>
-                </div>
-                <div class="card" onclick="showView('notification', this)">
-                    <h3>알람</h3>
-                    <p>복약 시간 및 기간 알림 설정</p>
-                </div>
-            </div>
-        </section>
+<div class="container">
 
-        <!-- Guide View -->
-        <section id="guide-view" class="view-section">
-            <header>
-                <h1>맞춤형 가이드 생성</h1>
-            </header>
-            <div class="card" style="max-width: 600px;">
-                <div class="input-group">
-                    <label>진료 기록 / 증상</label>
-                    <textarea id="guide-medical" rows="4" placeholder="예: 어지러움증이 있고 당뇨 수치가 높게 나왔음..."></textarea>
-                </div>
-                <div class="input-group">
-                    <label>현재 복용 중인 약품</label>
-                    <input type="text" id="guide-medication" placeholder="예: 메트포르민 500mg">
-                </div>
-                <button class="btn-primary" onclick="generateGuide()">가이드 생성하기 (LLM)</button>
-                <div id="guide-result"
-                    style="margin-top: 24px; white-space: pre-wrap; padding: 16px; background: var(--primary-light); border-radius: 12px; display: none;">
-                </div>
-            </div>
-        </section>
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <button class="dashboard-btn">대시보드</button>
+    <button class="guide-btn">처방전 및 약물</button>
+    <button class="alarm-btn">생활 안내 가이드</button>
+    <button class="upload-btn">복용 알람</button>
 
-        <!-- OCR View -->
-        <section id="ocr-view" class="view-section">
-            <header>
-                <h1>의료 기록 OCR 인식</h1>
-            </header>
+    <div class="sidebar-footer">
+      <button>👤 마이페이지</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <section class="dashboard open">
+        <!-- 큰 배너 -->
+        <div class="banner"></div>
+
+        <!-- 카드 영역 -->
+        <div class="card-grid">
             <div class="card">
-                <input type="file" id="ocr-file" accept="image/*,.pdf">
-                <button class="btn-primary" style="margin-top: 16px;" onclick="uploadOCR()">이미지 분석 시작</button>
-                <div id="ocr-result" style="margin-top: 20px; font-family: monospace; font-size: 0.9rem;"></div>
+            <h4>[ AI 맞춤 건강 요약 배너 ]</h4>
+            <p>안녕하세요, OOO님 👋</p>
+            <p>오늘 복약 2건 예정</p>
             </div>
-        </section>
 
-        <!-- Other Views (Stubs) -->
-        <section id="media-view" class="view-section">
-            <header>
-                <h1>콘텐츠 변환 (TTS/CardNews)</h1>
-            </header>
-            <p>가이드를 음성이나 카드뉴스로 바꿉니다 (준비 중..)</p>
-        </section>
-        <section id="notification-view" class="view-section">
-            <header>
-                <h1>알림 관리</h1>
-            </header>
-            <p>복약 알림 스케줄을 설정합니다 (준비 중..)</p>
-        </section>
+            <div class="card">
+            <h4>[ 오늘의 복약 알림 카드 ]</h4>
+            <p>08:00 아침약</p>
+            <p>20:00 저녁약</p>
+            </div>
 
-        <!-- Chat View -->
-        <div class="chat-view">
-            <div class="chat-window">
-                <div id="chat-messages" class="chat-messages">
-                    <div style="background: var(--bg-main); padding: 12px; border-radius: 8px; margin-bottom: 10px;">
-                        의료 전문 AI 챗봇입니다. 증상이나 건강 관리법에 대해 물어보세요!
-                    </div>
-                </div>
-                <div class="chat-input">
-                    <input type="text" id="chat-input-field" placeholder="메시지를 입력하세요..." style="flex: 1">
-                    <button class="btn-primary" style="width: auto;" onclick="sendChatMessage()">전송</button>
-                </div>
+            <div class="card">
+            <h4>[ 최근 분석 결과 ]</h4>
+            <p>처방전 분석 결과</p>
+            </div>
+
+            <div class="card">
+            <h4>[ AI 생활 가이드 ]</h4>
+            <p>요약 3줄</p>
             </div>
         </div>
-        <div class="chat_btn">?</div>
-    </main>
+    </section>
 
-    <script>
-        lucide.createIcons();
+    <!-- ================= 생활 안내 가이드 ================= -->
+    <section class="guide">
+      <div class="page-title">생활 안내 가이드</div>
 
-        function showView(viewId, el) {
-            document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
-            document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+      <div class="flex">
+        <div class="column box">
+          <h4>나의 건강 상태 요약</h4>
+          <div class="card">
+            <strong>만성질환</strong><br>고혈압, 당뇨
+          </div>
+          <div class="card">
+            <strong>알레르기</strong><br>땅콩, 갑각류
+          </div>
+          <div class="card">
+            <strong>복용 중인 약</strong><br>타이레놀, 게보린
+          </div>
+        </div>
 
-            document.getElementById(viewId + '-view').classList.add('active');
-            el.classList.add('active');
-        }
+        <div class="column box">
+          <h4>권장 생활 가이드</h4>
+          <div class="card">
+            고혈압 관리 식단 안내
+          </div>
+          <div class="card">
+            당뇨 관리 운동 권장 사항
+          </div>
+          <div class="card">
+            알러지 및 복약 주의사항
+          </div>
+          <button>UPDATE</button>
+        </div>
+      </div>
 
-        async function sendChatMessage() {
-            const input = document.getElementById('chat-input-field');
-            const box = document.getElementById('chat-messages');
-            if (!input.value) return;
+      <div class="box">⚠️ 본 서비스는 의료 진단을 제공하지 않습니다.</div>
+    </section>
 
-            const userText = input.value;
-            box.innerHTML += `<div style="text-align: right; margin-bottom: 12px;"><span style="background: var(--primary); color: white; padding: 8px 12px; border-radius: 12px;">${userText}</span></div>`;
-            input.value = '';
+    <!-- ================= 복용 알람 ================= -->
+    <section class="alarm">
+      <div class="page-title">복용 알람</div>
 
-            const response = await fetch('/api/v1/chat/message', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ user_id: 1, messages: [{ role: 'user', content: userText }] })
-            });
-            const data = await response.json();
-            box.innerHTML += `<div style="margin-bottom: 12px;"><span style="background: var(--border); padding: 8px 12px; border-radius: 12px;">${data.reply}</span></div>`;
-            box.scrollTop = box.scrollHeight;
-        }
+      <div class="flex">
+        <div class="column box">
+          <h4>현재 복용 중인 약물</h4>
+          <div class="card">약물 이름 1 <div class="toggle"></div></div>
+          <div class="card">약물 이름 2 <div class="toggle"></div></div>
+          <div class="card">약물 이름 3 <div class="toggle"></div></div>
+        </div>
 
-        async function generateGuide() {
-            const medRes = document.getElementById('guide-medical').value;
-            const drugRes = document.getElementById('guide-medication').value;
-            const resultBox = document.getElementById('guide-result');
+        <div class="column box">
+          <h4>약물 상세 정보</h4>
+          <div class="big-box"></div>
+        </div>
+      </div>
+    </section>
 
-            resultBox.style.display = 'block';
-            resultBox.innerText = 'LLM 가이드 생성 중...';
+    <!-- ================= 처방전 / 약봉투 ================= -->
+    <section class="upload">
+      <div class="page-title">처방전 / 약봉투 및 복용약</div>
 
-            const response = await fetch('/api/v1/guide/generate', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ user_id: 1, medical_records: medRes, medication_info: drugRes })
-            });
-            const data = await response.json();
-            resultBox.innerText = data.guide_text;
-        }
+      <div class="flex">
+        <div class="column">
+          <div class="big-box"></div>
+          <select>
+            <option>JPG</option>
+            <option>PDF</option>
+          </select>
+          <button>업로드</button>
+        </div>
 
-        async function uploadOCR() {
-            const resBox = document.getElementById('ocr-result');
-            resBox.innerText = '이미지를 분석 중입니다 (필수 3 테스트)...';
-            // 실제 구현 시 FormData 전송 로직 필요
-            const response = await fetch('/api/v1/ocr/extract_record', { method: 'POST', body: new FormData() });
-            const data = await response.json();
-            resBox.innerText = JSON.stringify(data, null, 2);
-        }
+        <div class="column">
+          <div class="box">
+            <h4>분석 결과</h4>
+            <p>✔ 타이레놀 (0.94)</p>
+            <p>✔ 게보린 (0.72)</p>
+            <p>✔ 판콜 (0.61)</p>
+          </div>
 
-        document.querySelector("aside .close_btn").addEventListener("click",()=>{
-            let classList = document.querySelector("aside").classList
-            if(classList.contains("close")){
-                classList.remove("close")
-            }else{
-                classList.add("close")
-            }
-        })
+          <div class="modal">
+            다음 약을 현재 복용 약물에 연동하시겠습니까?
+            <br>
+            <button>네, 연동하겠습니다</button>
+            <button>아니오</button>
+          </div>
+        </div>
+      </div>
+    </section>
 
-        document.querySelector(".chat_btn").addEventListener("click",()=>{
-            let classList = document.querySelector(".chat-view").classList
-            if(classList.contains("close")){
-                classList.remove("close")
-            }else{
-                classList.add("close")
-            }
-        })
-    </script>
+  </main>
+</div>
 </body>
-
+<script>
+    document.querySelector(".dashboard-btn").addEventListener("click",()=>{
+        document.querySelector(".dashboard").classList.add("open")
+        document.querySelector(".guide").classList.remove("open")
+        document.querySelector(".alarm").classList.remove("open")
+        document.querySelector(".upload").classList.remove("open")
+    })
+    document.querySelector(".guide-btn").addEventListener("click",()=>{
+        document.querySelector(".dashboard").classList.remove("open")
+        document.querySelector(".guide").classList.add("open")
+        document.querySelector(".alarm").classList.remove("open")
+        document.querySelector(".upload").classList.remove("open")
+    })
+    document.querySelector(".alarm-btn").addEventListener("click",()=>{
+        document.querySelector(".dashboard").classList.remove("open")
+        document.querySelector(".guide").classList.remove("open")
+        document.querySelector(".alarm").classList.add("open")
+        document.querySelector(".upload").classList.remove("open")
+    })
+    document.querySelector(".upload-btn").addEventListener("click",()=>{
+        document.querySelector(".dashboard").classList.remove("open")
+        document.querySelector(".guide").classList.remove("open")
+        document.querySelector(".alarm").classList.remove("open")
+        document.querySelector(".upload").classList.add("open")
+    })
+</script>
 </html>

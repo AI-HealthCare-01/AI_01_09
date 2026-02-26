@@ -1,60 +1,52 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends, status
-from fastapi.responses import JSONResponse as Response
-
+from fastapi import APIRouter, Depends, status, HTTPException
 from app.dependencies.security import get_request_user
-from app.dtos.guide import GuideRequest, GuideResponse
-from app.services.guide import GuideService
+from app.models.user import User
 
-guide_router = APIRouter(
-    prefix="/guide", 
-    tags=["guide"],
-    dependencies=[Depends(get_request_user)]
-)
+guide_router = APIRouter(prefix="/guides", tags=["guide"])
 
-
-# ==========================================
-# [추가된 기능] 필수 1: LLM 기반 안내 가이드 생성
-# ==========================================
-@guide_router.post("/generate", response_model=GuideResponse, status_code=status.HTTP_200_OK)
+@guide_router.post("")
 async def generate_guide(
-    request: GuideRequest,
-    guide_service: Annotated[GuideService, Depends(GuideService)],
-) -> Response:
+    user: Annotated[User, Depends(get_request_user)],
+    refresh: bool = False,
+):
     """
-    사용자 진료 기록 및 복약 정보를 기반으로 맞춤형 가이드를 자동 생성합니다.
-    
-    Args:
-        request (GuideRequest): 가이드 생성에 필요한 사용자 정보 및 OCR 요약
-        guide_service (GuideService): 건강 가이드 서비스
-        
-    Returns:
-        Response: 생성된 맞춤형 가이드 정보
+    [GUIDE] 맞춤 가이드 생성(RAG 핵심).
     """
-    response_dto = await guide_service.generate_guide(request)
-    return Response(content=response_dto.model_dump(), status_code=status.HTTP_200_OK)
+    return {
+        "guide_id": 1,
+        "guide_type": "복약",
+        "user_current_status": "고혈압/타이레놀 복용 중",
+        "generated_content": "가이드 내용...",
+        "is_emergency_alert": False,
+        "created_at": "2026-02-24T10:10:00"
+    }
 
-@guide_router.get("/history", status_code=status.HTTP_200_OK)
-async def get_guide_history():
+@guide_router.get("")
+async def get_guides(
+    user: Annotated[User, Depends(get_request_user)]
+):
     """
-    사용자의 전체 건강 가이드 생성 내역을 조회합니다.
-    
-    Returns:
-        list: 가이드 내역 목록
+    [GUIDE] 가이드 목록 조회
     """
-    from app.models.llm_life_guide import LLMLifeGuide
-    return await LLMLifeGuide.all().order_by("-created_at")
+    return {"items": []}
 
-@guide_router.get("/history/{id}", status_code=status.HTTP_200_OK)
-async def get_guide_detail(id: int):
+@guide_router.get("/{id}")
+async def get_guide_detail(
+    id: int,
+    user: Annotated[User, Depends(get_request_user)]
+):
     """
-    특정 가이드의 상세 내용과 멀티모달 에셋 정보를 조회합니다.
-    
-    Args:
-        id (int): 상세 조회를 요청한 가이드 ID
-        
-    Returns:
-        LLMLifeGuide: 가이드 상세 정보
+    [GUIDE] 가이드 상세 조회
     """
-    from app.models.llm_life_guide import LLMLifeGuide
-    return await LLMLifeGuide.filter(id=id).first()
+    return {"id": id, "guide_type": "복약"}
+
+@guide_router.patch("/{id}")
+async def update_guide(
+    id: int,
+    user: Annotated[User, Depends(get_request_user)]
+):
+    """
+    [GUIDE] 가이드 업데이트
+    """
+    return {"guide_id": id, "detail": "갱신되었습니다."}

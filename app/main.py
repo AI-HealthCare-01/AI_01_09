@@ -3,7 +3,7 @@ from fastapi.responses import HTMLResponse, ORJSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from app.apis.v1 import v1_routers
+from app.apis.v1 import api_v1_router
 from app.db.databases import initialize_tortoise
 from app.core.logger import logging
 
@@ -56,4 +56,4 @@ async def read_find_id_pw(request: Request):
     """
     return templates.TemplateResponse("find_account.html", {"request": request})
 
-app.include_router(v1_routers)
+app.include_router(api_v1_router)

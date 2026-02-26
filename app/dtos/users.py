@@ -1,11 +1,9 @@
 from typing import Annotated
-
-from pydantic import AfterValidator, BaseModel, EmailStr, Field
-
+from pydantic import BaseModel, Field, EmailStr, AfterValidator
 from app.dtos.base import BaseSerializerModel
-from app.validators.user_validators import validate_resident_registration_number, validate_password, validate_phone_number
+from app.validators.user_validators import validate_password, validate_phone_number, validate_resident_registration_number
 
-
+# 회원가입 요청
 class SignUpRequest(BaseModel):
     id: Annotated[
         EmailStr,
@@ -16,10 +14,16 @@ class SignUpRequest(BaseModel):
     nickname: Annotated[str, Field(max_length=20)]
     phone_number: Annotated[str, AfterValidator(validate_phone_number)]
     resident_registration_number: Annotated[str, AfterValidator(validate_resident_registration_number)]
-    is_terms_agreed: bool = Field(..., description="이용약관 동의 여부")
-    is_privacy_agreed: bool = Field(..., description="개인정보 처리방침 동의 여부")
-    is_marketing_agreed: bool = Field(default=False, description="마케팅 동의 여부")
+    is_terms_agreed: bool
+    is_privacy_agreed: bool
+    is_marketing_agreed: bool = False
 
+# 회원가입 응답
+class SignUpResponse(BaseModel):
+    id: str
+    access_token: str
+
+# 로그인 요청 (OAuth2 Password Bearer용 - form_data로 처리되지만 DTO로도 정의 가능)
 class LoginRequest(BaseModel):
     id: EmailStr
     password: Annotated[str, Field(..., description="패스워드")]
@@ -38,33 +42,46 @@ class LoginResponse(Token):
 
 class TokenRefreshResponse(BaseModel):
     access_token: str
-    token_type: str = "bearer"
 
+# 소셜 로그인 요청
 class SocialLoginRequest(BaseModel):
     id: EmailStr
     name: str
     nickname: str
     phone_number: str
-    birthday: str | None = None
-    gender: str | None = None
     social_id: str
-    provider: str = "naver"
+    provider: str
 
-class UserUpdateRequest(BaseModel):
-    nickname: Annotated[str | None, Field(None, min_length=2, max_length=40)]
-    phone_number:  Annotated[str, AfterValidator(validate_phone_number)]
-    resident_registration_number: Annotated[str, AfterValidator(validate_resident_registration_number)]
-    is_marketing_agreed: bool = Field(default=False)
+# 카카오 인가 URL 응답
+class KakaoAuthUrlResponse(BaseModel):
+    auth_url: str
 
-class UserInfoResponse(BaseSerializerModel):
-    name: str
+# 네이버 인가 URL 응답
+class NaverAuthUrlResponse(BaseModel):
+    auth_url: str
+
+# 카카오 콜백 응답
+class SocialLoginResponse(BaseModel):
+    user_id: str
+    is_new_user: bool
+    access_token: str
+
+# 정보 조회 응답
+class UserMeResponse(BaseSerializerModel):
     id: EmailStr
-    phone_number: str
     nickname: str
+    name: str
+    phone_number: str
     resident_registration_number: str
     is_terms_agreed: bool
     is_privacy_agreed: bool
     is_marketing_agreed: bool
 
     class Config:
-        from_attributes = True # ORM 객체를 자동으로 DTO로 변환 가능케 함
+        from_attributes = True
+
+# 정보 수정 요청
+class UserUpdateRequest(BaseModel):
+    nickname: Annotated[str | None, Field(None, min_length=2, max_length=40)]
+    phone_number: Annotated[str | None, AfterValidator(validate_phone_number)] = None
+    is_marketing_agreed: bool | None = None
