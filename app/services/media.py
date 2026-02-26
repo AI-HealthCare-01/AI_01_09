@@ -8,10 +8,10 @@ class MediaService:
     async def convert_text_to_audio(self, request: ConvertTTSRequest) -> ConvertTTSResponse:
         """
         생성된 텍스트 가이드를 TTS(Text-to-Speech) 엔진을 통해 음성 파일로 변환합니다.
-        
+
         Args:
             request (ConvertTTSRequest): 변환할 텍스트 및 관련 정보
-            
+
         Returns:
             ConvertTTSResponse: 생성된 오디오 파일의 URL 정보
         """
@@ -25,10 +25,10 @@ class MediaService:
     async def convert_text_to_cardnews(self, request: ConvertCardnewsRequest) -> ConvertCardnewsResponse:
         """
         텍스트 기반 정보를 인포그래픽 또는 카드뉴스 이미지 형태로 변환합니다.
-        
+
         Args:
             request (ConvertCardnewsRequest): 변환할 가이드 텍스트 정보
-            
+
         Returns:
             ConvertCardnewsResponse: 생성된 이미지 파일들의 URL 리스트
         """

@@ -1,6 +1,6 @@
 import pandas as pd
 
-excel_file = r'd:\healthcare_web\API명세서 Cloud9 Care.xlsx'
+excel_file = r"d:\healthcare_web\API명세서 Cloud9 Care.xlsx"
 
 try:
     xl = pd.ExcelFile(excel_file)

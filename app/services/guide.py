@@ -9,10 +9,10 @@ class GuideService:
         """
         사용자의 진료/복약 상세 정보를 결합하여 맞춤형 건강 가이드를 생성합니다.
         멀티모달 에셋 생성을 위한 기본 메타데이터를 포함합니다.
-        
+
         Args:
             request (GuideRequest): 사용자 ID 및 의료 정보 (진료 기록, 복약 정보 등)
-            
+
         Returns:
             GuideResponse: 생성된 가이드 텍스트, 분류, 위험도 및 구조화된 요약 정보
         """
@@ -28,7 +28,7 @@ class GuideService:
             structured_content={
                 "profile_summary": "30대 남성, 기저 질환 없음",
                 "ocr_summary": "감기약 (항생제/소염제)",
-                "warnings": ["부작용 주의", "술 금지"]
+                "warnings": ["부작용 주의", "술 금지"],
             },
-            multimodal_assets=[]
+            multimodal_assets=[],
         )

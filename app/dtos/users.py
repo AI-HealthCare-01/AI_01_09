@@ -1,7 +1,14 @@
 from typing import Annotated
-from pydantic import BaseModel, Field, EmailStr, AfterValidator
+
+from pydantic import AfterValidator, BaseModel, EmailStr, Field
+
 from app.dtos.base import BaseSerializerModel
-from app.validators.user_validators import validate_password, validate_phone_number, validate_resident_registration_number
+from app.validators.user_validators import (
+    validate_password,
+    validate_phone_number,
+    validate_resident_registration_number,
+)
+
 
 # 회원가입 요청
 class SignUpRequest(BaseModel):
@@ -18,13 +25,16 @@ class SignUpRequest(BaseModel):
     is_privacy_agreed: bool
     is_marketing_agreed: bool = False
 
+
 # 회원가입 응답
 class SignUpResponse(BaseModel):
     id: str
     access_token: str
 
+
 class IdDuplicationRequest(BaseModel):
     id: str
+
 
 # 로그인 요청 (OAuth2 Password Bearer용 - form_data로 처리되지만 DTO로도 정의 가능)
 class LoginRequest(BaseModel):
@@ -36,15 +46,19 @@ class Token(BaseModel):
     access_token: str
     token_type: str
 
+
 class TokenData(BaseModel):
     id: str | None = None
 
+
 class LoginResponse(Token):
     id: str
-    refresh_token: str | None = None # 쿠키로 내려줄 수도 있고 바디에 포함할 수도 있음
+    refresh_token: str | None = None  # 쿠키로 내려줄 수도 있고 바디에 포함할 수도 있음
+
 
 class TokenRefreshResponse(BaseModel):
     access_token: str
+
 
 # 소셜 로그인 요청
 class SocialLoginRequest(BaseModel):
@@ -55,19 +69,23 @@ class SocialLoginRequest(BaseModel):
     social_id: str
     provider: str
 
+
 # 카카오 인가 URL 응답
 class KakaoAuthUrlResponse(BaseModel):
     auth_url: str
 
+
 # 네이버 인가 URL 응답
 class NaverAuthUrlResponse(BaseModel):
     auth_url: str
+
 
 # 카카오 콜백 응답
 class SocialLoginResponse(BaseModel):
     user_id: str
     is_new_user: bool
     access_token: str
+
 
 # 정보 조회 응답
 class UserMeResponse(BaseSerializerModel):
@@ -82,6 +100,7 @@ class UserMeResponse(BaseSerializerModel):
 
     class Config:
         from_attributes = True
+
 
 # 정보 수정 요청
 class UserUpdateRequest(BaseModel):
