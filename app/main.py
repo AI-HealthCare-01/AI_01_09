@@ -28,7 +28,7 @@ async def read_root(request: Request):
     """
     return templates.TemplateResponse("index.html", {"request": request})
 
-@app.get("/join", response_class=HTMLResponse)
+@app.get("/signup", response_class=HTMLResponse)
 async def read_join(request: Request):
     """
     회원가입 페이지를 반환합니다.
@@ -49,7 +49,7 @@ async def read_mypage(request: Request):
     """
     return templates.TemplateResponse("mypage.html", {"request": request})
 
-@app.get("/find-id-pw", response_class=HTMLResponse)
+@app.get("/find-account", response_class=HTMLResponse)
 async def read_find_id_pw(request: Request):
     """
     아이디 및 비밀번호 찾기 페이지를 반환합니다.

@@ -113,8 +113,7 @@ class UserManageService:
         }
 
     async def check_id_exists(self, id: str | EmailStr) -> None:
-        if await self.user_repo.get_by_id(id):
-            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="이미 사용중인 아이디입니다.")
+        return await self.user_repo.get_by_id(id)
 
     async def check_phone_number_exists(self, phone_number: str) -> None:
         if await self.user_repo.exists_by_phone_number(phone_number):

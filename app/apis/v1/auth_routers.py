@@ -6,6 +6,8 @@ from fastapi.security import OAuth2PasswordRequestForm
 from app.core import config
 from app.dtos.users import LoginResponse, KakaoAuthUrlResponse, SocialLoginResponse, NaverAuthUrlResponse
 from app.services.users import UserManageService
+from app.dtos.users import LoginRequest, SocialLoginRequest
+import uuid
 
 auth_router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -19,7 +21,7 @@ async def login(
     """
     # Note: UserManageService.login logic remains similar but returns data for New DTO
     # Adjusting LoginRequest mapping if needed
-    from app.dtos.users import LoginRequest
+    
     login_data = LoginRequest(id=form_data.username, password=form_data.password)
     tokens = await user_service.login(login_data)
     
@@ -52,7 +54,7 @@ async def kakao_callback(
     [USER] 카카오 로그인 콜백. service access_token 발급.
     """
     # Using existing service logic for demo data mapping
-    from app.dtos.users import SocialLoginRequest
+    
     social_data = SocialLoginRequest(
         id="kakao_user@kakao.com",
         name="카카오사용자",
@@ -78,7 +80,7 @@ async def naver_authorize() -> Response:
     naver_client_id = config.NAVER_CLIENT_ID
     redirect_uri = config.NAVER_REDIRECT_URI
     # state parameter is recommended for Naver to prevent CSRF
-    import uuid
+    
     state = str(uuid.uuid4())[:8]
     auth_url = (
         f"https://nid.naver.com/oauth2.0/authorize?response_type=code"
@@ -95,7 +97,7 @@ async def naver_callback(
     """
     [USER] 네이버 로그인 콜백. service access_token 발급.
     """
-    from app.dtos.users import SocialLoginRequest
+    
     # Mocking Naver user data for implementation demonstration
     social_data = SocialLoginRequest(
         id="naver_user@naver.com",

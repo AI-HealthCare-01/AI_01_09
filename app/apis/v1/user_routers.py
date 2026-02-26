@@ -2,10 +2,13 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, status, HTTPException
 from fastapi.responses import ORJSONResponse as Response
 
+from app.dtos.users import IdDuplicationRequest
 from app.dependencies.security import get_request_user
 from app.dtos.users import SignUpRequest, SignUpResponse, UserMeResponse, UserUpdateRequest
 from app.models.user import User
 from app.services.users import UserManageService
+from app.utils.security import create_access_token
+from app.utils.common import Email
 
 user_router = APIRouter(prefix="/users", tags=["users"])
 
@@ -22,9 +25,7 @@ async def signup(
     await user_service.signup(request)
     
     # Generate token for response
-    from app.utils.security import create_access_token
-    from datetime import timedelta
-    from app.core import config
+    
     access_token = create_access_token(data={"user_id": request.id})
     
     return Response(content={
@@ -64,3 +65,50 @@ async def withdraw_me(
     # Note: Service currently requires password for delete, adjusting to simple me-delete
     await user_service.delete_user(id=user.id, password="") # In real case, password might be checked elsewhere or here
     return Response(content={"detail": "탈퇴 처리가 완료되었습니다."}, status_code=status.HTTP_200_OK)
+
+# 아이디 찾기
+@user_router.get("/find-email", status_code=status.HTTP_200_OK)
+async def find_email(
+    name: str,
+    phone_number: str,
+    auth_service: Annotated[UserManageService, Depends(UserManageService)]
+) -> Response:
+    email = await auth_service.find_email(name, phone_number)
+    return Response(content={"email": email}, status_code=status.HTTP_200_OK)
+
+# 비밀번호 재설정 (비인증 상태)
+@user_router.post("/reset-password", status_code=status.HTTP_200_OK)
+async def reset_password(
+    data: dict, # email, code, name, phone_number, new_password
+    auth_service: Annotated[UserManageService, Depends(UserManageService)],
+    email_service: Annotated[Email, Depends(Email)]
+) -> Response:
+    # 1. 인증 코드 검증
+    is_valid = await email_service.verify_code(data["email"], data["code"])
+    if not is_valid:
+        raise HTTPException(status_code=400, detail="인증 번호가 틀렸거나 만료되었습니다.")
+    
+    # 2. 사용자 정보 검증
+    await auth_service.verify_user_for_reset(
+        email=data["email"], 
+        name=data["name"], 
+        phone_number=data["phone_number"]
+    )
+    
+    # 3. 비밀번호 재설정
+    await auth_service.reset_password(data["email"], data["new_password"])
+    
+    return Response(content={"detail": "비밀번호가 성공적으로 변경되었습니다."}, status_code=status.HTTP_200_OK)
+
+@user_router.get("/id-check")
+async def id_check(
+    id: str,
+    user_service: Annotated[UserManageService, Depends(UserManageService)]
+) -> Response:
+    """
+    id 중복 확인
+    """
+    if await user_service.check_id_exists(id):
+        return Response(content={"detail": "이미 사용중인 아이디입니다."}, status_code=status.HTTP_200_OK)
+    else:
+        return Response(content={"detail": "사용하고 있지 않은 아이디입니다."}, status_code=status.HTTP_200_OK)

@@ -11,8 +11,9 @@ from app.apis.v1.chat_routers import chat_router
 from app.apis.v1.alarm_routers import alarm_router
 from app.apis.v1.multimodal_routers import multimodal_router
 from app.apis.v1.system_routers import system_router
+from app.apis.v1.common_routers import common_router
 
-api_v1_router = APIRouter()
+api_v1_router = APIRouter(prefix="/api/v1")
 
 api_v1_router.include_router(auth_router)
 api_v1_router.include_router(user_router)
@@ -26,4 +27,5 @@ api_v1_router.include_router(chat_router)
 api_v1_router.include_router(alarm_router)
 api_v1_router.include_router(multimodal_router)
 api_v1_router.include_router(system_router)
+api_v1_router.include_router(common_router)
 
