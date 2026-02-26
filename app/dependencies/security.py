@@ -19,13 +19,13 @@ async def get_request_user(token: Annotated[str, Depends(oauth2_scheme)]) -> Use
     """
     HTTP 요청 헤더의 Bearer 토큰을 검증하고 현재 인증된 사용자를 반환하는 종속성 함수입니다.
     JWT 유효성 검사 및 Redis 세션 토큰 대조를 통해 보완적인 보안 확인을 거칩니다.
-    
+
     Args:
         token (str): 요청 헤더에서 추출된 액세스 토큰
-        
+
     Returns:
         User: 인증에 성공한 사용자 환경 정보
-        
+
     Raises:
         HTTPException: 토큰이 유효하지 않거나 세션이 만료된 경우 401 에러 발생
     """

@@ -14,12 +14,14 @@ class ChatRequest(BaseModel):
     session_id: str | None = Field(None, description="대화 세션 ID (없으면 신규 생성)")
     messages: list[ChatMessage] = Field(..., description="이전 대화 맥락을 포함한 메시지 목록")
 
+
 class ChatResponse(BaseModel):
     session_id: str = Field(..., description="대화 세션 ID")
     question_type: str = Field(..., description="질문 분류 (복약/증상/일반/시스템)")
     risk_level: str = Field(..., description="위험도 (Normal/Emergency)")
     reply: str = Field(..., description="챗봇(LLM)의 실시간 응답 내용")
     multimodal_assets: list[dict] | None = Field(None, description="생성된 카드뉴스/이미지/음성(TTS) 등 에셋 정보")
+
 
 class ChatSessionResponse(BaseModel):
     session_id: str

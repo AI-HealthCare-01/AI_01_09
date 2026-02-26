@@ -1,9 +1,12 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends, status, HTTPException
+
+from fastapi import APIRouter, Depends
+
 from app.dependencies.security import get_request_user
 from app.models.user import User
 
 chat_router = APIRouter(prefix="/chat", tags=["chat"])
+
 
 @chat_router.post("/message")
 async def send_chat_message(
@@ -18,14 +21,12 @@ async def send_chat_message(
     return {
         "session_id": session_id or "new_session_123",
         "assistant_message": "안녕하세요. 무엇을 도와드릴까요?",
-        "action_type": "NONE"
+        "action_type": "NONE",
     }
 
+
 @chat_router.post("/end")
-async def end_chat(
-    session_id: str,
-    user: Annotated[User, Depends(get_request_user)]
-):
+async def end_chat(session_id: str, user: Annotated[User, Depends(get_request_user)]):
     """
     [CHAT] 채팅 종료(대화 내용 초기화).
     """

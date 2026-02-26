@@ -1,35 +1,43 @@
+import uuid
 from typing import Annotated
+
 from fastapi import APIRouter, Depends, status
 from fastapi.responses import ORJSONResponse as Response
 from fastapi.security import OAuth2PasswordRequestForm
 
 from app.core import config
-from app.dtos.users import LoginResponse, KakaoAuthUrlResponse, SocialLoginResponse, NaverAuthUrlResponse
+from app.dtos.users import (
+    KakaoAuthUrlResponse,
+    LoginRequest,
+    LoginResponse,
+    NaverAuthUrlResponse,
+    SocialLoginRequest,
+    SocialLoginResponse,
+)
 from app.services.users import UserManageService
-from app.dtos.users import LoginRequest, SocialLoginRequest
-import uuid
 
 auth_router = APIRouter(prefix="/auth", tags=["auth"])
+
 
 @auth_router.post("/login", response_model=LoginResponse)
 async def login(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
-    user_service: Annotated[UserManageService, Depends(UserManageService)]
+    user_service: Annotated[UserManageService, Depends(UserManageService)],
 ) -> Response:
     """
     [USER] 로그인 (이메일/비밀번호) -> access_token 발급
     """
     # Note: UserManageService.login logic remains similar but returns data for New DTO
     # Adjusting LoginRequest mapping if needed
-    
+
     login_data = LoginRequest(id=form_data.username, password=form_data.password)
     tokens = await user_service.login(login_data)
-    
-    return Response(content={
-        "access_token": tokens["access_token"],
-        "token_type": tokens["token_type"],
-        "id": tokens["id"]
-    }, status_code=status.HTTP_200_OK)
+
+    return Response(
+        content={"access_token": tokens["access_token"], "token_type": tokens["token_type"], "id": tokens["id"]},
+        status_code=status.HTTP_200_OK,
+    )
+
 
 @auth_router.get("/kakao/authorize", response_model=KakaoAuthUrlResponse)
 async def kakao_authorize() -> Response:
@@ -45,31 +53,33 @@ async def kakao_authorize() -> Response:
     )
     return Response(content={"auth_url": auth_url}, status_code=status.HTTP_200_OK)
 
+
 @auth_router.get("/kakao/callback", response_model=SocialLoginResponse)
-async def kakao_callback(
-    code: str,
-    user_service: Annotated[UserManageService, Depends(UserManageService)]
-) -> Response:
+async def kakao_callback(code: str, user_service: Annotated[UserManageService, Depends(UserManageService)]) -> Response:
     """
     [USER] 카카오 로그인 콜백. service access_token 발급.
     """
     # Using existing service logic for demo data mapping
-    
+
     social_data = SocialLoginRequest(
         id="kakao_user@kakao.com",
         name="카카오사용자",
         nickname="kakao_user_456",
         phone_number="01098765432",
         social_id="kakao_unique_id_abc",
-        provider="kakao"
+        provider="kakao",
     )
     tokens = await user_service.social_login(social_data)
-    
-    return Response(content={
-        "user_id": tokens["id"],
-        "is_new_user": tokens.get("is_new_user", False),
-        "access_token": tokens["access_token"]
-    }, status_code=status.HTTP_200_OK)
+
+    return Response(
+        content={
+            "user_id": tokens["id"],
+            "is_new_user": tokens.get("is_new_user", False),
+            "access_token": tokens["access_token"],
+        },
+        status_code=status.HTTP_200_OK,
+    )
+
 
 @auth_router.get("/naver/authorize", response_model=NaverAuthUrlResponse)
 async def naver_authorize() -> Response:
@@ -80,7 +90,7 @@ async def naver_authorize() -> Response:
     naver_client_id = config.NAVER_CLIENT_ID
     redirect_uri = config.NAVER_REDIRECT_URI
     # state parameter is recommended for Naver to prevent CSRF
-    
+
     state = str(uuid.uuid4())[:8]
     auth_url = (
         f"https://nid.naver.com/oauth2.0/authorize?response_type=code"
@@ -88,16 +98,15 @@ async def naver_authorize() -> Response:
     )
     return Response(content={"auth_url": auth_url}, status_code=status.HTTP_200_OK)
 
+
 @auth_router.get("/naver/callback", response_model=SocialLoginResponse)
 async def naver_callback(
-    code: str,
-    state: str | None = None,
-    user_service: Annotated[UserManageService, Depends(UserManageService)] = None
+    code: str, user_service: Annotated[UserManageService, Depends(UserManageService)], state: str | None = None
 ) -> Response:
     """
     [USER] 네이버 로그인 콜백. service access_token 발급.
     """
-    
+
     # Mocking Naver user data for implementation demonstration
     social_data = SocialLoginRequest(
         id="naver_user@naver.com",
@@ -105,12 +114,15 @@ async def naver_callback(
         nickname="naver_user_789",
         phone_number="01012345678",
         social_id="naver_unique_id_xyz",
-        provider="naver"
+        provider="naver",
     )
     tokens = await user_service.social_login(social_data)
-    
-    return Response(content={
-        "user_id": tokens["id"],
-        "is_new_user": tokens.get("is_new_user", False),
-        "access_token": tokens["access_token"]
-    }, status_code=status.HTTP_200_OK)
+
+    return Response(
+        content={
+            "user_id": tokens["id"],
+            "is_new_user": tokens.get("is_new_user", False),
+            "access_token": tokens["access_token"],
+        },
+        status_code=status.HTTP_200_OK,
+    )
