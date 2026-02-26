@@ -99,7 +99,7 @@ class UserRepository:
         Returns:
             User | None: 사용자 객체 또는 없음
         """
-        user: User | None = await self._model.get_or_none(id=id)  # type: ignore[assignment]
+        user = await self._model.filter(id=id).prefetch_related("allergies", "chronic_diseases").first()
         return user
 
     # 전화번호 중복 확인

@@ -7,12 +7,13 @@ from starlette import status
 from tortoise.transactions import in_transaction
 
 from app.core import config
-from app.dtos.users import LoginRequest, SignUpRequest, UserUpdateRequest, SignUpResponse
+from app.dtos.users import LoginRequest, SignUpRequest, UserUpdateRequest, ChangePasswordRequest
 from app.models.user import User
 from app.repositories.user_repository import UserRepository
 from app.utils.common import normalize_phone_number, redis_client
 from app.utils.security import create_access_token, create_refresh_token, hash_password, verify_password
-
+from app.models.allergy import Allergy
+from app.models.chronic_disease import ChronicDisease
 
 class UserManageService:
     """
@@ -73,7 +74,7 @@ class UserManageService:
         if not user:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="이메일 또는 비밀번호가 올바르지 않습니다.",
+                detail="아이디 또는 비밀번호가 올바르지 않습니다.",
                 headers={"WWW-Authenticate": "Bearer"},
             )
 
@@ -81,7 +82,7 @@ class UserManageService:
         if not verify_password(data.password, user.password):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="이메일 또는 비밀번호가 올바르지 않습니다.",
+                detail="아이디 또는 비밀번호가 올바르지 않습니다.",
                 headers={"WWW-Authenticate": "Bearer"},
             )
 
@@ -116,6 +117,9 @@ class UserManageService:
     async def update_user(self, user: User, data: UserUpdateRequest) -> User:
         update_data = data.model_dump(exclude_unset=True)
 
+        new_allergies = update_data.pop("allergies", None)
+        new_diseases = update_data.pop("chronic_diseases", None)
+
         if "phone_number" in update_data and update_data["phone_number"]:
             normalized_phone = normalize_phone_number(update_data["phone_number"])
             if normalized_phone != user.phone_number:
@@ -124,12 +128,34 @@ class UserManageService:
 
         user.update_from_dict(update_data)
         await user.save()
+
+        # [B] 알러지 정보 업데이트 (값이 들어왔을 때만 실행)
+        if new_allergies is not None:  # 빈 리스트([])일 때도 삭제 후 갱신되도록 처리
+            # 기존 데이터 삭제
+            await Allergy.filter(user=user).delete()
+            # 새 데이터 대량 생성
+            if new_allergies:
+                allergy_objs = [Allergy(allergy_name=name, user=user) for name in [new_allergies]]
+                await Allergy.bulk_create(allergy_objs)
+
+        # [C] 만성 질환 정보 업데이트
+        if new_diseases is not None:
+            # 기존 데이터 삭제
+            await ChronicDisease.filter(user=user).delete()
+            # 새 데이터 대량 생성
+            if new_diseases:
+                disease_objs = [ChronicDisease(disease_name=name, user=user) for name in [new_diseases]]
+                await ChronicDisease.bulk_create(disease_objs)
+
+        # [D] 최신 데이터로 리프레시 (연관 데이터 포함)
+        await user.fetch_related("allergies", "chronic_diseases")
+
         return user
 
     async def delete_user(self, id: str, password: str = "") -> None:
         user = await self.user_repo.get_by_id(id=id)
         if not user:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="사용자를 찾을 수 없습니다.")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="사용자를 찾을 수 없습니다.")
 
         # If password is provided, verify it (for me-delete, might need verification or just session check)
         if password and not verify_password(password, user.password):
@@ -146,29 +172,46 @@ class UserManageService:
         이름과 전화번호로 이메일을 찾습니다.
         """
         normalized_phone = normalize_phone_number(phone_number)
-        user: User | None = await self.user_repo.get_by_name_and_phone(name, normalized_phone)  # type: ignore[assignment]
-        if not user:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="사용자를 찾을 수 없습니다.")
-        return str(user.id)
+        user: User = await self.user_repo.get_by_name_and_phone(name, normalized_phone)  # type: ignore[assignment]
+        
+        return str(user.id) if user else None
 
     async def verify_user_for_reset(self, email: str, name: str, phone_number: str) -> None:
         """
         비밀번호 재설정을 위한 사용자 정보 검증
         """
         normalized_phone = normalize_phone_number(phone_number)
-        user = await self.user_repo.get_by_id(email)
+        user: User = await self.user_repo.get_by_id(email)
         if not user or user.name != name or user.phone_number != normalized_phone:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="사용자 정보가 일치하지 않습니다.")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="사용자 정보가 일치하지 않습니다.")
 
-    async def reset_password(self, email: str, new_password: str) -> None:
+    async def reset_password(self, id: str, new_password: str) -> None:
         """
         비밀번호를 재설정합니다.
         """
-        user = await self.user_repo.get_by_id(email)
+        user: User = await self.user_repo.get_by_id(id)
         if not user:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="사용자를 찾을 수 없습니다.")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="사용자를 찾을 수 없습니다.")
         user.password = hash_password(new_password)
         await user.save()
+
+    async def change_password(self, user: User, data:ChangePasswordRequest) -> None:
+        """
+        비밀번호 변경
+        """
+
+        # 비밀번호 검증
+        if not verify_password(data.old_password, user.password):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="아이디 또는 비밀번호가 올바르지 않습니다.",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+
+        user.password = hash_password(data.new_password)
+
+        await user.save()
+        return user
 
     async def social_login(self, data) -> dict:
         """

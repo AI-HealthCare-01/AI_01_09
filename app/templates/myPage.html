@@ -129,6 +129,28 @@
         .user-drop.open {
             display: block;
         }
+
+        .birthday-gender-age{
+            display: flex;
+            gap: 5px;
+            align-content: center;
+        }
+        .birthday-gender-age span{
+            flex-shrink: 0;
+        }
+        .birthday-gender-age input{
+            height: 24px;
+        }
+        .birthday-gender-age select{
+            height: 24px;
+            margin: 0 10px;
+        }
+        .birthday-gender-age .gender{
+            width: 50px;
+        }
+        .birthday-gender-age .age{
+            width: 50px;
+        }
     </style>
 </head>
 
@@ -157,7 +179,48 @@
                     <label>주민번호</label>
                     <input type="text" id="resident_registration_number" name="resident_registration_number" required>
                 </div>
-
+                <div class="form-group birthday-gender-age">
+                    <span>생년월일</span>
+                    <input type="date" class="birthday" readonly>
+                    <select class="gender">
+                        <option>남자</option>
+                        <option>여자</option>
+                    </select>
+                    <span>나이</span>
+                    <input type="input" class="age" readonly>
+                </div>
+                <div class="form-group">
+                    <label>만성 질환</label>
+                    <div class="chronic_diseases_list">
+                        <input type="text" name="chronic_diseases" id="chronic_diseases" maxlength="11" placeholder="만성 질환" required>
+                        <!-- <div class="custom-select">
+                            <div class="selected">옵션을 선택하세요</div>
+                            <ul class="options">
+                                <li data-value="고혈압">고혈압</li>
+                                <li data-value="당뇨병">당뇨병</li>
+                                <li data-value="정신 및 행동장애(간질 포함)">정신 및 행동장애(간질 포함)</li>
+                                <li data-value="호흡기질환">호흡기질환</li>
+                                <li data-value="심장질환">심장질환</li>
+                                <li data-value="뇌혈관질환">뇌혈관질환</li>
+                                <li data-value="신경계질환">신경계질환</li>
+                                <li data-value="암">암</li>
+                                <li data-value="갑상선의 장애">갑상선의 장애</li>
+                                <li data-value="간의 질환(만성 바이러스 간염 포함)">간의 질환(만성 바이러스 간염 포함)</li>
+                                <li data-value="만성신부전증">만성신부전증</li>
+                                <li data-value="디스크">디스크</li>
+                                <li data-value="고지혈">고지혈</li>
+                                <li data-value="관절염">관절염</li>
+                                <li data-value="뇌경색">뇌경색</li>
+                                <li data-value="기타">기타</li>
+                            </ul>
+                        </div> -->
+                            
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>알러지</label>
+                    <input type="text" name="allergies" id="allergies" maxlength="11" placeholder="알러지" required>
+                </div>
                 <div class="agreement-section">
                     <div class="agreement-item">
                         <input type="checkbox" id="is_terms_agreed" disabled checked>
@@ -172,6 +235,11 @@
                     <div class="agreement-item">
                         <input type="checkbox" id="is_marketing_agreed" name="is_marketing_agreed">
                         <span>마케팅 정보 수신 동의(선택)</span>
+                        <span class="item-open">보기</span>
+                    </div>
+                    <div class="agreement-item">
+                        <input type="checkbox" class="agree-item" id="is_alarm_agreed" name="is_alarm_agreed">
+                        <span>약 복용 알람 정보 수신 동의(선택)</span>
                         <span class="item-open">보기</span>
                     </div>
                 </div>
@@ -265,16 +333,36 @@
                 if (!response || !response.ok) throw new Error("Fetch failed");
 
                 const user = await response.json();
+
                 document.getElementById('id').value = user.id;
                 document.getElementById('name').value = user.name;
                 document.getElementById('nickname').value = user.nickname;
                 document.getElementById('phone_number').value = user.phone_number;
                 document.getElementById('resident_registration_number').value = user.resident_registration_number;
+                document.getElementById('allergies').value = user.allergies
+                document.getElementById('chronic_diseases').value = user.chronic_diseases
 
                 // 약관 동의 상태 반영
                 document.getElementById('is_terms_agreed').checked = user.is_terms_agreed;
                 document.getElementById('is_privacy_agreed').checked = user.is_privacy_agreed;
                 document.getElementById('is_marketing_agreed').checked = user.is_marketing_agreed;
+                document.getElementById('is_alarm_agreed').checked = user.is_alarm_agreed;
+
+                vs = document.getElementById("resident_registration_number").value.split("")
+                document.querySelector(".birthday").value = "19"+vs[0]+vs[1]+"-"+vs[2]+vs[3]+"-"+vs[4]+vs[5]
+
+                document.querySelector(".gender").value = parseInt(vs[7])%2==0?'여자':'남자'
+
+                const today = new Date();
+                const birthDate = new Date(document.querySelector(".birthday").value);
+                let age = today.getFullYear() - birthDate.getFullYear();
+                const monthDiff = today.getMonth() - birthDate.getMonth();
+                
+                // 생일이 지나지 않았으면 1살 뺌
+                if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                    age--;
+                }
+                document.querySelector(".age").value = age
             } catch (e) {
                 console.error(e);
             }
@@ -287,7 +375,10 @@
                 nickname: document.getElementById('nickname').value,
                 phone_number: document.getElementById('phone_number').value,
                 resident_registration_number: document.getElementById('resident_registration_number').value,
+                allergies: document.getElementById('allergies').value,
+                chronic_diseases: document.getElementById('chronic_diseases').value,
                 is_marketing_agreed: document.getElementById('is_marketing_agreed').checked,
+                is_alarm_agreed: document.getElementById('is_alarm_agreed').checked,
             };
 
             const response = await fetchWithAuth('/api/v1/users/me', {
@@ -316,15 +407,17 @@
         async function changePassword() {
             const oldPassword = document.getElementById('old_password').value;
             const newPassword = document.getElementById('new_password').value;
+            const id = document.getElementById('id').value;
 
             if (!oldPassword || !newPassword) return alert("비밀번호를 모두 입력하세요.");
 
             const response = await fetchWithAuth('/api/v1/users/me/password', {
-                method: 'POST',
+                method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     old_password: oldPassword,
-                    new_password: newPassword
+                    new_password: newPassword,
+                    id:id
                 })
             });
 

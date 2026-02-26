@@ -8,6 +8,8 @@ from app.validators.user_validators import (
     validate_phone_number,
     validate_resident_registration_number,
 )
+from app.models.allergy import Allergy
+from app.models.chronic_disease import ChronicDisease
 
 
 # 회원가입 요청
@@ -97,9 +99,12 @@ class UserMeResponse(BaseSerializerModel):
     name: str
     phone_number: str
     resident_registration_number: str
+    chronic_diseases: list[str]
+    allergies: list[str]
     is_terms_agreed: bool
     is_privacy_agreed: bool
     is_marketing_agreed: bool
+    is_alarm_agreed:bool
 
     class Config:
         from_attributes = True
@@ -109,4 +114,11 @@ class UserMeResponse(BaseSerializerModel):
 class UserUpdateRequest(BaseModel):
     nickname: Annotated[str | None, Field(None, min_length=2, max_length=40)]
     phone_number: Annotated[str | None, AfterValidator(validate_phone_number)] = None
-    is_marketing_agreed: bool | None = None
+    chronic_diseases: Annotated[str, Field(255)]
+    allergies: Annotated[str, Field(255)]
+    is_marketing_agreed: bool
+    is_alarm_agreed:bool
+
+class ChangePasswordRequest(BaseModel):
+    old_password: str = Field(..., description="현재 비밀번호")
+    new_password: str = Field(..., description="새 비밀번호")

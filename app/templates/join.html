@@ -357,6 +357,8 @@
                     body: JSON.stringify({ email: userId })
                 });
 
+                
+
                 if (!response1.ok) {
                     console.error("Send Code Error:", response1.status);
                     alert("인증코드 발송 실패");
@@ -364,7 +366,7 @@
                 }
 
                 const result1 = await response1.json();
-                alert(result1.message || result1.detail);
+                alert(result1.message);
 
             } catch (e) {
                 alert("발송 실패");
@@ -401,8 +403,8 @@
                 }
 
                 const result = await response.json();
-                alert(result.detail);
-                document.querySelector(".btn-verify").nextElementSibling.textContent = '인증 완료'
+                alert(result.message);
+                document.querySelector("#code").nextElementSibling.textContent = '인증 완료'
 
             } catch (e) {
                 alert("발송 실패");
@@ -449,7 +451,7 @@
                 alert("비밀번호가 다릅니다..")
                 return;
             }
-            if(document.querySelector(".btn-verify").value!='인증 완료'){
+            if(document.querySelector("#code").nextElementSibling.textContent!='인증 완료'){
                 alert("이메일 인증해주시기 바랍니다.")
                 return;
             }

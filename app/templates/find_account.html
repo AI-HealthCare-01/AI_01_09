@@ -140,12 +140,13 @@
                     <input type="text" id="id_phone" placeholder="01012345678">
                 </div>
                 <button type="button" onclick="handleFindId()">아이디 확인</button>
+                <button onclick="location.href='/login'">로그인하러 가기</button>
             </div>
 
             <div id="idResultBox" class="result-box">
                 <p>가입하신 이메일 아이디입니다.</p>
                 <div id="idResult" class="found-id"></div>
-                <button onclick="location.href='/login.html'">로그인하러 가기</button>
+                <button onclick="location.href='/login'">로그인하러 가기</button>
             </div>
         </div>
 
@@ -154,7 +155,7 @@
             <div class="form-group">
                 <label>이메일 (ID)</label>
                 <div class="row">
-                    <input type="email" id="id" name="id" required placeholder="example@mail.com"
+                    <input type="email" id="pw_id" name="pw_id" required placeholder="example@mail.com"
                         value="ejrtn153@naver.com">
                     <button type="button" class="btn-verify" onclick="sendCode()">인증 요청</button>
                 </div>
@@ -162,7 +163,7 @@
             <div class="form-group">
                 <label>인증번호</label>
                 <div class="row">
-                    <input type="text" id="code" name="code" required placeholder="6자리 번호 입력">
+                    <input type="text" id="pw_code" name="pw_code" required placeholder="6자리 번호 입력">
                     <button type="button" class="btn-verify" onclick="checkCode()">인증 확인</button>
                 </div>
             </div>
@@ -180,6 +181,7 @@
                 <input type="password" id="pw_new" placeholder="새로운 비밀번호 입력">
             </div>
             <button type="button" onclick="handleResetPw()">비밀번호 변경하기</button>
+            <button onclick="location.href='/login'">로그인하러 가기</button>
         </div>
     </div>
 
@@ -205,13 +207,13 @@
 
             try {
                 // GET 요청으로 쿼리 파라미터 전달
-                const response = await fetch(`/api/v1/users/find-id?name=${name}&phone_number=${phone}`);
+                const response = await fetch(`/api/v1/users/find-id?name=${encodeURIComponent(name)}&phone_number=${encodeURIComponent(phone)}`);
                 const result = await response.json();
 
-                if (result.id) {
+                if (result.email) {
                     document.getElementById('idFormArea').style.display = 'none';
                     document.getElementById('idResultBox').style.display = 'block';
-                    document.getElementById('idResult').innerText = result.id;
+                    document.getElementById('idResult').innerText = result.email;
                 } else {
                     alert("일치하는 회원 정보가 없습니다.");
                 }
@@ -222,7 +224,7 @@
 
         // 1. 인증번호 발송 함수
         async function sendCode() {
-            const userId = document.getElementById('id').value;
+            const userId = document.getElementById('pw_id').value;
             if (!userId) return alert("이메일을 입력해주세요.");
 
             try {
@@ -239,7 +241,7 @@
                 }else{
                     const result = await response.json();
                     if (!result.detail.includes("이미")) {
-                        alert(result);
+                        alert(result.detail);
                         return;
                     }
                 }
@@ -260,17 +262,17 @@
                 }
 
                 const result1 = await response1.json();
-                alert(result1.message || result1.detail);
+                alert(result1.message);
 
             } catch (e) {
                 alert("발송 실패");
             }
         }
         async function checkCode() {
-            const userId = document.getElementById('id').value;
+            const userId = document.getElementById('pw_id').value;
             if (!userId) return alert("이메일을 입력해주세요.");
 
-            const code = document.getElementById('code').value;
+            const code = document.getElementById('pw_code').value;
             if (!code) return alert("인증번호를 입력해주세요.");
 
             try {
@@ -297,8 +299,8 @@
                 }
 
                 const result = await response.json();
-                alert(result.detail);
-                document.querySelector(".btn-verify").nextElementSibling.textContent = '인증 완료'
+                alert(result.message);
+                document.querySelector("#pw_code").nextElementSibling.textContent = '인증 완료'
 
             } catch (e) {
                 alert("발송 실패");
@@ -309,13 +311,16 @@
         async function handleResetPw() {
             const data = {
                 id: document.getElementById('pw_id').value,
-                code: document.getElementById('pw_code').value,
                 name: document.getElementById('pw_name').value,
                 phone_number: document.getElementById('pw_phone').value,
                 new_password: document.getElementById('pw_new').value
             };
 
             if (Object.values(data).some(v => !v)) return alert("모든 항목을 입력해주세요.");
+
+            if(document.querySelector("#pw_code").nextElementSibling.textContent != '인증 완료'){
+                alert("이메일 인증 해주세요.")
+            }
 
             try {
                 const response = await fetch('/api/v1/users/reset-password', {
