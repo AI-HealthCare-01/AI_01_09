@@ -1,0 +1,371 @@
+[
+  {
+    "domain": "V1",
+    "url": "/api/v1/users",
+    "method": "POST",
+    "description": "[USER] 회원가입",
+    "req_body_schema": "201: { \"email\": email, \"access_token\": str }",
+    "res_success_schema": "400: { \"error_detail\": str, \"fields\": object? }\n401: { \"error_detail\": str }\n403: { \"error_detail\": str }\n404: { \"error_detail\": str }\n409: { \"error_detail\": str }\n500: { \"error_detail\": str }",
+    "res_error_schema": "{201: Created, 400: Bad Request, 409: Conflict}"
+  },
+  {
+    "domain": "V1",
+    "url": "/api/v1/auth/login",
+    "method": "POST",
+    "description": "[USER] 로그인 (이메일/비밀번호) → access_token 발급",
+    "req_body_schema": "200: { \"access_token\": str }",
+    "res_success_schema": "400: { \"error_detail\": str, \"fields\": object? }\n401: { \"error_detail\": str }\n403: { \"error_detail\": str }\n404: { \"error_detail\": str }\n409: { \"error_detail\": str }\n500: { \"error_detail\": str }",
+    "res_error_schema": "{200: OK, 400: Bad Request, 401: Unauthorized}"
+  },
+  {
+    "domain": "V1",
+    "url": "/api/v1/auth/kakao/authorize",
+    "method": "GET",
+    "description": "[USER] 카카오 소셜 로그인 시작.\n프론트는 반환된 auth_url로 리다이렉트하여 인가코드(code)를 획득",
+    "req_body_schema": "200: { \"auth_url\": str }",
+    "res_success_schema": "400: { \"error_detail\": str, \"fields\": object? }\n401: { \"error_detail\": str }\n403: { \"error_detail\": str }\n404: { \"error_detail\": str }\n409: { \"error_detail\": str }\n500: { \"error_detail\": str }",
+    "res_error_schema": "{200: OK, 400: Bad Request}"
+  },
+  {
+    "domain": "V1",
+    "url": "/api/v1/auth/kakao/callback",
+    "method": "GET",
+    "description": "[USER] 카카오 로그인 콜백. code로 카카오 토큰 발급\n→사용자 정보 조회→(신규면 회원 생성)\n→서비스 access_token 발급.\nis_new_user로 신규 여부 반환",
+    "req_body_schema": "200: { \"user_id\": str, \"is_new_user\": bool, \"access_token\": str }",
+    "res_success_schema": "400: { \"error_detail\": str, \"fields\": object? }\n401: { \"error_detail\": str }\n403: { \"error_detail\": str }\n404: { \"error_detail\": str }\n409: { \"error_detail\": str }\n500: { \"error_detail\": str }",
+    "res_error_schema": "{200: OK, 400: Bad Request, 401: Unauthorized}"
+  },
+  {
+    "domain": "V1",
+    "url": "/api/v1/users/me",
+    "method": "GET",
+    "description": "[USER] 내 정보 조회",
+    "req_body_schema": "200: {\n  \"email\": email,\n  \"nickname\": str,\n  \"name\": str,\n  \"phone_number\": str,\n  \"resident_registration_number\": str,\n  \"is_terms_agreed\": bool,\n  \"is_privacy_agreed\": bool,\n  \"is_marketing_agreed\": bool\n}",
+    "res_success_schema": "400: { \"error_detail\": str, \"fields\": object? }\n401: { \"error_detail\": str }\n403: { \"error_detail\": str }\n404: { \"error_detail\": str }\n409: { \"error_detail\": str }\n500: { \"error_detail\": str }",
+    "res_error_schema": "{200: OK, 401: Unauthorized}"
+  },
+  {
+    "domain": "V1",
+    "url": "/api/v1/users/me",
+    "method": "PATCH",
+    "description": "[USER] 내 정보 수정(닉네임/연락처/마케팅 동의 등)",
+    "req_body_schema": "200: { \"detail\": str }",
+    "res_success_schema": "400: { \"error_detail\": str, \"fields\": object? }\n401: { \"error_detail\": str }\n403: { \"error_detail\": str }\n404: { \"error_detail\": str }\n409: { \"error_detail\": str }\n500: { \"error_detail\": str }",
+    "res_error_schema": "{200: OK, 400: Bad Request, 401: Unauthorized, 409: Conflict}"
+  },
+  {
+    "domain": "V1",
+    "url": "/api/v1/users/me",
+    "method": "DELETE",
+    "description": "[USER] 회원 탈퇴(비활성/삭제 처리)",
+    "req_body_schema": "200: { \"detail\": str }",
+    "res_success_schema": "400: { \"error_detail\": str, \"fields\": object? }\n401: { \"error_detail\": str }\n403: { \"error_detail\": str }\n404: { \"error_detail\": str }\n409: { \"error_detail\": str }\n500: { \"error_detail\": str }",
+    "res_error_schema": "{200: OK, 401: Unauthorized}"
+  },
+  {
+    "domain": "V1",
+    "url": "/api/v1/health/chronic-diseases",
+    "method": "GET",
+    "description": "[PROFILE] 기저질환 목록 조회",
+    "req_body_schema": "200: { \"items\": [ { \"id\": int, \"disease_name\": str } ] }",
+    "res_success_schema": "400: { \"error_detail\": str, \"fields\": object? }\n401: { \"error_detail\": str }\n403: { \"error_detail\": str }\n404: { \"error_detail\": str }\n409: { \"error_detail\": str }\n500: { \"error_detail\": str }",
+    "res_error_schema": "{200: OK, 401: Unauthorized}"
+  },
+  {
+    "domain": "V1",
+    "url": "/api/v1/health/chronic-diseases",
+    "method": "POST",
+    "description": "[PROFILE] 기저질환 등록",
+    "req_body_schema": "201: { \"id\": int }",
+    "res_success_schema": "400: { \"error_detail\": str, \"fields\": object? }\n401: { \"error_detail\": str }\n403: { \"error_detail\": str }\n404: { \"error_detail\": str }\n409: { \"error_detail\": str }\n500: { \"error_detail\": str }",
+    "res_error_schema": "{201: Created, 400: Bad Request, 401: Unauthorized}"
+  },
+  {
+    "domain": "V1",
+    "url": "/api/v1/health/chronic-diseases/{id}",
+    "method": "DELETE",
+    "description": "[PROFILE] 기저질환 삭제",
+    "req_body_schema": "200: { \"detail\": str }",
+    "res_success_schema": "400: { \"error_detail\": str, \"fields\": object? }\n401: { \"error_detail\": str }\n403: { \"error_detail\": str }\n404: { \"error_detail\": str }\n409: { \"error_detail\": str }\n500: { \"error_detail\": str }",
+    "res_error_schema": "{200: OK, 401: Unauthorized, 404: Not Found}"
+  },
+  {
+    "domain": "V1",
+    "url": "/api/v1/health/allergies",
+    "method": "GET",
+    "description": "[PROFILE] 알러지 목록 조회",
+    "req_body_schema": "200: { \"items\": [ { \"id\": int, \"allergy_name\": str } ] }",
+    "res_success_schema": "400: { \"error_detail\": str, \"fields\": object? }\n401: { \"error_detail\": str }\n403: { \"error_detail\": str }\n404: { \"error_detail\": str }\n409: { \"error_detail\": str }\n500: { \"error_detail\": str }",
+    "res_error_schema": "{200: OK, 401: Unauthorized}"
+  },
+  {
+    "domain": "V1",
+    "url": "/api/v1/health/allergies",
+    "method": "POST",
+    "description": "[PROFILE] 알러지 등록",
+    "req_body_schema": "201: { \"id\": int }",
+    "res_success_schema": "400: { \"error_detail\": str, \"fields\": object? }\n401: { \"error_detail\": str }\n403: { \"error_detail\": str }\n404: { \"error_detail\": str }\n409: { \"error_detail\": str }\n500: { \"error_detail\": str }",
+    "res_error_schema": "{201: Created, 400: Bad Request, 401: Unauthorized}"
+  },
+  {
+    "domain": "V1",
+    "url": "/api/v1/health/allergies/{id}",
+    "method": "DELETE",
+    "description": "[PROFILE] 알러지 삭제",
+    "req_body_schema": "200: { \"detail\": str }",
+    "res_success_schema": "400: { \"error_detail\": str, \"fields\": object? }\n401: { \"error_detail\": str }\n403: { \"error_detail\": str }\n404: { \"error_detail\": str }\n409: { \"error_detail\": str }\n500: { \"error_detail\": str }",
+    "res_error_schema": "{200: OK, 401: Unauthorized, 404: Not Found}"
+  },
+  {
+    "domain": "V1",
+    "url": "/api/v1/uploads",
+    "method": "POST",
+    "description": "[UPLOAD] 이미지 업로드(처방전/알약 앞/뒤). 업로드 결과(upload_id)로 분석 API 호출",
+    "req_body_schema": "201: { \"upload_id\": int, \"file_url\": str }",
+    "res_success_schema": "400: { \"error_detail\": str, \"fields\": object? }\n401: { \"error_detail\": str }\n403: { \"error_detail\": str }\n404: { \"error_detail\": str }\n409: { \"error_detail\": str }\n500: { \"error_detail\": str }",
+    "res_error_schema": "{201: Created, 400: Bad Request, 401: Unauthorized}"
+  },
+  {
+    "domain": "V1",
+    "url": "/api/v1/analysis/prescriptions",
+    "method": "POST",
+    "description": "[ANALYSIS] 처방전 분석(OCR→정제).\nocr_history + prescriptions + prescription_drugs 생성",
+    "req_body_schema": "201: {\n  \"ocr_history_id\": int,\n  \"prescription_id\": int,\n  \"hospital_name\": str?,\n  \"prescribed_date\": date?,\n  \"drugs\": [\n  {\"id\": int, \"standard_drug_name\": str, \"dosage_amount\": float?, \"daily_frequency\": int?, \"duration_days\": int?, \"is_linked_to_meds\": bool}\n  ]\n}",
+    "res_success_schema": "400: { \"error_detail\": str, \"fields\": object? }\n401: { \"error_detail\": str }\n403: { \"error_detail\": str }\n404: { \"error_detail\": str }\n409: { \"error_detail\": str }\n500: { \"error_detail\": str }",
+    "res_error_schema": "{201: Created, 400: Bad Request, 401: Unauthorized, 409: Conflict}"
+  },
+  {
+    "domain": "V1",
+    "url": "/api/v1/prescriptions",
+    "method": "GET",
+    "description": "[RESULT] 처방전 결과 목록 조회",
+    "req_body_schema": "200: { \"items\":[ { \"id\": int, \"hospital_name\": str?, \"prescribed_date\": date?, \"upload_id\": int, \"created_at\": datetime } ] }",
+    "res_success_schema": "400: { \"error_detail\": str, \"fields\": object? }\n401: { \"error_detail\": str }\n403: { \"error_detail\": str }\n404: { \"error_detail\": str }\n409: { \"error_detail\": str }\n500: { \"error_detail\": str }",
+    "res_error_schema": "{200: OK, 401: Unauthorized}"
+  },
+  {
+    "domain": "V1",
+    "url": "/api/v1/prescriptions/{id}",
+    "method": "GET",
+    "description": "[RESULT] 처방전 상세 조회(약 목록 포함)",
+    "req_body_schema": "200: {\n  \"id\": int,\n  \"hospital_name\": str?,\n  \"prescribed_date\": date?,\n  \"upload_id\": int,\n  \"drugs\": [\n  {\"id\": int, \"standard_drug_name\": str, \"dosage_amount\": float?, \"daily_frequency\": int?, \"duration_days\": int?, \"is_linked_to_meds\": bool}\n  ]\n}",
+    "res_success_schema": "400: { \"error_detail\": str, \"fields\": object? }\n401: { \"error_detail\": str }\n403: { \"error_detail\": str }\n404: { \"error_detail\": str }\n409: { \"error_detail\": str }\n500: { \"error_detail\": str }",
+    "res_error_schema": "{200: OK, 401: Unauthorized, 404: Not Found}"
+  },
+  {
+    "domain": "V1",
+    "url": "/api/v1/analysis/pills",
+    "method": "POST",
+    "description": "[ANALYSIS] 알약 복합 분석(CNN+OCR).\nfront/back 기반으로 cnn_history+ocr_history 생성 후\npill_recognition 생성. AI 불확실성 대비 candidates 반환",
+    "req_body_schema": "201: {\n  \"cnn_history_id\": int,\n  \"ocr_history_id\": int,\n  \"pill_recognition_id\": int,\n  \"primary_pill_name\": str,\n  \"confidence\": float,\n  \"candidates\": [ { \"pill_name\": str, \"confidence\": float } ]\n}",
+    "res_success_schema": "400: { \"error_detail\": str, \"fields\": object? }\n401: { \"error_detail\": str }\n403: { \"error_detail\": str }\n404: { \"error_detail\": str }\n409: { \"error_detail\": str }\n500: { \"error_detail\": str }",
+    "res_error_schema": "{201: Created, 400: Bad Request, 401: Unauthorized}"
+  },
+  {
+    "domain": "V1",
+    "url": "/api/v1/pill-recognitions",
+    "method": "GET",
+    "description": "[RESULT] 알약 인식 결과 목록 조회",
+    "req_body_schema": "200: { \"items\":[ { \"id\": int, \"pill_name\": str, \"confidence\": float, \"is_linked_to_meds\": bool, \"created_at\": datetime } ] }",
+    "res_success_schema": "400: { \"error_detail\": str, \"fields\": object? }\n401: { \"error_detail\": str }\n403: { \"error_detail\": str }\n404: { \"error_detail\": str }\n409: { \"error_detail\": str }\n500: { \"error_detail\": str }",
+    "res_error_schema": "{200: OK, 401: Unauthorized}"
+  },
+  {
+    "domain": "V1",
+    "url": "/api/v1/pill-recognitions/{id}",
+    "method": "GET",
+    "description": "[RESULT] 알약 인식 결과 상세 조회(후보군 포함 가능)",
+    "req_body_schema": "200: {\n  \"id\": int,\n  \"pill_name\": str,\n  \"pill_description\": str?,\n  \"confidence\": float,\n  \"candidates\": [ { \"pill_name\": str, \"confidence\": float } ]?,\n  \"is_linked_to_meds\": bool,\n  \"created_at\": datetime\n}",
+    "res_success_schema": "400: { \"error_detail\": str, \"fields\": object? }\n401: { \"error_detail\": str }\n403: { \"error_detail\": str }\n404: { \"error_detail\": str }\n409: { \"error_detail\": str }\n500: { \"error_detail\": str }",
+    "res_error_schema": "{200: OK, 401: Unauthorized, 404: Not Found}"
+  },
+  {
+    "domain": "V1",
+    "url": "/api/v1/medications/confirm/drug/{id}",
+    "method": "PATCH",
+    "description": "[CONFIRM] 처방전 약물 승인.\nprescription_drugs.is_linked_to_meds=1 설정 후\ncurrent_meds에 Insert",
+    "req_body_schema": "200: { \"detail\": str, \"current_meds_id\": int }",
+    "res_success_schema": "400: { \"error_detail\": str, \"fields\": object? }\n401: { \"error_detail\": str }\n403: { \"error_detail\": str }\n404: { \"error_detail\": str }\n409: { \"error_detail\": str }\n500: { \"error_detail\": str }",
+    "res_error_schema": "{200: OK, 401: Unauthorized, 404: Not Found, 409: Conflict}"
+  },
+  {
+    "domain": "V1",
+    "url": "/api/v1/medications/confirm/pill/{id}",
+    "method": "PATCH",
+    "description": "[CONFIRM] 알약 인식 승인.\npill_recognition.is_linked_to_meds=1 설정 후\ncurrent_meds에 Insert",
+    "req_body_schema": "200: { \"detail\": str, \"current_meds_id\": int }",
+    "res_success_schema": "400: { \"error_detail\": str, \"fields\": object? }\n401: { \"error_detail\": str }\n403: { \"error_detail\": str }\n404: { \"error_detail\": str }\n409: { \"error_detail\": str }\n500: { \"error_detail\": str }",
+    "res_error_schema": "{200: OK, 401: Unauthorized, 404: Not Found, 409: Conflict}"
+  },
+  {
+    "domain": "V1",
+    "url": "/api/v1/current-meds",
+    "method": "GET",
+    "description": "[MEDS] 현재 복용약 목록 조회(RAG 핵심 소스)",
+    "req_body_schema": "200: { \"items\":[ { \"id\": int, \"medication_name\": str, \"added_from\": str, \"start_date\": date } ] }",
+    "res_success_schema": "400: { \"error_detail\": str, \"fields\": object? }\n401: { \"error_detail\": str }\n403: { \"error_detail\": str }\n404: { \"error_detail\": str }\n409: { \"error_detail\": str }\n500: { \"error_detail\": str }",
+    "res_error_schema": "{200: OK, 401: Unauthorized}"
+  },
+  {
+    "domain": "V1",
+    "url": "/api/v1/current-meds",
+    "method": "POST",
+    "description": "[MEDS] 현재 복용약 수기 등록",
+    "req_body_schema": "201: { \"id\": int }",
+    "res_success_schema": "400: { \"error_detail\": str, \"fields\": object? }\n401: { \"error_detail\": str }\n403: { \"error_detail\": str }\n404: { \"error_detail\": str }\n409: { \"error_detail\": str }\n500: { \"error_detail\": str }",
+    "res_error_schema": "{201: Created, 400: Bad Request, 401: Unauthorized}"
+  },
+  {
+    "domain": "V1",
+    "url": "/api/v1/current-meds/{id}",
+    "method": "DELETE",
+    "description": "[MEDS] 현재 복용약 삭제",
+    "req_body_schema": "200: { \"detail\": str }",
+    "res_success_schema": "400: { \"error_detail\": str, \"fields\": object? }\n401: { \"error_detail\": str }\n403: { \"error_detail\": str }\n404: { \"error_detail\": str }\n409: { \"error_detail\": str }\n500: { \"error_detail\": str }",
+    "res_error_schema": "{200: OK, 401: Unauthorized, 404: Not Found}"
+  },
+  {
+    "domain": "V1",
+    "url": "/api/v1/guides",
+    "method": "POST",
+    "description": "[GUIDE] 맞춤 가이드 생성(RAG 핵심).\n실행 시 질환+알러지+복용약을 요약해 user_current_status에 저장.\nrefresh=true면 최신 상태로 재생성",
+    "req_body_schema": "200: {\n  \"guide_id\": int,\n  \"guide_type\": str,\n  \"user_current_status\": str,\n  \"generated_content\": str,\n  \"is_emergency_alert\": bool,\n  \"created_at\": datetime\n}",
+    "res_success_schema": "400: { \"error_detail\": str, \"fields\": object? }\n401: { \"error_detail\": str }\n403: { \"error_detail\": str }\n404: { \"error_detail\": str }\n409: { \"error_detail\": str }\n500: { \"error_detail\": str }",
+    "res_error_schema": "{200: OK, 400: Bad Request, 401: Unauthorized}"
+  },
+  {
+    "domain": "V1",
+    "url": "/api/v1/guides",
+    "method": "GET",
+    "description": "[GUIDE] 가이드 목록 조회",
+    "req_body_schema": "200: { \"items\":[ { \"id\": int, \"guide_type\": str, \"is_emergency_alert\": bool, \"created_at\": datetime } ] }",
+    "res_success_schema": "400: { \"error_detail\": str, \"fields\": object? }\n401: { \"error_detail\": str }\n403: { \"error_detail\": str }\n404: { \"error_detail\": str }\n409: { \"error_detail\": str }\n500: { \"error_detail\": str }",
+    "res_error_schema": "{200: OK, 401: Unauthorized}"
+  },
+  {
+    "domain": "V1",
+    "url": "/api/v1/guides/{id}",
+    "method": "GET",
+    "description": "[GUIDE] 가이드 상세 조회",
+    "req_body_schema": "200: { \"id\": int, \"guide_type\": str, \"user_current_status\": str, \"generated_content\": str, \"is_emergency_alert\": bool, \"created_at\": datetime }",
+    "res_success_schema": "400: { \"error_detail\": str, \"fields\": object? }\n401: { \"error_detail\": str }\n403: { \"error_detail\": str }\n404: { \"error_detail\": str }\n409: { \"error_detail\": str }\n500: { \"error_detail\": str }",
+    "res_error_schema": "{200: OK, 401: Unauthorized, 404: Not Found}"
+  },
+  {
+    "domain": "V1",
+    "url": "/api/v1/guides/{id}",
+    "method": "PATCH",
+    "description": "[GUIDE] 가이드 업데이트(페이지 내 '업데이트' 버튼).\n최신 chronic_diseases/allergies/current_meds를 기반으로\n기존 가이드를 재생성하여 화면의 상단 요약(user_current_status)과\n하단 안내(generated_content)를 갱신",
+    "req_body_schema": "200: {\n  \"guide_id\": int,\n  \"guide_type\": str,\n  \"user_current_status\": str,\n  \"generated_content\": str,\n  \"is_emergency_alert\": bool,\n  \"created_at\": datetime\n}",
+    "res_success_schema": "400: { \"error_detail\": str, \"fields\": object? }\n401: { \"error_detail\": str }\n403: { \"error_detail\": str }\n404: { \"error_detail\": str }\n409: { \"error_detail\": str }\n500: { \"error_detail\": str }",
+    "res_error_schema": "{200: OK, 401: Unauthorized, 404: Not Found}"
+  },
+  {
+    "domain": "V1",
+    "url": "/api/v1/chat/message",
+    "method": "POST",
+    "description": "[CHAT] 챗봇 메시지 전송(세션 유지).\n서버는 llm_life_guides(기본: 최신 가이드 또는 reference_guide_id 지정)를\nRAG 컨텍스트로 포함해 답변. '채팅 종료' 버튼 클릭 시\n/chat/end 호출로 해당 세션 메시지 삭제(또는 is_deleted=1 처리).\naction_type으로 UI 제어 가능",
+    "req_body_schema": "200: {\n  \"session_id\": str,\n  \"assistant_message\": str,\n  \"reference_guide_id\": int?,\n  \"action_type\": str?  // UPDATE_ALARM | CREATE_ALARM | NONE\n}",
+    "res_success_schema": "400: { \"error_detail\": str, \"fields\": object? }\n401: { \"error_detail\": str }\n403: { \"error_detail\": str }\n404: { \"error_detail\": str }\n409: { \"error_detail\": str }\n500: { \"error_detail\": str }",
+    "res_error_schema": "{200: OK, 400: Bad Request, 401: Unauthorized}"
+  },
+  {
+    "domain": "V1",
+    "url": "/api/v1/chat/end",
+    "method": "POST",
+    "description": "[CHAT] 채팅 종료(대화 내용 초기화).\n요청한 session_id에 속한 chat_messages를 삭제(권장: soft delete)하여\n다음 접속 시 이전 대화가 보이지 않게 처리",
+    "req_body_schema": "200: { \"detail\": str }",
+    "res_success_schema": "400: { \"error_detail\": str, \"fields\": object? }\n401: { \"error_detail\": str }\n403: { \"error_detail\": str }\n404: { \"error_detail\": str }\n409: { \"error_detail\": str }\n500: { \"error_detail\": str }",
+    "res_error_schema": "{200: OK, 401: Unauthorized}"
+  },
+  {
+    "domain": "V1",
+    "url": "/api/v1/alarms",
+    "method": "GET",
+    "description": "[ALARM] 복약 알람 목록 조회",
+    "req_body_schema": "200: { \"items\":[ { \"id\": int, \"drug_name\": str, \"alarm_time\": time, \"is_active\": bool } ] }",
+    "res_success_schema": "400: { \"error_detail\": str, \"fields\": object? }\n401: { \"error_detail\": str }\n403: { \"error_detail\": str }\n404: { \"error_detail\": str }\n409: { \"error_detail\": str }\n500: { \"error_detail\": str }",
+    "res_error_schema": "{200: OK, 401: Unauthorized}"
+  },
+  {
+    "domain": "V1",
+    "url": "/api/v1/alarms",
+    "method": "POST",
+    "description": "[ALARM] 복약 알람 생성",
+    "req_body_schema": "201: { \"id\": int }",
+    "res_success_schema": "400: { \"error_detail\": str, \"fields\": object? }\n401: { \"error_detail\": str }\n403: { \"error_detail\": str }\n404: { \"error_detail\": str }\n409: { \"error_detail\": str }\n500: { \"error_detail\": str }",
+    "res_error_schema": "{201: Created, 400: Bad Request, 401: Unauthorized}"
+  },
+  {
+    "domain": "V1",
+    "url": "/api/v1/alarms/{id}",
+    "method": "PATCH",
+    "description": "[ALARM] 복약 알람 수정",
+    "req_body_schema": "200: { \"detail\": str }",
+    "res_success_schema": "400: { \"error_detail\": str, \"fields\": object? }\n401: { \"error_detail\": str }\n403: { \"error_detail\": str }\n404: { \"error_detail\": str }\n409: { \"error_detail\": str }\n500: { \"error_detail\": str }",
+    "res_error_schema": "{200: OK, 400: Bad Request, 401: Unauthorized, 404: Not Found}"
+  },
+  {
+    "domain": "V1",
+    "url": "/api/v1/alarms/{id}",
+    "method": "DELETE",
+    "description": "[ALARM] 복약 알람 삭제",
+    "req_body_schema": "200: { \"detail\": str }",
+    "res_success_schema": "400: { \"error_detail\": str, \"fields\": object? }\n401: { \"error_detail\": str }\n403: { \"error_detail\": str }\n404: { \"error_detail\": str }\n409: { \"error_detail\": str }\n500: { \"error_detail\": str }",
+    "res_error_schema": "{200: OK, 401: Unauthorized, 404: Not Found}"
+  },
+  {
+    "domain": "V1",
+    "url": "/api/v1/alarms/{id}/history",
+    "method": "GET",
+    "description": "[ALARM] 복약 알람 발송/확인 이력 조회",
+    "req_body_schema": "200: { \"items\":[ { \"id\": int, \"sent_at\": datetime, \"is_confirmed\": bool } ] }",
+    "res_success_schema": "400: { \"error_detail\": str, \"fields\": object? }\n401: { \"error_detail\": str }\n403: { \"error_detail\": str }\n404: { \"error_detail\": str }\n409: { \"error_detail\": str }\n500: { \"error_detail\": str }",
+    "res_error_schema": "{200: OK, 401: Unauthorized, 404: Not Found}"
+  },
+  {
+    "domain": "V1",
+    "url": "/api/v1/alarms/history/{id}",
+    "method": "PATCH",
+    "description": "[ALARM] 복약 완료 체크(alarm_history.is_confirmed 업데이트)\n(웹 서비스에서도 가능: 카카오 메시지(나에게 보내기/알림톡)의 버튼 URL을\n'복약완료 확인 페이지'로 연결 → 페이지에서 이 API 호출로 체크 처리)",
+    "req_body_schema": "200: { \"detail\": str }",
+    "res_success_schema": "400: { \"error_detail\": str, \"fields\": object? }\n401: { \"error_detail\": str }\n403: { \"error_detail\": str }\n404: { \"error_detail\": str }\n409: { \"error_detail\": str }\n500: { \"error_detail\": str }",
+    "res_error_schema": "{200: OK, 401: Unauthorized, 404: Not Found}"
+  },
+  {
+    "domain": "V1",
+    "url": "/api/v1/alarms/history/{id}/confirm-link",
+    "method": "POST",
+    "description": "[ALARM] 카카오 버튼/링크 기반 복약완료 체크.\nconfirm_token 검증 후 alarm_history.is_confirmed=true 처리\n(카카오톡 메시지 버튼은 웹 URL만 열 수 있으므로, 해당 URL에서 이 API를 호출)",
+    "req_body_schema": "200: { \"detail\": str }",
+    "res_success_schema": "400: { \"error_detail\": str, \"fields\": object? }\n401: { \"error_detail\": str }\n403: { \"error_detail\": str }\n404: { \"error_detail\": str }\n409: { \"error_detail\": str }\n500: { \"error_detail\": str }",
+    "res_error_schema": "{200: OK, 400: Bad Request, 404: Not Found}"
+  },
+  {
+    "domain": "V1",
+    "url": "/api/v1/multimodal/generate",
+    "method": "POST",
+    "description": "[MULTIMODAL] 카드뉴스/음성 생성.\nsource_table+source_id 기반으로 생성 후 multimodal_assets 저장",
+    "req_body_schema": "201: { \"id\": int, \"asset_url\": str }",
+    "res_success_schema": "400: { \"error_detail\": str, \"fields\": object? }\n401: { \"error_detail\": str }\n403: { \"error_detail\": str }\n404: { \"error_detail\": str }\n409: { \"error_detail\": str }\n500: { \"error_detail\": str }",
+    "res_error_schema": "{201: Created, 400: Bad Request, 401: Unauthorized, 404: Not Found}"
+  },
+  {
+    "domain": "V1",
+    "url": "/api/v1/assets",
+    "method": "GET",
+    "description": "[MULTIMODAL] 생성된 자산 조회(source_table/source_id로 필터)",
+    "req_body_schema": "200: { \"items\":[ { \"id\": int, \"source_table\": str, \"source_id\": int, \"asset_type\": str, \"asset_url\": str } ] }",
+    "res_success_schema": "400: { \"error_detail\": str, \"fields\": object? }\n401: { \"error_detail\": str }\n403: { \"error_detail\": str }\n404: { \"error_detail\": str }\n409: { \"error_detail\": str }\n500: { \"error_detail\": str }",
+    "res_error_schema": "{200: OK, 401: Unauthorized}"
+  },
+  {
+    "domain": "V1",
+    "url": "/api/v1/system/logs",
+    "method": "GET",
+    "description": "[SYSTEM] 시스템 로그 조회(운영/디버깅). (내부/관리자용)",
+    "req_body_schema": "200: { \"items\":[ { \"id\": int, \"api_path\": str, \"method\": str, \"response_ms\": int, \"created_at\": datetime } ] }",
+    "res_success_schema": "400: { \"error_detail\": str, \"fields\": object? }\n401: { \"error_detail\": str }\n403: { \"error_detail\": str }\n404: { \"error_detail\": str }\n409: { \"error_detail\": str }\n500: { \"error_detail\": str }",
+    "res_error_schema": "{200: OK, 401: Unauthorized, 403: Forbidden}"
+  }
+]

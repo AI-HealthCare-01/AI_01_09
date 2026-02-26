@@ -10,7 +10,7 @@ class ChatMessage(BaseModel):
 
 
 class ChatRequest(BaseModel):
-    user_id: int = Field(..., description="사용자 ID")
+    user_id: str = Field(..., description="사용자 ID (이메일)")
     session_id: str | None = Field(None, description="대화 세션 ID (없으면 신규 생성)")
     messages: list[ChatMessage] = Field(..., description="이전 대화 맥락을 포함한 메시지 목록")
 
