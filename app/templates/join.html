@@ -203,22 +203,22 @@
                     method: 'GET'
                 });
 
-                // 이메일 중복 (정상 처리)
-                if (response.status === 409) {
-                    const result = await response.json();
-                    alert(result.detail);
-                    return;
-                }
-
                 // 다른 HTTP 에러만 콘솔 출력
                 if (!response.ok) {
                     console.error("API Error:", response.status);
                     alert("에러가 발생했습니다.");
                     return;
+                }else{
+                    const result = await response.json();
+                    if (result.includes("이미")) {
+                        alert(result);
+                    } else {
+                        return;
+                    }
                 }
 
                 // 정상일 때 인증코드 발송
-                const response1 = await fetch('/api/v1/email/send-code', {
+                const response1 = await fetch('/api/v1/common/send-code', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -248,7 +248,7 @@
 
             try {
                 // 정상일 때 인증코드 확인
-                const response = await fetch('/api/v1/email/verify-code', {
+                const response = await fetch('/api/v1/common/verify-code', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -331,7 +331,7 @@
 
             console.log(data)
             try {
-                const response = await fetch('/api/v1/users/signup', {
+                const response = await fetch('/api/v1/users', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json' // JSON을 보낸다고 서버에 알림

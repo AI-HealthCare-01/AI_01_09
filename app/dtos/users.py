@@ -23,6 +23,9 @@ class SignUpResponse(BaseModel):
     id: str
     access_token: str
 
+class IdDuplicationRequest(BaseModel):
+    id: str
+
 # 로그인 요청 (OAuth2 Password Bearer용 - form_data로 처리되지만 DTO로도 정의 가능)
 class LoginRequest(BaseModel):
     id: EmailStr
