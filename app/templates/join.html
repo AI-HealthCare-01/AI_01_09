@@ -117,6 +117,10 @@
             cursor: pointer;
             font-weight: 500;
         }
+        .result-btn{
+            display: flex;
+            gap: 10px;
+        }
     </style>
 </head>
 
@@ -187,7 +191,10 @@
                     <span class="item-open">보기</span>
                 </div>
             </div>
-            <button type="button" class="ok">회원가입 완료</button>
+            <div class="result-btn">
+                <button type="button" class="cancel">회원가입 취소</button>
+                <button type="button" class="ok">회원가입 완료</button>
+            </div>
         </form>
     </div>
 
@@ -210,9 +217,8 @@
                     return;
                 }else{
                     const result = await response.json();
-                    if (result.includes("이미")) {
+                    if (result.detail.includes("이미")) {
                         alert(result);
-                    } else {
                         return;
                     }
                 }
@@ -329,7 +335,6 @@
                 is_marketing_agreed: document.getElementById('is_marketing_agreed').checked,
             }
 
-            console.log(data)
             try {
                 const response = await fetch('/api/v1/users', {
                     method: 'POST',
@@ -353,12 +358,20 @@
                 }
 
                 const result = await response.json();
-                alert(result.message || result.detail);
+                alert(result.detail);
                 location.href = "/login"
             } catch (e) {
                 alert("가입 실패");
             }
         });
+
+        document.querySelector(".cancel").addEventListener("click",()=>{
+             if (confirm("정말 취소하시겠습니까??")){
+                location.href = "login"
+            }else{
+                return false;
+            }
+        })
 
     </script>
 </body>
