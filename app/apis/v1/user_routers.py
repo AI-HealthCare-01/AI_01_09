@@ -13,7 +13,7 @@ from app.utils.security import create_access_token
 user_router = APIRouter(prefix="/users", tags=["users"])
 
 
-@user_router.post("", response_model=SignUpResponse, status_code=status.HTTP_201_CREATED)
+@user_router.post("", response_model=SignUpResponse, status_code=status.HTTP_200_OK)
 async def signup(
     request: SignUpRequest, user_service: Annotated[UserManageService, Depends(UserManageService)]
 ) -> Response:
@@ -26,9 +26,7 @@ async def signup(
 
     # Generate token for response
 
-    access_token = create_access_token(data={"user_id": request.id})
-
-    return Response(content={"id": request.id, "access_token": access_token}, status_code=status.HTTP_201_CREATED)
+    return Response(content={"id": request.id, "detail": '회원가입 성공하셨습니다.'}, status_code=status.HTTP_200_OK)
 
 
 @user_router.get("/me", response_model=UserMeResponse)

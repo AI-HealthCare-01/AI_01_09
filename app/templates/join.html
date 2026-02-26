@@ -121,6 +121,64 @@
             display: flex;
             gap: 10px;
         }
+        .birthday-gender-age{
+            display: flex;
+            gap: 5px;
+            align-content: center;
+        }
+        .birthday-gender-age span{
+            flex-shrink: 0;
+        }
+        .birthday-gender-age input{
+            height: 24px;
+        }
+        .birthday-gender-age select{
+            height: 24px;
+            margin: 0 10px;
+        }
+        .birthday-gender-age .gender{
+            width: 50px;
+        }
+        .birthday-gender-age .age{
+            width: 50px;
+        }
+        .chronic_diseases_list{
+            display: flex;
+        }
+        .chronic_diseases_list .custom-select {
+            position: relative;
+            width: 200px;
+            font-size: 14px;
+        }
+
+        .chronic_diseases_list .selected {
+            height: 40px;
+            line-height: 40px;
+            padding: 0 10px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+        }
+
+        .chronic_diseases_list .options {
+            display: none;
+            position: absolute;
+            width: 100%;
+            border: 1px solid #ccc;
+            background: #fff;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 0px;
+        }
+
+        .chronic_diseases_list .options li {
+            padding: 10px;
+            cursor: pointer;
+            list-style:none;
+        }
+
+        .chronic_diseases_list .options li:hover {
+            background: #f0f0f0;
+        }
     </style>
 </head>
 
@@ -169,25 +227,72 @@
                 <input type="text" name="resident_registration_number" id="resident_registration_number" maxlength="14"
                     placeholder="900101-1234567" value="123456-1234567" required>
             </div>
+            <div class="form-group birthday-gender-age">
+                <span>생년월일</span>
+                <input type="date" class="birthday" readonly>
+                <select class="gender">
+                    <option>남자</option>
+                    <option>여자</option>
+                </select>
+                <span>나이</span>
+                <input type="input" class="age" readonly>
+            </div>
+            <div class="form-group">
+                <label>만성 질환</label>
+                <div class="chronic_diseases_list">
+                    <input type="text" name="chronic_diseases" id="chronic_diseases" maxlength="11" value="당뇨"
+                        placeholder="만성 질환" required>
+                    <!-- <div class="custom-select">
+                        <div class="selected">옵션을 선택하세요</div>
+                        <ul class="options">
+                            <li data-value="고혈압">고혈압</li>
+                            <li data-value="당뇨병">당뇨병</li>
+                            <li data-value="정신 및 행동장애(간질 포함)">정신 및 행동장애(간질 포함)</li>
+                            <li data-value="호흡기질환">호흡기질환</li>
+                            <li data-value="심장질환">심장질환</li>
+                            <li data-value="뇌혈관질환">뇌혈관질환</li>
+                            <li data-value="신경계질환">신경계질환</li>
+                            <li data-value="암">암</li>
+                            <li data-value="갑상선의 장애">갑상선의 장애</li>
+                            <li data-value="간의 질환(만성 바이러스 간염 포함)">간의 질환(만성 바이러스 간염 포함)</li>
+                            <li data-value="만성신부전증">만성신부전증</li>
+                            <li data-value="디스크">디스크</li>
+                            <li data-value="고지혈">고지혈</li>
+                            <li data-value="관절염">관절염</li>
+                            <li data-value="뇌경색">뇌경색</li>
+                            <li data-value="기타">기타</li>
+                        </ul>
+                    </div> -->
+                        
+                </div>
+            </div>
+            <div class="form-group">
+                <label>알러지</label>
+                <input type="text" name="allergies" id="allergies" maxlength="11" value="각갑류 알러지"
+                    placeholder="알러지" required>
+            </div>
             <div class="agreement-section">
                 <div class="agreement-item all-agree">
                     <input type="checkbox" id="checkAll"> 전체 동의하기
                 </div>
                 <div class="agreement-item">
-                    <input type="checkbox" class="agree-item" id="is_terms_agreed" name="is_terms_agreed" checked
-                        required>
+                    <input type="checkbox" class="agree-item" id="is_terms_agreed" name="is_terms_agreed">
                     <span>이용약관 동의<span class="required">(필수)</span></span>
                     <span class="item-open">보기</span>
                 </div>
                 <div class="agreement-item">
-                    <input type="checkbox" class="agree-item" id="is_privacy_agreed" name="is_privacy_agreed" checked
-                        required>
+                    <input type="checkbox" class="agree-item" id="is_privacy_agreed" name="is_privacy_agreed">
                     <span>개인정보 처리방침 동의<span class="required">(필수)</span></span>
                     <span class="item-open">보기</span>
                 </div>
                 <div class="agreement-item">
                     <input type="checkbox" class="agree-item" id="is_marketing_agreed" name="is_marketing_agreed">
                     <span>마케팅 정보 수신 동의(선택)</span>
+                    <span class="item-open">보기</span>
+                </div>
+                <div class="agreement-item">
+                    <input type="checkbox" class="agree-item" id="is_alarm_agreed" name="is_alarm_agreed">
+                    <span>약 복용 알람 정보 수신 동의(선택)</span>
                     <span class="item-open">보기</span>
                 </div>
             </div>
@@ -199,6 +304,26 @@
     </div>
 
     <script>
+        // const selected = document.querySelector('.selected');
+        // const options = document.querySelector('.options');
+
+        // selected.addEventListener('click', () => {
+        //     options.style.display = options.style.display === 'block' ? 'none' : 'block';
+        // });
+
+        // options.addEventListener('click', (e) => {
+        //     if (e.target.tagName === 'LI') {
+        //         selected.textContent = e.target.textContent;
+                
+        //         if(e.target.textContent=='기타'){
+        //             document.getElementById('chronic_diseases').value = ''
+        //         }else{
+        //             document.getElementById('chronic_diseases').value = e.target.textContent;
+        //         }
+        //         options.style.display = 'none';
+        //     }
+        // });
+
         // 1. 인증번호 발송 함수
         async function sendCode() {
             const userId = document.getElementById('id').value;
@@ -229,7 +354,7 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ id: userId })
+                    body: JSON.stringify({ email: userId })
                 });
 
                 if (!response1.ok) {
@@ -259,7 +384,7 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ id: userId, code: code })
+                    body: JSON.stringify({ email: userId, code: code })
                 });
 
                 // 인증 틀림 (정상 처리)
@@ -276,8 +401,8 @@
                 }
 
                 const result = await response.json();
-                alert(result.message || result.detail);
-                document.querySelector("#code").nextElementSibling.textContent = '인증 완료'
+                alert(result.detail);
+                document.querySelector(".btn-verify").nextElementSibling.textContent = '인증 완료'
 
             } catch (e) {
                 alert("발송 실패");
@@ -316,6 +441,18 @@
                 alert("주민번호를 입력해주세요.")
                 return;
             }
+            if (document.querySelector('.birthday').value == '') {
+                alert("주민번호 형식이 잘못 되었습니다.")
+                return;
+            }
+            if (document.getElementById('password').value != document.getElementById('password_check').value) {
+                alert("비밀번호가 다릅니다..")
+                return;
+            }
+            if(document.querySelector(".btn-verify").value!='인증 완료'){
+                alert("이메일 인증해주시기 바랍니다.")
+                return;
+            }
 
             if (!document.getElementById('is_terms_agreed').checked ||
                 !document.getElementById('is_privacy_agreed').checked) {
@@ -330,9 +467,12 @@
                 nickname: document.getElementById('nickname').value,
                 phone_number: document.getElementById('phone_number').value,
                 resident_registration_number: document.getElementById('resident_registration_number').value,
+                chronic_diseases: document.getElementById('chronic_diseases').value,
+                allergies: document.getElementById('allergies').value,
                 is_terms_agreed: document.getElementById('is_terms_agreed').checked,
                 is_privacy_agreed: document.getElementById('is_privacy_agreed').checked,
                 is_marketing_agreed: document.getElementById('is_marketing_agreed').checked,
+                is_alarm_agreed: document.getElementById('is_alarm_agreed').checked,
             }
 
             try {
@@ -373,6 +513,31 @@
             }
         })
 
+        document.querySelector("#resident_registration_number").addEventListener("change",()=>{
+            vs = document.getElementById("resident_registration_number").value.split("")
+            document.querySelector(".birthday").value = "19"+vs[0]+vs[1]+"-"+vs[2]+vs[3]+"-"+vs[4]+vs[5]
+
+            document.querySelector(".gender").value = parseInt(vs[7])%2==0?'여자':'남자'
+
+            const today = new Date();
+            const birthDate = new Date(document.querySelector(".birthday").value);
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const monthDiff = today.getMonth() - birthDate.getMonth();
+            
+            // 생일이 지나지 않았으면 1살 뺌
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            document.querySelector(".age").value = age
+        })
+
+        document.getElementById("checkAll").addEventListener("click",(e)=>{
+            document.querySelectorAll(".agree-item").forEach(el=>{
+                el.checked = e.target.checked
+            })
+        })
+
+        
     </script>
 </body>
 

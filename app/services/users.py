@@ -7,7 +7,7 @@ from starlette import status
 from tortoise.transactions import in_transaction
 
 from app.core import config
-from app.dtos.users import LoginRequest, SignUpRequest, UserUpdateRequest
+from app.dtos.users import LoginRequest, SignUpRequest, UserUpdateRequest, SignUpResponse
 from app.models.user import User
 from app.repositories.user_repository import UserRepository
 from app.utils.common import normalize_phone_number, redis_client
@@ -48,7 +48,7 @@ class UserManageService:
 
         # Pydantic → dict 변환
         user_data = data.model_dump()
-
+        
         # 데이터 가공
         user_data["phone_number"] = normalized_phone
         user_data["password"] = hash_password(data.password)

@@ -21,9 +21,12 @@ class SignUpRequest(BaseModel):
     nickname: Annotated[str, Field(max_length=20)]
     phone_number: Annotated[str, AfterValidator(validate_phone_number)]
     resident_registration_number: Annotated[str, AfterValidator(validate_resident_registration_number)]
+    chronic_diseases: Annotated[str, Field(255)]
+    allergies: Annotated[str, Field(255)]
     is_terms_agreed: bool
     is_privacy_agreed: bool
-    is_marketing_agreed: bool = False
+    is_marketing_agreed: bool
+    is_alarm_agreed:bool
 
 
 # 회원가입 응답
