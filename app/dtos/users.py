@@ -18,7 +18,7 @@ class SignUpRequest(BaseModel):
     password: Annotated[str, Field(min_length=8), AfterValidator(validate_password)]
     name: Annotated[str, Field(max_length=20)]
     nickname: Annotated[str, Field(max_length=20)]
-    birthday:Annotated[str, Field(max_length=10)]
+    birthday: Annotated[str, Field(max_length=10)]
     gender: Annotated[str, Field(max_length=10)]
     phone_number: Annotated[str, AfterValidator(validate_phone_number)]
     chronic_diseases: Annotated[str, Field(max_length=255)]
