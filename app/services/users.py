@@ -46,8 +46,6 @@ class UserManageService:
         normalized_phone = normalize_phone_number(data.phone_number)
         await self.check_phone_number_exists(normalized_phone)
 
-        await self.check_resident_registration_number_exists(data.resident_registration_number)
-
         # Pydantic → dict 변환
         user_data = data.model_dump()
 
@@ -110,10 +108,6 @@ class UserManageService:
     async def check_phone_number_exists(self, phone_number: str) -> None:
         if await self.user_repo.exists_by_phone_number(phone_number):
             raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="이미 사용중인 휴대폰 번호입니다.")
-
-    async def check_resident_registration_number_exists(self, resident_registration_number: str) -> None:
-        if await self.user_repo.exists_by_resident_registration_number(resident_registration_number):
-            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="이미 등록된 주민번호입니다.")
 
     async def update_user(self, user: User, data: UserUpdateRequest) -> User:
         update_data = data.model_dump(exclude_unset=True)

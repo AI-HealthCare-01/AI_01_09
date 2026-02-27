@@ -31,8 +31,6 @@ class UserRepository:
         del data["chronic_diseases"]
         del data["allergies"]
 
-        print(data)
-
         # dict 언패킹(**)을 사용하여 간단하게 생성
         user: User = await self._model.create(**data)  # type: ignore[assignment]
 
