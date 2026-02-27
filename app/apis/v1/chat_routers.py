@@ -2,6 +2,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends
 from fastapi.responses import ORJSONResponse as Response
+from pydantic import BaseModel
 
 from app.dependencies.security import get_request_user
 from app.dtos.chat import ChatRequest
@@ -11,14 +12,17 @@ from app.services.chat import ChatService
 chat_router = APIRouter(prefix="/chat", tags=["chat"])
 
 
+class ChatMessageRequest(BaseModel):
+    message: str
+    session_id: str | None = None
+
+
 @chat_router.post("/message", response_model=dict)
 async def send_chat_message(
-    user: Annotated[User, Depends(get_request_user)],
-    message: str,
-    session_id: str | None = None,
+    request: ChatMessageRequest,
 ) -> Response:
     """
-    [CHAT] 챗봇 메시지 전송(세션 유지).
+    [CHAT] 챗봇 메시지 전송(세션 유지) - 비로그인 상태에서도 사용 가능.
     """
     chat_service = ChatService()
 
@@ -26,7 +30,9 @@ async def send_chat_message(
     from app.dtos.chat import ChatMessage
 
     chat_request = ChatRequest(
-        user_id=user.id, session_id=session_id, messages=[ChatMessage(role="user", content=message)]
+        user_id="guest",  # 비로그인 사용자
+        session_id=request.session_id,
+        messages=[ChatMessage(role="user", content=request.message)],
     )
 
     # 챗봇 처리

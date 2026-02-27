@@ -57,15 +57,39 @@
   font-weight: 600;
 }
 
+.chatbot-header-buttons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.chatbot-tts,
+.chatbot-end,
 .chatbot-close {
   background: none;
   border: none;
   color: white;
-  font-size: 24px;
+  font-size: 20px;
   cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.chatbot-tts:hover,
+.chatbot-end:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.chatbot-close {
+  font-size: 24px;
   padding: 0;
   width: 30px;
   height: 30px;
+}
+
+.chatbot-close:hover {
+  background: rgba(255, 255, 255, 0.2);
 }
 
 /* 챗봇 메시지 영역 */
