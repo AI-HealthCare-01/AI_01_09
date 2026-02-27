@@ -6,7 +6,6 @@ from app.dtos.base import BaseSerializerModel
 from app.validators.user_validators import (
     validate_password,
     validate_phone_number,
-    validate_resident_registration_number,
 )
 
 
@@ -19,10 +18,12 @@ class SignUpRequest(BaseModel):
     password: Annotated[str, Field(min_length=8), AfterValidator(validate_password)]
     name: Annotated[str, Field(max_length=20)]
     nickname: Annotated[str, Field(max_length=20)]
+    birthday:Annotated[str, Field(max_length=10)]
+    gender: Annotated[str, Field(max_length=10)]
     phone_number: Annotated[str, AfterValidator(validate_phone_number)]
-    resident_registration_number: Annotated[str, AfterValidator(validate_resident_registration_number)]
-    chronic_diseases: Annotated[str, Field(255)]
-    allergies: Annotated[str, Field(255)]
+    chronic_diseases: Annotated[str, Field(max_length=255)]
+    allergies: Annotated[str, Field(max_length=255)]
+    alarm_tf: bool
     is_terms_agreed: bool
     is_privacy_agreed: bool
     is_marketing_agreed: bool
@@ -96,9 +97,11 @@ class UserMeResponse(BaseSerializerModel):
     nickname: str
     name: str
     phone_number: str
-    resident_registration_number: str
+    birthday: str
+    gender: str
     chronic_diseases: list[str]
     allergies: list[str]
+    alarm_tf: bool
     is_terms_agreed: bool
     is_privacy_agreed: bool
     is_marketing_agreed: bool
@@ -112,8 +115,11 @@ class UserMeResponse(BaseSerializerModel):
 class UserUpdateRequest(BaseModel):
     nickname: Annotated[str | None, Field(None, min_length=2, max_length=40)]
     phone_number: Annotated[str | None, AfterValidator(validate_phone_number)] = None
-    chronic_diseases: Annotated[str, Field(255)]
-    allergies: Annotated[str, Field(255)]
+    chronic_diseases: Annotated[str, Field(max_length=255)]
+    allergies: Annotated[str, Field(max_length=255)]
+    birthday: Annotated[str, Field(max_length=10)]
+    gender: Annotated[str, Field(max_length=10)]
+    alarm_tf: bool
     is_marketing_agreed: bool
     is_alarm_agreed: bool
 

@@ -26,6 +26,12 @@
             margin-bottom: 15px;
         }
 
+        .form-group .head {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
         label {
             display: block;
             margin-bottom: 5px;
@@ -118,49 +124,44 @@
             cursor: pointer;
             font-weight: 500;
         }
-        .result-btn{
+
+        .result-btn {
             display: flex;
             gap: 10px;
         }
-        .birthday-gender-age{
+
+        .birthday-gender-age {
             display: flex;
             gap: 5px;
-            align-content: center;
+            align-items: center;
         }
-        .birthday-gender-age span{
+
+        .birthday-gender-age span {
             flex-shrink: 0;
         }
-        .birthday-gender-age input{
-            height: 24px;
+
+        .birthday-gender-age input {}
+
+        .birthday-gender-age select {
+            height: 38px;
         }
-        .birthday-gender-age select{
-            height: 24px;
-            margin: 0 10px;
-        }
-        .birthday-gender-age .gender{
-            width: 50px;
-        }
-        .birthday-gender-age .age{
-            width: 50px;
-        }
-        .chronic_diseases_list{
-            display: flex;
-        }
-        .chronic_diseases_list .custom-select {
+
+        .custom-select {
             position: relative;
             width: 200px;
             font-size: 14px;
+            margin-left: 10px;
         }
 
-        .chronic_diseases_list .selected {
-            height: 40px;
-            line-height: 40px;
+        .selected {
+            height: 28px;
+            line-height: 25px;
             padding: 0 10px;
             border: 1px solid #ccc;
             cursor: pointer;
         }
 
-        .chronic_diseases_list .options {
+        .custom-select .options {
             display: none;
             position: absolute;
             width: 100%;
@@ -171,14 +172,46 @@
             padding: 0px;
         }
 
-        .chronic_diseases_list .options li {
+        .custom-select .options li {
             padding: 10px;
-            cursor: pointer;
-            list-style:none;
+            list-style: none;
+            padding-top: 0px;
         }
 
-        .chronic_diseases_list .options li:hover {
+        .custom-select .options li ul {
+            padding-left: 0px;
+        }
+
+        .custom-select .options li ul li {
+            padding: 5px;
+            cursor: pointer;
+        }
+
+        .custom-select .options li ul li::before {
+            content: "- ";
+            /* 점 대신 하이픈 추가 */
+            margin-right: 5px;
+            /* 하이픈과 텍스트 사이 간격 */
+        }
+
+        .custom-select .options li ul li:hover {
             background: #f0f0f0;
+        }
+
+        .alarm_tf {
+            display: flex;
+            align-items: center;
+        }
+
+        .alarm_tf input {
+            width: 13px;
+            height: 100%;
+        }
+
+        .alarm_tf label {
+            margin: 0px;
+            margin-bottom: 2px;
+            padding: 0px;
         }
     </style>
 </head>
@@ -223,54 +256,80 @@
                 <input type="text" name="phone_number" id="phone_number" maxlength="11" value="01012341234"
                     placeholder="01012345678" required>
             </div>
-            <div class="form-group">
-                <label>주민번호</label>
-                <input type="text" name="resident_registration_number" id="resident_registration_number" maxlength="14"
-                    placeholder="900101-1234567" value="123456-1234567" required>
-            </div>
             <div class="form-group birthday-gender-age">
                 <span>생년월일</span>
-                <input type="date" class="birthday" readonly>
-                <select class="gender">
+                <input type="date" class="birthday" id="birthday">
+                <select class="gender" id="gender">
+                    <option disabled selected style="display: none;">성별</option>
                     <option>남자</option>
                     <option>여자</option>
                 </select>
-                <span>나이</span>
-                <input type="input" class="age" readonly>
             </div>
             <div class="form-group">
-                <label>만성 질환</label>
-                <div class="chronic_diseases_list">
-                    <input type="text" name="chronic_diseases" id="chronic_diseases" maxlength="11" value="당뇨"
-                        placeholder="만성 질환" required>
-                    <!-- <div class="custom-select">
-                        <div class="selected">옵션을 선택하세요</div>
+                <div class="head">
+                    <label>만성 질환</label>
+                    <div class="custom-select">
+                        <div class="selected">만성 질환 목록</div>
                         <ul class="options">
-                            <li data-value="고혈압">고혈압</li>
-                            <li data-value="당뇨병">당뇨병</li>
-                            <li data-value="정신 및 행동장애(간질 포함)">정신 및 행동장애(간질 포함)</li>
-                            <li data-value="호흡기질환">호흡기질환</li>
-                            <li data-value="심장질환">심장질환</li>
-                            <li data-value="뇌혈관질환">뇌혈관질환</li>
-                            <li data-value="신경계질환">신경계질환</li>
-                            <li data-value="암">암</li>
-                            <li data-value="갑상선의 장애">갑상선의 장애</li>
-                            <li data-value="간의 질환(만성 바이러스 간염 포함)">간의 질환(만성 바이러스 간염 포함)</li>
-                            <li data-value="만성신부전증">만성신부전증</li>
-                            <li data-value="디스크">디스크</li>
-                            <li data-value="고지혈">고지혈</li>
-                            <li data-value="관절염">관절염</li>
-                            <li data-value="뇌경색">뇌경색</li>
-                            <li data-value="기타">기타</li>
+                            <li>
+                                <label>해당 없음</label>
+                                <ul>
+                                    <li>해당 사항 없음</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <label>심혈관질 및 대사 질환</label>
+                                <ul>
+                                    <li>고혈압</li>
+                                    <li>당뇨병</li>
+                                    <li>고지혈</li>
+                                    <li>심긍경색</li>
+                                    <li>뇌졸증</li>
+                                    <li>동맹경화증</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <label>호흡기 및 간 질환</label>
+                                <ul>
+                                    <li>만성 폐쇄성 폐질환</li>
+                                    <li>천식</li>
+                                    <li>만성 간염</li>
+                                    <li>간경병증</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <label>근골격계 및 신경계 질환</label>
+                                <ul>
+                                    <li>관절염</li>
+                                    <li>골다공증</li>
+                                    <li>치매</li>
+                                    <li>통풍</li>
+                                </ul>
+                            </li>
+                            <li>
+                                <label>기타</label>
+                                <ul>
+                                    <li>암</li>
+                                    <li>갑상선 질환</li>
+                                    <li>만성 신부전증</li>
+                                </ul>
+                            </li>
                         </ul>
-                    </div> -->
-                        
+                    </div>
+                </div>
+                <div class="chronic_diseases_list">
+                    <input type="text" name="chronic_diseases" id="chronic_diseases" maxlength="11" value=""
+                        placeholder="만성 질환" required>
                 </div>
             </div>
             <div class="form-group">
                 <label>알러지</label>
-                <input type="text" name="allergies" id="allergies" maxlength="11" value="각갑류 알러지"
-                    placeholder="알러지" required>
+                <input type="text" name="allergies" id="allergies" maxlength="11" value="각갑류 알러지" placeholder="알러지"
+                    required>
+            </div>
+            <div class="form-group alarm_tf">
+                <input type="checkbox">
+                <label>알람 전체 실행</label>
             </div>
             <div class="agreement-section">
                 <div class="agreement-item all-agree">
@@ -305,25 +364,31 @@
     </div>
 
     <script>
-        // const selected = document.querySelector('.selected');
-        // const options = document.querySelector('.options');
+        const selected = document.querySelector('.selected');
+        const options = document.querySelector('.options');
+        const li = document.querySelectorAll(".options li")
 
-        // selected.addEventListener('click', () => {
-        //     options.style.display = options.style.display === 'block' ? 'none' : 'block';
-        // });
+        selected.addEventListener('click', () => {
+            options.style.display = options.style.display === 'block' ? 'none' : 'block';
+        });
 
-        // options.addEventListener('click', (e) => {
-        //     if (e.target.tagName === 'LI') {
-        //         selected.textContent = e.target.textContent;
-                
-        //         if(e.target.textContent=='기타'){
-        //             document.getElementById('chronic_diseases').value = ''
-        //         }else{
-        //             document.getElementById('chronic_diseases').value = e.target.textContent;
-        //         }
-        //         options.style.display = 'none';
-        //     }
-        // });
+
+
+        li.forEach(el => {
+            el.addEventListener('click', (e) => {
+                selected.textContent = e.target.textContent;
+
+                if (e.target.textContent == '해당 사항 없음') {
+                    document.getElementById('chronic_diseases').value = e.target.textContent
+                } else {
+                    document.getElementById('chronic_diseases').value = document.getElementById('chronic_diseases').value.replace("해당 사항 없음", "")
+                    if (!document.getElementById('chronic_diseases').value.includes(e.target.textContent)) {
+                        document.getElementById('chronic_diseases').value += e.target.textContent + ","
+                    }
+                }
+                options.style.display = 'none';
+            });
+        })
 
         // 1. 인증번호 발송 함수
         async function sendCode() {
@@ -341,7 +406,7 @@
                     console.error("API Error:", response.status);
                     alert("에러가 발생했습니다.");
                     return;
-                }else{
+                } else {
                     const result = await response.json();
                     if (result.detail.includes("이미")) {
                         alert(result);
@@ -357,8 +422,6 @@
                     },
                     body: JSON.stringify({ email: userId })
                 });
-
-                
 
                 if (!response1.ok) {
                     console.error("Send Code Error:", response1.status);
@@ -440,19 +503,19 @@
                 alert("전화번호를 입력해주세요.")
                 return;
             }
-            if (document.getElementById('resident_registration_number').value == '') {
-                alert("주민번호를 입력해주세요.")
+            if (document.querySelector('.birthday').value == '') {
+                alert("생년월일 입력해주세요.")
                 return;
             }
-            if (document.querySelector('.birthday').value == '') {
-                alert("주민번호 형식이 잘못 되었습니다.")
+            if (document.querySelector(".gender").value == '성별') {
+                alert("성별 입력해주세요.")
                 return;
             }
             if (document.getElementById('password').value != document.getElementById('password_check').value) {
                 alert("비밀번호가 다릅니다..")
                 return;
             }
-            if(document.querySelector("#code").nextElementSibling.textContent!='인증 완료'){
+            if (document.querySelector("#code").nextElementSibling.textContent != '인증 완료') {
                 alert("이메일 인증해주시기 바랍니다.")
                 return;
             }
@@ -468,10 +531,12 @@
                 password: document.getElementById('password').value,
                 name: document.getElementById('name').value,
                 nickname: document.getElementById('nickname').value,
+                birthday: document.getElementById('birthday').value,
+                gender: document.getElementById('gender').value,
                 phone_number: document.getElementById('phone_number').value,
-                resident_registration_number: document.getElementById('resident_registration_number').value,
                 chronic_diseases: document.getElementById('chronic_diseases').value,
                 allergies: document.getElementById('allergies').value,
+                alarm_tf: document.querySelector(".alarm_tf input").checked,
                 is_terms_agreed: document.getElementById('is_terms_agreed').checked,
                 is_privacy_agreed: document.getElementById('is_privacy_agreed').checked,
                 is_marketing_agreed: document.getElementById('is_marketing_agreed').checked,
@@ -508,39 +573,21 @@
             }
         });
 
-        document.querySelector(".cancel").addEventListener("click",()=>{
-             if (confirm("정말 취소하시겠습니까??")){
+        document.querySelector(".cancel").addEventListener("click", () => {
+            if (confirm("정말 취소하시겠습니까??")) {
                 location.href = "login"
-            }else{
+            } else {
                 return false;
             }
         })
 
-        document.querySelector("#resident_registration_number").addEventListener("change",()=>{
-            vs = document.getElementById("resident_registration_number").value.split("")
-            document.querySelector(".birthday").value = "19"+vs[0]+vs[1]+"-"+vs[2]+vs[3]+"-"+vs[4]+vs[5]
-
-            document.querySelector(".gender").value = parseInt(vs[7])%2==0?'여자':'남자'
-
-            const today = new Date();
-            const birthDate = new Date(document.querySelector(".birthday").value);
-            let age = today.getFullYear() - birthDate.getFullYear();
-            const monthDiff = today.getMonth() - birthDate.getMonth();
-            
-            // 생일이 지나지 않았으면 1살 뺌
-            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-                age--;
-            }
-            document.querySelector(".age").value = age
-        })
-
-        document.getElementById("checkAll").addEventListener("click",(e)=>{
-            document.querySelectorAll(".agree-item").forEach(el=>{
+        document.getElementById("checkAll").addEventListener("click", (e) => {
+            document.querySelectorAll(".agree-item").forEach(el => {
                 el.checked = e.target.checked
             })
         })
 
-        
+
     </script>
 </body>
 

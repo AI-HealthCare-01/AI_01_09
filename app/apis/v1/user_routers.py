@@ -18,6 +18,7 @@ async def signup(
     """
     [USER] 회원가입
     """
+    print(request)
     # Service cleanup needed for new SignUpRequest field names (email vs id)
     # Mapping new field names to service
     await user_service.signup(request)
@@ -38,9 +39,11 @@ async def get_me(user: Annotated[User, Depends(get_request_user)]) -> UserMeResp
         nickname=user.nickname,
         name=user.name,
         phone_number=user.phone_number,
-        resident_registration_number=user.resident_registration_number,
+        birthday = user.birthday,
+        gender= user.gender,
         chronic_diseases=[a.disease_name for a in user.chronic_diseases],
         allergies=[d.allergy_name for d in user.allergies],
+        alarm_tf=user.alarm_tf,
         is_terms_agreed=user.is_terms_agreed,
         is_privacy_agreed=user.is_privacy_agreed,
         is_marketing_agreed=user.is_marketing_agreed,

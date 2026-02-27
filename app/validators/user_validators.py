@@ -44,15 +44,3 @@ def validate_phone_number(phone_number: str) -> str:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=text)
 
     return phone_number
-
-
-def validate_resident_registration_number(value: str) -> str:
-    if len(value) != 14:
-        text = "주민번호는 14자리여야 합니다."
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=text)
-
-    if "-" not in value:
-        text = "주민번호 형식이 올바르지 않습니다. (xxxxxx-xxxxxxx)"
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=text)
-
-    return value
