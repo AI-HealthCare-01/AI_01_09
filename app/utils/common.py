@@ -68,7 +68,7 @@ class Email:
             subject="인증 번호",
             recipients=[email],  # type: ignore[list-item]
             body=f"인증 번호는 [{code}] 입니다.",
-            subtype=MessageType.plain
+            subtype=MessageType.plain,
         )  # type: ignore[list-item]
 
         fm = FastMail(conf)
