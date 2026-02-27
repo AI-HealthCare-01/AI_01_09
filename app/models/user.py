@@ -17,6 +17,7 @@ class User(models.Model):
     is_terms_agreed = fields.BooleanField(default=False)  # 약관 동의 여부
     is_privacy_agreed = fields.BooleanField(default=False)  # 개인정보 동의 여부
     is_marketing_agreed = fields.BooleanField(default=False)  # 마케팅 수신 동의
+    is_alarm_agreed = fields.BooleanField(default=False)  # 약 복용 알람 정보 수신 동의(선택)
 
     class Meta:
         table = "users"

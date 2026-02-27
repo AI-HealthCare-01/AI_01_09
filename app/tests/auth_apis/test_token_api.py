@@ -1,4 +1,4 @@
-from httpx import ASGITransport, AsyncClient
+from httpx import ASGITransport, AsyncClient  # type: ignore[import-untyped, import-not-found]
 from starlette import status
 from tortoise.contrib.test import TestCase
 

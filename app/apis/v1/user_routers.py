@@ -1,19 +1,17 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, status
 from fastapi.responses import ORJSONResponse as Response
 
 from app.dependencies.security import get_request_user
-from app.dtos.users import SignUpRequest, SignUpResponse, UserMeResponse, UserUpdateRequest
+from app.dtos.users import ChangePasswordRequest, SignUpRequest, SignUpResponse, UserMeResponse, UserUpdateRequest
 from app.models.user import User
 from app.services.users import UserManageService
-from app.utils.common import Email
-from app.utils.security import create_access_token
 
 user_router = APIRouter(prefix="/users", tags=["users"])
 
 
-@user_router.post("", response_model=SignUpResponse, status_code=status.HTTP_201_CREATED)
+@user_router.post("", response_model=SignUpResponse, status_code=status.HTTP_200_OK)
 async def signup(
     request: SignUpRequest, user_service: Annotated[UserManageService, Depends(UserManageService)]
 ) -> Response:
@@ -26,9 +24,7 @@ async def signup(
 
     # Generate token for response
 
-    access_token = create_access_token(data={"user_id": request.id})
-
-    return Response(content={"id": request.id, "access_token": access_token}, status_code=status.HTTP_201_CREATED)
+    return Response(content={"id": request.id, "detail": "회원가입 성공하셨습니다."}, status_code=status.HTTP_200_OK)
 
 
 @user_router.get("/me", response_model=UserMeResponse)
@@ -36,7 +32,20 @@ async def get_me(user: Annotated[User, Depends(get_request_user)]) -> UserMeResp
     """
     [USER] 내 정보 조회
     """
-    return user
+
+    return UserMeResponse(
+        id=user.id,
+        nickname=user.nickname,
+        name=user.name,
+        phone_number=user.phone_number,
+        resident_registration_number=user.resident_registration_number,
+        chronic_diseases=[a.disease_name for a in user.chronic_diseases],
+        allergies=[d.allergy_name for d in user.allergies],
+        is_terms_agreed=user.is_terms_agreed,
+        is_privacy_agreed=user.is_privacy_agreed,
+        is_marketing_agreed=user.is_marketing_agreed,
+        is_alarm_agreed=user.is_alarm_agreed,
+    )
 
 
 @user_router.patch("/me")
@@ -66,7 +75,7 @@ async def withdraw_me(
 
 
 # 아이디 찾기
-@user_router.get("/find-email", status_code=status.HTTP_200_OK)
+@user_router.get("/find-id", status_code=status.HTTP_200_OK)
 async def find_email(
     name: str, phone_number: str, auth_service: Annotated[UserManageService, Depends(UserManageService)]
 ) -> Response:
@@ -77,20 +86,27 @@ async def find_email(
 # 비밀번호 재설정 (비인증 상태)
 @user_router.post("/reset-password", status_code=status.HTTP_200_OK)
 async def reset_password(
-    data: dict,  # email, code, name, phone_number, new_password
+    data: dict,  # email, name, phone_number, new_password
     auth_service: Annotated[UserManageService, Depends(UserManageService)],
-    email_service: Annotated[Email, Depends(Email)],
 ) -> Response:
-    # 1. 인증 코드 검증
-    is_valid = await email_service.verify_code(data["email"], data["code"])
-    if not is_valid:
-        raise HTTPException(status_code=400, detail="인증 번호가 틀렸거나 만료되었습니다.")
+    # 사용자 정보 검증
+    await auth_service.verify_user_for_reset(email=data["id"], name=data["name"], phone_number=data["phone_number"])
 
-    # 2. 사용자 정보 검증
-    await auth_service.verify_user_for_reset(email=data["email"], name=data["name"], phone_number=data["phone_number"])
+    # 비밀번호 재설정
+    await auth_service.reset_password(data["id"], data["new_password"])
 
-    # 3. 비밀번호 재설정
-    await auth_service.reset_password(data["email"], data["new_password"])
+    return Response(content={"detail": "비밀번호가 성공적으로 변경되었습니다."}, status_code=status.HTTP_200_OK)
+
+
+# 비밀번호 재설정 (인증 상태)
+@user_router.patch("/me/password", status_code=status.HTTP_200_OK)
+async def new_password(
+    data: ChangePasswordRequest,  # old_password, new_password
+    user: Annotated[User, Depends(get_request_user)],
+    auth_service: Annotated[UserManageService, Depends(UserManageService)],
+) -> Response:
+    # 비밀번호 재설정
+    await auth_service.change_password(user, data)
 
     return Response(content={"detail": "비밀번호가 성공적으로 변경되었습니다."}, status_code=status.HTTP_200_OK)
 

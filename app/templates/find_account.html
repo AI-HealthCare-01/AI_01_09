@@ -83,7 +83,6 @@
             flex: 1;
             white-space: nowrap;
             font-size: 0.8em;
-            background-color: #6c757d;
             margin: 0px;
         }
 
@@ -141,27 +140,32 @@
                     <input type="text" id="id_phone" placeholder="01012345678">
                 </div>
                 <button type="button" onclick="handleFindId()">아이디 확인</button>
+                <button onclick="location.href='/login'">로그인하러 가기</button>
             </div>
 
             <div id="idResultBox" class="result-box">
                 <p>가입하신 이메일 아이디입니다.</p>
                 <div id="idResult" class="found-id"></div>
-                <button onclick="location.href='/login.html'">로그인하러 가기</button>
+                <button onclick="location.href='/login'">로그인하러 가기</button>
             </div>
         </div>
 
         <!-- 2. 비밀번호 찾기 탭 -->
         <div id="findPw" class="tab-content">
             <div class="form-group">
-                <label>이메일</label>
+                <label>이메일 (ID)</label>
                 <div class="row">
-                    <input type="email" id="pw_id" placeholder="가입한 이메일 입력">
-                    <button type="button" onclick="sendPwResetCode()">인증 요청</button>
+                    <input type="email" id="pw_id" name="pw_id" required placeholder="example@mail.com"
+                        value="ejrtn153@naver.com">
+                    <button type="button" class="btn-verify" onclick="sendCode()">인증 요청</button>
                 </div>
             </div>
             <div class="form-group">
                 <label>인증번호</label>
-                <input type="text" id="pw_code" placeholder="6자리 번호">
+                <div class="row">
+                    <input type="text" id="pw_code" name="pw_code" required placeholder="6자리 번호 입력">
+                    <button type="button" class="btn-verify" onclick="checkCode()">인증 확인</button>
+                </div>
             </div>
             <div class="form-group">
                 <label>이름</label>
@@ -177,6 +181,7 @@
                 <input type="password" id="pw_new" placeholder="새로운 비밀번호 입력">
             </div>
             <button type="button" onclick="handleResetPw()">비밀번호 변경하기</button>
+            <button onclick="location.href='/login'">로그인하러 가기</button>
         </div>
     </div>
 
@@ -202,13 +207,13 @@
 
             try {
                 // GET 요청으로 쿼리 파라미터 전달
-                const response = await fetch(`/api/v1/users/find-id?name=${name}&phone_number=${phone}`);
+                const response = await fetch(`/api/v1/users/find-id?name=${encodeURIComponent(name)}&phone_number=${encodeURIComponent(phone)}`);
                 const result = await response.json();
 
-                if (result.id) {
+                if (result.email) {
                     document.getElementById('idFormArea').style.display = 'none';
                     document.getElementById('idResultBox').style.display = 'block';
-                    document.getElementById('idResult').innerText = result.id;
+                    document.getElementById('idResult').innerText = result.email;
                 } else {
                     alert("일치하는 회원 정보가 없습니다.");
                 }
@@ -217,19 +222,86 @@
             }
         }
 
-        // 비밀번호 찾기 - 인증번호 발송
-        async function sendPwResetCode() {
+        // 1. 인증번호 발송 함수
+        async function sendCode() {
             const userId = document.getElementById('pw_id').value;
             if (!userId) return alert("이메일을 입력해주세요.");
 
             try {
-                const response = await fetch('/api/v1/email/send-code', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id: userId })
+                const response = await fetch(
+                    `/api/v1/users/id-check?id=${encodeURIComponent(userId)}`, {
+                    method: 'GET'
                 });
+
+                // 다른 HTTP 에러만 콘솔 출력
+                if (!response.ok) {
+                    console.error("API Error:", response.status);
+                    alert("에러가 발생했습니다.");
+                    return;
+                }else{
+                    const result = await response.json();
+                    if (!result.detail.includes("이미")) {
+                        alert(result.detail);
+                        return;
+                    }
+                }
+
+                // 정상일 때 인증코드 발송
+                const response1 = await fetch('/api/v1/common/send-code', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email: userId })
+                });
+
+                if (!response1.ok) {
+                    console.error("Send Code Error:", response1.status);
+                    alert("인증코드 발송 실패");
+                    return;
+                }
+
+                const result1 = await response1.json();
+                alert(result1.message);
+
+            } catch (e) {
+                alert("발송 실패");
+            }
+        }
+        async function checkCode() {
+            const userId = document.getElementById('pw_id').value;
+            if (!userId) return alert("이메일을 입력해주세요.");
+
+            const code = document.getElementById('pw_code').value;
+            if (!code) return alert("인증번호를 입력해주세요.");
+
+            try {
+                // 정상일 때 인증코드 확인
+                const response = await fetch('/api/v1/common/verify-code', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email: userId, code: code })
+                });
+
+                // 인증 틀림 (정상 처리)
+                if (response.status === 400) {
+                    const result = await response.json();
+                    alert(result.detail);
+                    return;
+                }
+
+                if (!response.ok) {
+                    console.error("API Error:", response.status);
+                    alert("에러가 발생했습니다.");
+                    return;
+                }
+
                 const result = await response.json();
-                alert(result.message || result.detail);
+                alert(result.message);
+                document.querySelector("#pw_code").nextElementSibling.textContent = '인증 완료'
+
             } catch (e) {
                 alert("발송 실패");
             }
@@ -239,13 +311,16 @@
         async function handleResetPw() {
             const data = {
                 id: document.getElementById('pw_id').value,
-                code: document.getElementById('pw_code').value,
                 name: document.getElementById('pw_name').value,
                 phone_number: document.getElementById('pw_phone').value,
                 new_password: document.getElementById('pw_new').value
             };
 
             if (Object.values(data).some(v => !v)) return alert("모든 항목을 입력해주세요.");
+
+            if(document.querySelector("#pw_code").nextElementSibling.textContent != '인증 완료'){
+                alert("이메일 인증 해주세요.")
+            }
 
             try {
                 const response = await fetch('/api/v1/users/reset-password', {

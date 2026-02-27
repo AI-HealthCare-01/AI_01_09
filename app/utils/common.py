@@ -11,7 +11,7 @@ redis_client = redis.from_url("redis://172.17.0.1:6379", decode_responses=True)
 
 conf = ConnectionConfig(
     MAIL_USERNAME=config.SMTP_USER,  # 네이버 이메일 주소 전체
-    MAIL_PASSWORD=config.SMTP_PASSWORD,  # 16자리 앱 비밀번호
+    MAIL_PASSWORD=config.SMTP_PASSWORD,  # type: ignore[arg-type]
     MAIL_FROM=config.SMTP_USER,  # 반드시 네이버 메일 주소와 일치해야 함
     MAIL_PORT=config.SMTP_PORT,  # 네이버 SMTP SSL 포트
     MAIL_SERVER=config.SMTP_HOST,  # 네이버 SMTP 서버 주소
@@ -65,8 +65,11 @@ class Email:
 
         # 이메일 발송
         message = MessageSchema(
-            subject="인증 번호", recipients=[email], body=f"인증 번호는 [{code}] 입니다.", subtype=MessageType.plain
-        )
+            subject="인증 번호",
+            recipients=[email],  # type: ignore[list-item]
+            body=f"인증 번호는 [{code}] 입니다.",
+            subtype=MessageType.plain,
+        )  # type: ignore[list-item]
 
         fm = FastMail(conf)
 

@@ -1,3 +1,5 @@
+from app.models.allergy import Allergy
+from app.models.chronic_disease import ChronicDisease
 from app.models.user import User
 
 
@@ -8,6 +10,8 @@ class UserRepository:
 
     def __init__(self):
         self._model = User
+        self._allergy = Allergy
+        self._chronic_disease = ChronicDisease
 
     # 회원가입
     async def create_user(self, data: dict) -> User:
@@ -20,8 +24,24 @@ class UserRepository:
         Returns:
             User: 생성된 사용자 객체
         """
+
+        allergies = data["allergies"]
+        chronic_diseases = data["chronic_diseases"]
+
+        del data["chronic_diseases"]
+        del data["allergies"]
+
+        print(data)
+
         # dict 언패킹(**)을 사용하여 간단하게 생성
         user: User = await self._model.create(**data)  # type: ignore[assignment]
+
+        if allergies:
+            await self._allergy.create(allergy_name=allergies, user=user)  # user 객체 전달
+
+        if chronic_diseases:
+            await self._chronic_disease.create(disease_name=chronic_diseases, user=user)  # user 객체 전달
+
         return user
 
     # 이메일 찾기
@@ -80,8 +100,8 @@ class UserRepository:
         Returns:
             User | None: 사용자 객체 또는 없음
         """
-        user: User | None = await self._model.get_or_none(id=id)  # type: ignore[assignment]
-        return user
+        user = await self._model.filter(id=id).prefetch_related("allergies", "chronic_diseases").first()
+        return user  # type: ignore[no-any-return]
 
     # 전화번호 중복 확인
     async def exists_by_phone_number(self, phone_number: str) -> bool:
