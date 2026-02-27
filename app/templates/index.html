@@ -20,8 +20,60 @@ body { height: 100vh; background: #f7f7f7; }
   padding: 0 20px;
 }
 .header-left { font-size: 20px; font-weight: bold; }
-.header-right { display: flex; align-items: center; gap: 10px; }
+.header-right { display: flex; align-items: center; gap: 10px; position: relative; }
 .search { border: 1px solid #aaa; border-radius: 20px; padding: 4px 10px; }
+
+/* 사용자 메뉴 드롭다운 */
+.user-menu {
+  position: relative;
+}
+
+.user-menu-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 8px;
+}
+
+.user-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 8px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  min-width: 150px;
+  z-index: 1000;
+}
+
+.user-dropdown.show {
+  display: block;
+}
+
+.user-dropdown a {
+  display: block;
+  padding: 12px 16px;
+  color: #333;
+  text-decoration: none;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.user-dropdown a:hover {
+  background: #f5f5f5;
+}
+
+.user-dropdown a:first-child {
+  border-radius: 8px 8px 0 0;
+}
+
+.user-dropdown a:last-child {
+  border-radius: 0 0 8px 8px;
+}
 
 /* ===== LAYOUT ===== */
 .container {
@@ -143,7 +195,14 @@ body { height: 100vh; background: #f7f7f7; }
     <input class="search" placeholder="search">
     <button>Button</button>
     <button>➕</button>
-    <button>👤</button>
+    <div class="user-menu">
+      <button class="user-menu-btn" id="user-menu-btn">👤</button>
+      <div class="user-dropdown" id="user-dropdown">
+        <a href="/signup">회원가입</a>
+        <a href="/login">로그인</a>
+        <a href="/mypage">마이페이지</a>
+      </div>
+    </div>
   </div>
 </header>
 
@@ -346,6 +405,20 @@ body { height: 100vh; background: #f7f7f7; }
 
 <script src="/static/chatbot.js"></script>
 <script>
+    // 사용자 메뉴 드롭다운 토글
+    document.getElementById('user-menu-btn').addEventListener('click', function(e) {
+        e.stopPropagation();
+        document.getElementById('user-dropdown').classList.toggle('show');
+    });
+
+    // 외부 클릭 시 드롭다운 닫기
+    document.addEventListener('click', function(e) {
+        const dropdown = document.getElementById('user-dropdown');
+        if (dropdown.classList.contains('show')) {
+            dropdown.classList.remove('show');
+        }
+    });
+
     document.querySelector(".dashboard-btn").addEventListener("click",()=>{
         document.querySelector(".dashboard").classList.add("open")
         document.querySelector(".guide").classList.remove("open")
