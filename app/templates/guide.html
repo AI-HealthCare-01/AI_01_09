@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud9 Care - 생활 안내 가이드</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700&display=swap');
+        body { font-family: 'Pretendard', sans-serif; }
+        .glassmorphism {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-indigo-50 min-h-screen text-gray-800 flex flex-col items-center">
+    <!-- Header -->
+    <header class="w-full max-w-7xl mx-auto px-6 py-4 flex justify-between items-center bg-white shadow-sm mt-4 rounded-xl">
+        <div class="flex items-center gap-3">
+            <span class="text-3xl">⛅</span>
+            <h1 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">Cloud9 Care</h1>
+            <span class="text-xl px-4 text-gray-500 font-semibold border-l-2 ml-2">생활 안내 가이드</span>
+        </div>
+        <div class="flex items-center gap-4">
+            <div class="relative">
+                <input type="text" placeholder="search" class="pl-10 pr-4 py-2 border rounded-full focus:outline-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-gray-50">
+                <svg class="w-5 h-5 absolute text-gray-400 left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            </div>
+            <button class="px-5 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition shadow-sm font-medium">Button</button>
+            <div class="flex gap-2">
+                <button class="p-2 bg-gray-100 rounded-full hover:bg-gray-200 transition">🔍</button>
+                <button class="p-2 bg-gray-100 rounded-full hover:bg-gray-200 transition">👤</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="w-full max-w-7xl mx-auto px-6 flex flex-col lg:flex-row gap-10 mt-10">
+        <!-- Left Column: Health Profile -->
+        <section class="w-full lg:w-1/2 flex flex-col gap-6">
+            <div class="flex items-center gap-2 mb-2">
+                <span class="text-xl">📈</span>
+                <h2 class="text-lg font-bold px-3 py-1 border border-gray-300 rounded-md bg-white shadow-sm">나의 건강 상태 한 눈에 보기(요약)</h2>
+            </div>
+
+            <!-- Health Information Form container -->
+            <div class="glassmorphism p-8 rounded-2xl flex flex-col gap-6">
+                
+                <!-- Chronic Diseases -->
+                <div>
+                    <h3 class="w-max px-3 py-1 border border-gray-300 rounded-md bg-white font-semibold text-gray-700 mb-3 shadow-sm">나의 만성질환</h3>
+                    <div class="border border-gray-200 bg-white p-4 rounded-xl w-full min-h-[100px]" id="chronic-disease-container">
+                        <ul class="list-disc pl-5 text-gray-600 space-y-1" id="chronic-disease-list">
+                            <!-- JS injected -->
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Allergies -->
+                <div>
+                    <h3 class="w-max px-3 py-1 border border-gray-300 rounded-md bg-white font-semibold text-gray-700 mb-3 shadow-sm">나의 알레르기</h3>
+                    <div class="border border-gray-200 bg-white p-4 rounded-xl w-full min-h-[100px]" id="allergy-container">
+                        <ul class="list-disc pl-5 text-gray-600 space-y-1" id="allergy-list">
+                            <!-- JS injected -->
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Active Medications -->
+                <div>
+                    <h3 class="w-max px-3 py-1 border border-gray-300 rounded-md bg-white font-semibold text-gray-700 mb-3 shadow-sm">나의 복용 중인 약</h3>
+                    <div class="border border-gray-200 bg-white p-4 rounded-xl w-full min-h-[120px]" id="medication-container">
+                        <ul class="space-y-2 text-gray-600" id="medication-list">
+                            <!-- JS Injected -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Divider -->
+        <div class="hidden lg:block w-px bg-gray-300 my-16"></div>
+
+        <!-- Right Column: Recommended Life Guide -->
+        <section class="w-full lg:w-1/2 flex flex-col gap-6">
+            <div class="flex justify-between items-center mb-2">
+                <div class="flex items-center gap-2">
+                    <span class="text-red-500">❤️</span>
+                    <h2 class="text-lg font-bold px-3 py-1 border border-gray-300 rounded-md bg-white shadow-sm">권장 생활 가이드를 안내해드려요!</h2>
+                </div>
+                <!-- TTS Button -->
+                <button id="tts-btn" class="px-4 py-1.5 border border-indigo-300 rounded-md bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold transition shadow-sm flex items-center gap-2">
+                    📢 가이드 읽어주기
+                </button>
+            </div>
+
+            <!-- Guide Content Container -->
+            <div class="glassmorphism p-8 rounded-2xl flex flex-col gap-6 relative">
+                <!-- Update Button Area -->
+                <div class="absolute top-4 right-4 z-10">
+                    <button id="update-btn" class="px-6 py-2 border-2 border-indigo-500 rounded-lg hover:bg-indigo-50 text-indigo-700 font-bold shadow-md transition transform hover:scale-105">
+                        UPDATE
+                    </button>
+                </div>
+
+                <!-- Dynamic Guide Content injected here -->
+                <div id="guide-content-container" class="flex flex-col gap-6 w-full pt-10">
+                   <!-- Loading placeholder -->
+                   <div class="animate-pulse space-y-4">
+                       <div class="h-8 bg-gray-200 rounded w-1/3"></div>
+                       <div class="h-24 bg-gray-200 rounded w-full"></div>
+                   </div>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer / Disclaimer -->
+    <footer class="w-full mt-auto py-8 flex flex-col items-center">
+        <div class="px-6 py-2 border border-gray-300 rounded-md bg-white text-gray-500 text-sm shadow-sm flex items-center gap-2">
+            <span class="text-amber-500 font-bold">⚠️</span> 본 서비스는 의료 진단 또는 처방을 제공하지 않으며, 참고용으로만 사용됩니다.
+        </div>
+        <!-- Right align Chatbot icons (mockup) -->
+        <div class="fixed bottom-6 right-6 flex gap-3">
+            <div class="w-12 h-12 bg-indigo-600 rounded-full flex items-center justify-center text-white text-2xl shadow-lg cursor-pointer hover:bg-indigo-700 transition">💬</div>
+            <div class="w-12 h-12 border-2 border-gray-800 rounded-full flex items-center justify-center text-gray-800 text-2xl bg-white shadow-lg cursor-pointer hover:bg-gray-100 transition">?</div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchInitialData();
+            setupEventListeners();
+        });
+
+        // Global State
+        let currentStatus = {
+            diseases: [],
+            allergies: [],
+            meds: []
+        };
+        let currentGuideContent = "";
+        let isSpeaking = false;
+        let synthesis = window.speechSynthesis;
+        let utterance = null;
+
+        // Fetching Data from Backend
+        async function fetchInitialData() {
+            try {
+                // Mock API Calls based on API Spec
+                // In a real environment, you'd add Headers: { Authorization: `Bearer ${token}` }
+                
+                const [diseasesRes, allergiesRes, medsRes, guidesRes] = await Promise.all([
+                    mockFetch('disease'),
+                    mockFetch('allergy'),
+                    mockFetch('meds'),
+                    mockFetch('guide_generate')
+                ]);
+
+                currentStatus.diseases = diseasesRes.items;
+                currentStatus.allergies = allergiesRes.items;
+                currentStatus.meds = medsRes.items;
+
+                renderHealthProfile();
+                renderGuideContent(guidesRes.generated_content);
+            } catch (error) {
+                console.error("Failed to load data", error);
+            }
+        }
+
+        // Mock Fetch Implementation to match backend response shapes temporarily
+        async function mockFetch(type) {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    switch(type) {
+                        case 'disease': return resolve({ items: [{id: 1, disease_name: '고혈압'}, {id: 2, disease_name: '당뇨'}] });
+                        case 'allergy': return resolve({ items: [{id: 1, allergy_name: '땅콩'}, {id: 2, allergy_name: '갑각류'}] });
+                        case 'meds': return resolve({ items: [
+                            {id: 101, medication_name: '타이레놀', isChecked: true}, 
+                            {id: 102, medication_name: '게보린', isChecked: true}, 
+                            {id: 103, medication_name: '판콜', isChecked: false}
+                        ]});
+                        case 'guide_generate': return resolve({
+                            guide_id: 1,
+                            generated_content: `
+                                <div class="guide-section">
+                                    <h3 class="w-max px-3 py-1 border border-gray-300 rounded-md bg-white font-semibold text-gray-700 mb-3 shadow-sm">고혈압 관리를 위한 식단 가이드</h3>
+                                    <div class="border border-gray-200 bg-white p-4 rounded-xl w-full text-gray-600 leading-relaxed shadow-sm">
+                                        고혈압 관리를 위해 저염 식단을 권장합니다.<br/>칼륨이 풍부한 과일 섭취를 권장합니다.
+                                    </div>
+                                </div>
+                                <div class="guide-section mt-6">
+                                    <h3 class="w-max px-3 py-1 border border-gray-300 rounded-md bg-white font-semibold text-gray-700 mb-3 shadow-sm">당뇨 관리를 위한 운동 권장 사항</h3>
+                                    <div class="border border-gray-200 bg-white p-4 rounded-xl w-full text-gray-600 leading-relaxed shadow-sm">
+                                        규칙적인 유산소 운동과 근력 운동을 병행하면 혈당 조절에 도움을 줄 수 있습니다.<br/>저혈당을 대비하여 간식을 준비하는 것이 좋습니다.
+                                    </div>
+                                </div>
+                                <div class="guide-section mt-6">
+                                    <h3 class="w-max px-3 py-1 border border-gray-300 rounded-md bg-white font-semibold text-gray-700 mb-3 shadow-sm">알러지 유발 식품 회피 가이드 / 복용약 주의사항</h3>
+                                    <div class="border border-red-200 bg-red-50 p-4 rounded-xl w-full text-gray-700 leading-relaxed shadow-sm">
+                                        땅콩과 갑각류 알러지가 있으므로 식품 구매 시 성분표를 확인해주세요.<br/>현재 복용 중인 <strong>타이레놀</strong> 복용 시 간독성으로 인해 음주는 권장하지 않습니다.
+                                    </div>
+                                </div>
+                            `
+                        });
+                        case 'guide_update': return resolve({
+                            guide_id: 1,
+                            generated_content: `
+                                <div class="guide-section text-indigo-800 p-4 bg-indigo-100 rounded-xl mb-6 font-bold shadow-sm">
+                                    ✨ 업데이트 완료! 최근 복약 정보가 반영된 가이드입니다.
+                                </div>
+                                <div class="guide-section">
+                                    <h3 class="w-max px-3 py-1 border border-gray-300 rounded-md bg-white font-semibold text-gray-700 mb-3 shadow-sm">새로운 복약 가이드</h3>
+                                    <div class="border border-indigo-200 bg-white p-4 rounded-xl w-full text-gray-600 leading-relaxed shadow-sm">
+                                        선택된 약들에 대한 상호작용은 발견되지 않았습니다. 권장 용량을 준수하세요.
+                                    </div>
+                                </div>
+                            `
+                        })
+                    }
+                }, 500); // 0.5초 지연
+            });
+        }
+
+        function renderHealthProfile() {
+            // Diseases
+            const diseaseList = document.getElementById('chronic-disease-list');
+            diseaseList.innerHTML = currentStatus.diseases.map(d => `<li>${d.disease_name}</li>`).join('') || '<li class="text-gray-400">등록된 질환이 없습니다.</li>';
+
+            // Allergies
+            const allergyList = document.getElementById('allergy-list');
+            allergyList.innerHTML = currentStatus.allergies.map(a => `<li>${a.allergy_name}</li>`).join('') || '<li class="text-gray-400">등록된 알레르기가 없습니다.</li>';
+
+            // Medications
+            const medList = document.getElementById('medication-list');
+            medList.innerHTML = currentStatus.meds.map(m => `
+                <label class="flex items-center gap-3 cursor-pointer group">
+                    <input type="checkbox" value="${m.id}" class="w-5 h-5 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500 med-checkbox" ${m.isChecked ? 'checked' : ''}>
+                    <span class="group-hover:text-indigo-600 font-medium transition duration-200">${m.medication_name}</span>
+                </label>
+            `).join('') || '<div class="text-gray-400 italic mt-2">등록된 약품이 없습니다.</div>';
+        }
+
+        function renderGuideContent(htmlContent) {
+            currentGuideContent = htmlContent;
+            document.getElementById('guide-content-container').innerHTML = htmlContent;
+        }
+
+        function setupEventListeners() {
+            // Update Button
+            document.getElementById('update-btn').addEventListener('click', async () => {
+                const checkedMeds = Array.from(document.querySelectorAll('.med-checkbox:checked')).map(cb => cb.value);
+                console.log("Updating with checked meds:", checkedMeds);
+                
+                // Visual feedback
+                const btn = document.getElementById('update-btn');
+                const originalText = btn.innerText;
+                btn.innerText = "UPDATING...";
+                btn.disabled = true;
+
+                try {
+                    // Call PATCH /api/v1/guides/{id} (mocking for now)
+                    const res = await mockFetch('guide_update');
+                    renderGuideContent(res.generated_content);
+                } finally {
+                    btn.innerText = originalText;
+                    btn.disabled = false;
+                }
+            });
+
+            // TTS Button
+            document.getElementById('tts-btn').addEventListener('click', toggleTTS);
+        }
+
+        function toggleTTS() {
+            const btn = document.getElementById('tts-btn');
+            
+            if (isSpeaking) {
+                synthesis.cancel();
+                isSpeaking = false;
+                btn.innerHTML = '📢 가이드 읽어주기';
+                btn.classList.remove('bg-indigo-600', 'text-white');
+                btn.classList.add('bg-indigo-50', 'text-indigo-700');
+                return;
+            }
+
+            // Extract text from the DOM elements
+            const container = document.getElementById('guide-content-container');
+            // Remove emojis and get clean text
+            const textToRead = container.innerText.replace(/[^\w\s\uAC00-\uD7A3.,!?]/g, ' ');
+
+            if (!textToRead.trim()) return;
+
+            utterance = new SpeechSynthesisUtterance(textToRead);
+            utterance.lang = 'ko-KR'; 
+            utterance.pitch = 1;
+            utterance.rate = 1; // 조금 더 안정적인 속도
+
+            utterance.onend = () => {
+                isSpeaking = false;
+                btn.innerHTML = '📢 가이드 읽어주기';
+                btn.classList.remove('bg-indigo-600', 'text-white');
+                btn.classList.add('bg-indigo-50', 'text-indigo-700');
+            };
+
+            isSpeaking = true;
+            btn.innerHTML = '⏹ 읽기 중지';
+            btn.classList.remove('bg-indigo-50', 'text-indigo-700');
+            btn.classList.add('bg-indigo-600', 'text-white');
+            
+            synthesis.speak(utterance);
+        }
+    </script>
+</body>
+</html>

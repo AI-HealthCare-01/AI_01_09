@@ -62,4 +62,12 @@ async def read_find_id_pw(request: Request):
     return templates.TemplateResponse("find_account.html", {"request": request})
 
 
+@app.get("/guide", response_class=HTMLResponse)
+async def read_guide(request: Request):
+    """
+    생활 안내 가이드 페이지를 반환합니다.
+    """
+    return templates.TemplateResponse("guide.html", {"request": request})
+
+
 app.include_router(api_v1_router)
