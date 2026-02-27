@@ -10,6 +10,7 @@ from app.services.users import UserManageService
 
 user_router = APIRouter(prefix="/users", tags=["users"])
 
+
 @user_router.post("", response_model=SignUpResponse, status_code=status.HTTP_200_OK)
 async def signup(
     request: SignUpRequest, user_service: Annotated[UserManageService, Depends(UserManageService)]
@@ -23,7 +24,8 @@ async def signup(
 
     # Generate token for response
 
-    return Response(content={"id": request.id, "detail": '회원가입 성공하셨습니다.'}, status_code=status.HTTP_200_OK)
+    return Response(content={"id": request.id, "detail": "회원가입 성공하셨습니다."}, status_code=status.HTTP_200_OK)
+
 
 @user_router.get("/me", response_model=UserMeResponse)
 async def get_me(user: Annotated[User, Depends(get_request_user)]) -> UserMeResponse:
@@ -31,19 +33,20 @@ async def get_me(user: Annotated[User, Depends(get_request_user)]) -> UserMeResp
     [USER] 내 정보 조회
     """
 
-    return {
-        'id': user.id,
-        'nickname': user.nickname,
-        'name': user.name,
-        'phone_number': user.phone_number,
-        'resident_registration_number': user.resident_registration_number,
-        'chronic_diseases': [a.disease_name for a in user.chronic_diseases],
-        'allergies': [d.allergy_name for d in user.allergies],
-        'is_terms_agreed': user.is_terms_agreed,
-        'is_privacy_agreed': user.is_privacy_agreed,
-        'is_marketing_agreed': user.is_marketing_agreed,
-        'is_alarm_agreed': user.is_alarm_agreed,
-    }
+    return UserMeResponse(
+        id=user.id,
+        nickname=user.nickname,
+        name=user.name,
+        phone_number=user.phone_number,
+        resident_registration_number=user.resident_registration_number,
+        chronic_diseases=[a.disease_name for a in user.chronic_diseases],
+        allergies=[d.allergy_name for d in user.allergies],
+        is_terms_agreed=user.is_terms_agreed,
+        is_privacy_agreed=user.is_privacy_agreed,
+        is_marketing_agreed=user.is_marketing_agreed,
+        is_alarm_agreed=user.is_alarm_agreed,
+    )
+
 
 @user_router.patch("/me")
 async def update_me(
@@ -57,6 +60,7 @@ async def update_me(
     await user_service.update_user(user=user, data=update_data)
     return Response(content={"detail": "정보가 수정되었습니다."}, status_code=status.HTTP_200_OK)
 
+
 @user_router.delete("/me")
 async def withdraw_me(
     user: Annotated[User, Depends(get_request_user)],
@@ -69,6 +73,7 @@ async def withdraw_me(
     await user_service.delete_user(id=user.id, password="")  # In real case, password might be checked elsewhere or here
     return Response(content={"detail": "탈퇴 처리가 완료되었습니다."}, status_code=status.HTTP_200_OK)
 
+
 # 아이디 찾기
 @user_router.get("/find-id", status_code=status.HTTP_200_OK)
 async def find_email(
@@ -77,13 +82,13 @@ async def find_email(
     email = await auth_service.find_email(name, phone_number)
     return Response(content={"email": email}, status_code=status.HTTP_200_OK)
 
+
 # 비밀번호 재설정 (비인증 상태)
 @user_router.post("/reset-password", status_code=status.HTTP_200_OK)
 async def reset_password(
     data: dict,  # email, name, phone_number, new_password
     auth_service: Annotated[UserManageService, Depends(UserManageService)],
 ) -> Response:
-
     # 사용자 정보 검증
     await auth_service.verify_user_for_reset(email=data["id"], name=data["name"], phone_number=data["phone_number"])
 
@@ -92,6 +97,7 @@ async def reset_password(
 
     return Response(content={"detail": "비밀번호가 성공적으로 변경되었습니다."}, status_code=status.HTTP_200_OK)
 
+
 # 비밀번호 재설정 (인증 상태)
 @user_router.patch("/me/password", status_code=status.HTTP_200_OK)
 async def new_password(
@@ -99,11 +105,11 @@ async def new_password(
     user: Annotated[User, Depends(get_request_user)],
     auth_service: Annotated[UserManageService, Depends(UserManageService)],
 ) -> Response:
-
     # 비밀번호 재설정
     await auth_service.change_password(user, data)
 
     return Response(content={"detail": "비밀번호가 성공적으로 변경되었습니다."}, status_code=status.HTTP_200_OK)
+
 
 @user_router.get("/id-check")
 async def id_check(id: str, user_service: Annotated[UserManageService, Depends(UserManageService)]):

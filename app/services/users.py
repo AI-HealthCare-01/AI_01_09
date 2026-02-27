@@ -168,7 +168,7 @@ class UserManageService:
     async def logout(self, id: str) -> None:
         await redis_client.delete(f"session:{id}")
 
-    async def find_email(self, name: str, phone_number: str) -> str:
+    async def find_email(self, name: str, phone_number: str) -> str | None:
         """
         이름과 전화번호로 이메일을 찾습니다.
         """
@@ -196,7 +196,7 @@ class UserManageService:
         user.password = hash_password(new_password)
         await user.save()
 
-    async def change_password(self, user: User, data:ChangePasswordRequest) -> None:
+    async def change_password(self, user: User, data: ChangePasswordRequest) -> None:
         """
         비밀번호 변경
         """
@@ -212,7 +212,6 @@ class UserManageService:
         user.password = hash_password(data.new_password)
 
         await user.save()
-        return user
 
     async def social_login(self, data) -> dict:
         """

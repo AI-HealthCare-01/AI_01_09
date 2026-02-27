@@ -25,11 +25,11 @@ class UserRepository:
             User: 생성된 사용자 객체
         """
 
-        allergies = data['allergies']
-        chronic_diseases = data['chronic_diseases']
+        allergies = data["allergies"]
+        chronic_diseases = data["chronic_diseases"]
 
-        del data['chronic_diseases']
-        del data['allergies']
+        del data["chronic_diseases"]
+        del data["allergies"]
 
         print(data)
 
@@ -37,10 +37,10 @@ class UserRepository:
         user: User = await self._model.create(**data)  # type: ignore[assignment]
 
         if allergies:
-            await self._allergy.create(allergy_name=allergies, user=user) # user 객체 전달
+            await self._allergy.create(allergy_name=allergies, user=user)  # user 객체 전달
 
         if chronic_diseases:
-            await self._chronic_disease.create(disease_name=chronic_diseases, user=user) # user 객체 전달
+            await self._chronic_disease.create(disease_name=chronic_diseases, user=user)  # user 객체 전달
 
         return user
 
@@ -101,7 +101,7 @@ class UserRepository:
             User | None: 사용자 객체 또는 없음
         """
         user = await self._model.filter(id=id).prefetch_related("allergies", "chronic_diseases").first()
-        return user
+        return user  # type: ignore[no-any-return]
 
     # 전화번호 중복 확인
     async def exists_by_phone_number(self, phone_number: str) -> bool:

@@ -1,9 +1,9 @@
 from typing import Annotated
 
-import jwt
+import jwt  # type: ignore[import-untyped, import-not-found]
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from jwt.exceptions import InvalidTokenError
+from jwt.exceptions import InvalidTokenError  # type: ignore[import-untyped, import-not-found]
 
 from app.core import config
 from app.models.user import User

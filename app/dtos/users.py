@@ -26,7 +26,7 @@ class SignUpRequest(BaseModel):
     is_terms_agreed: bool
     is_privacy_agreed: bool
     is_marketing_agreed: bool
-    is_alarm_agreed:bool
+    is_alarm_agreed: bool
 
 
 # 회원가입 응답
@@ -102,7 +102,7 @@ class UserMeResponse(BaseSerializerModel):
     is_terms_agreed: bool
     is_privacy_agreed: bool
     is_marketing_agreed: bool
-    is_alarm_agreed:bool
+    is_alarm_agreed: bool
 
     class Config:
         from_attributes = True
@@ -115,7 +115,8 @@ class UserUpdateRequest(BaseModel):
     chronic_diseases: Annotated[str, Field(255)]
     allergies: Annotated[str, Field(255)]
     is_marketing_agreed: bool
-    is_alarm_agreed:bool
+    is_alarm_agreed: bool
+
 
 class ChangePasswordRequest(BaseModel):
     old_password: str = Field(..., description="현재 비밀번호")
