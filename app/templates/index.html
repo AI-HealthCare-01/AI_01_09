@@ -385,7 +385,11 @@ body { height: 100vh; background: #f7f7f7; }
 <div id="chatbot-container" class="chatbot-container">
   <div class="chatbot-header">
     <h3>💬 Cloud9 Care 챗봇</h3>
-    <button id="chatbot-close" class="chatbot-close">×</button>
+    <div class="chatbot-header-buttons">
+      <button id="chatbot-tts" class="chatbot-tts" title="답변 읽어주기">🔊</button>
+      <button id="chatbot-end" class="chatbot-end" title="챗 종료">🗑️</button>
+      <button id="chatbot-close" class="chatbot-close">×</button>
+    </div>
   </div>
   
   <div id="chatbot-messages" class="chatbot-messages">
