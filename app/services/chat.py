@@ -2,9 +2,6 @@ from app.dtos.chat import ChatRequest, ChatResponse
 
 
 class ChatService:
-    # ==========================================
-    # [추가된 기능] 필수 2: 실시간 챗봇
-    # ==========================================
     async def process_chat(self, request: ChatRequest) -> ChatResponse:
         """
         사용자의 질문에 대해 LLM 또는 규칙 기반 챗봇의 응답을 생성합니다.
@@ -16,29 +13,62 @@ class ChatService:
         Returns:
             ChatResponse: 질문 분류, 위험도, 답변 및 멀티모달 에셋 링크
         """
-        # TODO: 이전 대화 기록(request.messages)을 포함하여 LLM 또는 규칙 기반 챗봇 질의응답 처리
-        # 1. 사용자 질문 의도 파악 (질문 분류: 복약/증상/일반/시스템)
-        # 2. 응급 키워드 감지 (호흡곤란, 흉통 등)
-        # 3. LLM 응답 생성 반환
+        from openai import OpenAI
+
+        from app.core import config
+
+        client = OpenAI(api_key=config.OPENAI_API_KEY)
+
         recent_msg = request.messages[-1].content if request.messages else ""
 
-        # dummy classification & risk detection
-        q_type = "일반"
-        r_level = "Normal"
-        if "숨" in recent_msg or "가슴" in recent_msg:
+        # 응급 키워드 감지
+        emergency_keywords = ["숨", "가슴", "호흡곤란", "흉통", "의식", "어지러움", "경련"]
+        is_emergency = any(keyword in recent_msg for keyword in emergency_keywords)
+
+        if is_emergency:
             q_type = "증상"
             r_level = "Emergency"
-            dummy_reply = (
-                "호흡곤란이나 흉통이 느껴지신다면 즉시 가까운 응급실을 방문하시거나 119에 연락하시기 바랍니다."
-            )
+            reply = "호흡곤란이나 흉통이 느껴지신다면 즉시 가까운 응급실을 방문하시거나 119에 연락하시기 바랍니다."
         else:
-            dummy_reply = f"챗봇 응답입니다. (받은 마지막 메시지: {recent_msg})"
+            # OpenAI API 호출
+            system_prompt = """당신은 Cloud9 Care의 건강 상담 AI 비서입니다.
+사용자의 복약 관리, 건강 상담, 증상 문의에 친절하고 정확하게 답변해주세요.
+의학적 진단은 하지 말고, 필요시 전문의와 상담을 권유하세요.
+답변은 간결하고 친근하게 작성해주세요."""
+
+            try:
+                response = client.chat.completions.create(
+                    model="gpt-3.5-turbo",
+                    messages=[
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": recent_msg},
+                    ],
+                    max_tokens=500,
+                    temperature=0.7,
+                )
+
+                reply = response.choices[0].message.content
+
+                # 질문 분류
+                if any(word in recent_msg for word in ["약", "복용", "복약", "처방"]):
+                    q_type = "복약"
+                elif any(word in recent_msg for word in ["증상", "아프", "통증", "아픔"]):
+                    q_type = "증상"
+                else:
+                    q_type = "일반"
+
+                r_level = "Normal"
+
+            except Exception:
+                reply = "죄송합니다. 일시적인 오류가 발생했습니다. 다시 시도해주세요."
+                q_type = "일반"
+                r_level = "Normal"
 
         return ChatResponse(
-            session_id=request.session_id or "new_dummy_session",
+            session_id=request.session_id or "new_session",
             question_type=q_type,
             risk_level=r_level,
-            reply=dummy_reply,
+            reply=reply,
             multimodal_assets=[],
         )
 

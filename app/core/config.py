@@ -45,8 +45,12 @@ class Config(BaseSettings):
     SMTP_PORT: int = 587
     MAIL_STARTTLS: bool = True
     MAIL_SSL_TLS: bool = False
+    MAIL_FROM: str = ""
 
     COOKIE_DOMAIN: str = "localhost"
+
+    # OpenAI API
+    OPENAI_API_KEY: str = ""
 
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
