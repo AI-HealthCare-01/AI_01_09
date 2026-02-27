@@ -1,5 +1,6 @@
 from app.models.allergy import Allergy
 
+
 class AllergyRepository:
     """
     User 모델에 대한 데이터베이스 접근 및 CRUD 연산을 담당하는 레포지토리 클래스입니다.
@@ -7,7 +8,7 @@ class AllergyRepository:
 
     def __init__(self):
         self._model = Allergy
-    
+
     # 사용자에 해당하는 질병 가져오기
     async def get_by_user_id(self, user_id: str) -> Allergy | None:
         """

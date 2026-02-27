@@ -1,15 +1,14 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, status
 from fastapi.responses import ORJSONResponse as Response
 
 from app.dependencies.security import get_request_user
-from app.dtos.users import SignUpRequest, SignUpResponse, UserMeResponse, UserUpdateRequest, ChangePasswordRequest
+from app.dtos.users import ChangePasswordRequest, SignUpRequest, SignUpResponse, UserMeResponse, UserUpdateRequest
 from app.models.user import User
 from app.services.users import UserManageService
 
 user_router = APIRouter(prefix="/users", tags=["users"])
-
 
 @user_router.post("", response_model=SignUpResponse, status_code=status.HTTP_200_OK)
 async def signup(
@@ -25,7 +24,6 @@ async def signup(
     # Generate token for response
 
     return Response(content={"id": request.id, "detail": '회원가입 성공하셨습니다.'}, status_code=status.HTTP_200_OK)
-
 
 @user_router.get("/me", response_model=UserMeResponse)
 async def get_me(user: Annotated[User, Depends(get_request_user)]) -> UserMeResponse:
@@ -47,7 +45,6 @@ async def get_me(user: Annotated[User, Depends(get_request_user)]) -> UserMeResp
         'is_alarm_agreed': user.is_alarm_agreed,
     }
 
-
 @user_router.patch("/me")
 async def update_me(
     update_data: UserUpdateRequest,
@@ -59,7 +56,6 @@ async def update_me(
     """
     await user_service.update_user(user=user, data=update_data)
     return Response(content={"detail": "정보가 수정되었습니다."}, status_code=status.HTTP_200_OK)
-
 
 @user_router.delete("/me")
 async def withdraw_me(
@@ -73,7 +69,6 @@ async def withdraw_me(
     await user_service.delete_user(id=user.id, password="")  # In real case, password might be checked elsewhere or here
     return Response(content={"detail": "탈퇴 처리가 완료되었습니다."}, status_code=status.HTTP_200_OK)
 
-
 # 아이디 찾기
 @user_router.get("/find-id", status_code=status.HTTP_200_OK)
 async def find_email(
@@ -82,14 +77,13 @@ async def find_email(
     email = await auth_service.find_email(name, phone_number)
     return Response(content={"email": email}, status_code=status.HTTP_200_OK)
 
-
 # 비밀번호 재설정 (비인증 상태)
 @user_router.post("/reset-password", status_code=status.HTTP_200_OK)
 async def reset_password(
     data: dict,  # email, name, phone_number, new_password
     auth_service: Annotated[UserManageService, Depends(UserManageService)],
 ) -> Response:
-    
+
     # 사용자 정보 검증
     await auth_service.verify_user_for_reset(email=data["id"], name=data["name"], phone_number=data["phone_number"])
 
@@ -100,12 +94,12 @@ async def reset_password(
 
 # 비밀번호 재설정 (인증 상태)
 @user_router.patch("/me/password", status_code=status.HTTP_200_OK)
-async def reset_password(
+async def new_password(
     data: ChangePasswordRequest,  # old_password, new_password
     user: Annotated[User, Depends(get_request_user)],
     auth_service: Annotated[UserManageService, Depends(UserManageService)],
 ) -> Response:
-    
+
     # 비밀번호 재설정
     await auth_service.change_password(user, data)
 

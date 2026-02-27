@@ -7,13 +7,14 @@ from starlette import status
 from tortoise.transactions import in_transaction
 
 from app.core import config
-from app.dtos.users import LoginRequest, SignUpRequest, UserUpdateRequest, ChangePasswordRequest
+from app.dtos.users import ChangePasswordRequest, LoginRequest, SignUpRequest, UserUpdateRequest
+from app.models.allergy import Allergy
+from app.models.chronic_disease import ChronicDisease
 from app.models.user import User
 from app.repositories.user_repository import UserRepository
 from app.utils.common import normalize_phone_number, redis_client
 from app.utils.security import create_access_token, create_refresh_token, hash_password, verify_password
-from app.models.allergy import Allergy
-from app.models.chronic_disease import ChronicDisease
+
 
 class UserManageService:
     """
@@ -49,7 +50,7 @@ class UserManageService:
 
         # Pydantic → dict 변환
         user_data = data.model_dump()
-        
+
         # 데이터 가공
         user_data["phone_number"] = normalized_phone
         user_data["password"] = hash_password(data.password)
@@ -173,7 +174,7 @@ class UserManageService:
         """
         normalized_phone = normalize_phone_number(phone_number)
         user: User = await self.user_repo.get_by_name_and_phone(name, normalized_phone)  # type: ignore[assignment]
-        
+
         return str(user.id) if user else None
 
     async def verify_user_for_reset(self, email: str, name: str, phone_number: str) -> None:

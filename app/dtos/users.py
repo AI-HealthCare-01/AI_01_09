@@ -8,8 +8,6 @@ from app.validators.user_validators import (
     validate_phone_number,
     validate_resident_registration_number,
 )
-from app.models.allergy import Allergy
-from app.models.chronic_disease import ChronicDisease
 
 
 # 회원가입 요청

@@ -1,6 +1,7 @@
-from app.models.user import User
 from app.models.allergy import Allergy
 from app.models.chronic_disease import ChronicDisease
+from app.models.user import User
+
 
 class UserRepository:
     """
@@ -26,7 +27,7 @@ class UserRepository:
 
         allergies = data['allergies']
         chronic_diseases = data['chronic_diseases']
-        
+
         del data['chronic_diseases']
         del data['allergies']
 
@@ -37,7 +38,7 @@ class UserRepository:
 
         if allergies:
             await self._allergy.create(allergy_name=allergies, user=user) # user 객체 전달
-    
+
         if chronic_diseases:
             await self._chronic_disease.create(disease_name=chronic_diseases, user=user) # user 객체 전달
 

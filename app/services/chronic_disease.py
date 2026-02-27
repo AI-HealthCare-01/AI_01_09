@@ -1,6 +1,7 @@
 from app.models.chronic_disease import ChronicDisease
 from app.repositories.chronic_disease import ChronicDiseaseRepository
 
+
 class ChronicDiseaseManageService:
     """
     User 모델에 대한 데이터베이스 접근 및 CRUD 연산을 담당하는 레포지토리 클래스입니다.
