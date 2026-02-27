@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends
 from fastapi.responses import ORJSONResponse as Response
 
 from app.dependencies.security import get_request_user
-from app.dtos.chat import ChatRequest, ChatResponse
+from app.dtos.chat import ChatRequest
 from app.models.user import User
 from app.services.chat import ChatService
 
@@ -21,24 +21,25 @@ async def send_chat_message(
     [CHAT] 챗봇 메시지 전송(세션 유지).
     """
     chat_service = ChatService()
-    
+
     # ChatRequest 객체 생성
     from app.dtos.chat import ChatMessage
+
     chat_request = ChatRequest(
-        user_id=user.id,
-        session_id=session_id,
-        messages=[ChatMessage(role="user", content=message)]
+        user_id=user.id, session_id=session_id, messages=[ChatMessage(role="user", content=message)]
     )
-    
+
     # 챗봇 처리
     response = await chat_service.process_chat(chat_request)
-    
-    return Response(content={
-        "session_id": response.session_id,
-        "assistant_message": response.reply,
-        "action_type": response.risk_level,
-        "question_type": response.question_type,
-    })
+
+    return Response(
+        content={
+            "session_id": response.session_id,
+            "assistant_message": response.reply,
+            "action_type": response.risk_level,
+            "question_type": response.question_type,
+        }
+    )
 
 
 @chat_router.post("/end")

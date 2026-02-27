@@ -13,7 +13,7 @@ class ChatService:
         Returns:
             ChatResponse: 질문 분류, 위험도, 답변 및 멀티모달 에셋 링크
         """
-        from openai import OpenAI
+        from openai import OpenAI  # type: ignore[import-not-found]
 
         from app.core import config
 
