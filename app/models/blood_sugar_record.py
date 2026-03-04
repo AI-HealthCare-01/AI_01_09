@@ -8,11 +8,10 @@ if TYPE_CHECKING:
 
 
 class GlucoseMeasureType(str, Enum):
-    FASTING = "FASTING"  # 공복
-    BEFORE_MEAL = "BEFORE_MEAL"  # 식전
-    AFTER_MEAL = "AFTER_MEAL"  # 식후
-    BEDTIME = "BEDTIME"  # 취침 전
-    RANDOM = "RANDOM"  # 임의
+    FASTING = "공복"  # 공복
+    AFTER_MEAL = "식후 2시간"  # 식후 2시간
+    BEDTIME = "취침 전"  # 취침 전
+    RANDOM = "임의"  # 임의
 
 
 class BloodSugarRecord(models.Model):
@@ -33,11 +32,9 @@ class BloodSugarRecord(models.Model):
     glucose_mg_dl = fields.FloatField(description="혈당(mg/dL)")
     measure_type = fields.CharEnumField(
         GlucoseMeasureType,
-        default=GlucoseMeasureType.RANDOM,
-        description="측정 상황(공복/식전/식후/취침전/임의)",
+        description="측정 상황(공복/식후 2시간/취침전/임의)",
     )
 
-    recorded_at = fields.DatetimeField(description="실제 측정 시각(사용자 입력/측정 시각)")
     created_at = fields.DatetimeField(auto_now_add=True, description="서버 저장 시각")
 
     class Meta:

@@ -1,7 +1,7 @@
 from typing import cast
 
 from app.models.blood_sugar_record import BloodSugarRecord
-
+from app.dtos.health import BloodSugarRequest
 
 class BloodSugarRecordRepository:
     """
@@ -23,3 +23,6 @@ class BloodSugarRecordRepository:
             list[BloodSugarRecord]: 혈당 기록 리스트
         """
         return cast(list[BloodSugarRecord], await self._model.filter(user_id=user_id).order_by("-recorded_at").all())
+
+    async def create_blood_sugar(self, data: dict):
+        return await self._model.create(**data)
