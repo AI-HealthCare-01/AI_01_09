@@ -235,6 +235,7 @@
                 if (response.ok) {
                     const result = await response.json();
 
+                    localStorage.setItem("access_token", result.access_token);
                     localStorage.setItem("auth_token", result.access_token);
                     localStorage.setItem("user_id", result.id);
 

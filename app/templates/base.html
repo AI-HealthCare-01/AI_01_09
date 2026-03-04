@@ -765,7 +765,12 @@
 
     <script src="/static/chatbot.js"></script>
     <script>
-        // 페이지 로드 시 저장된 확대 상태 복원
+        function logAuthStatus(page) {
+            const token = localStorage.getItem('access_token');
+            const status = token ? '로그인' : '로그아웃';
+            console.log(`[${page}] ${status}`);
+        }
+
         window.addEventListener('DOMContentLoaded', function() {
             const isZoomed = localStorage.getItem('zoomState') === 'true';
             if (isZoomed) {
@@ -773,15 +778,19 @@
                 document.getElementById('zoom-btn').textContent = '🔎';
                 document.getElementById('zoom-btn').title = '글자 크기 축소';
             }
+            logAuthStatus('Dashboard');
         });
 
-        // 사용자 메뉴 드롭다운 토글
+        document.querySelector('.header-left').addEventListener('click', function() {
+            logAuthStatus('Cloud9 Care');
+        });
+
         document.getElementById('user-menu-btn').addEventListener('click', function (e) {
             e.stopPropagation();
+            logAuthStatus('마이페이지');
             document.getElementById('user-dropdown').classList.toggle('show');
         });
 
-        // 외부 클릭 시 드롭다운 닫기
         document.addEventListener('click', function (e) {
             const dropdown = document.getElementById('user-dropdown');
             const userMenu = document.querySelector('.user-menu');
@@ -790,34 +799,41 @@
             }
         });
 
-        // 드롭다운 항목 클릭 시 닫기
         document.querySelectorAll('.user-dropdown a').forEach(link => {
             link.addEventListener('click', function() {
+                const menuName = this.textContent.trim();
+                logAuthStatus(menuName);
                 document.getElementById('user-dropdown').classList.remove('show');
             });
         });
 
-        // 검색 기능
         document.getElementById('search-btn').addEventListener('click', function() {
+            logAuthStatus('검색');
             const searchTerm = document.getElementById('search-input').value.trim();
             if (searchTerm) {
                 alert(`"${searchTerm}" 검색 기능은 추후 추가될 예정입니다.`);
             }
         });
 
-        // 엔터 키로 검색
         document.getElementById('search-input').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
+                logAuthStatus('검색');
                 document.getElementById('search-btn').click();
             }
         });
 
-        // 확대 기능 - localStorage에 상태 저장
         document.getElementById('zoom-btn').addEventListener('click', function() {
             const isZoomed = document.body.classList.toggle('zoom-large');
             localStorage.setItem('zoomState', isZoomed);
             this.textContent = isZoomed ? '🔎' : '🔍';
             this.title = isZoomed ? '글자 크기 축소' : '글자 크기 확대';
+        });
+
+        document.querySelectorAll('.sidebar a button').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const menuName = this.textContent.trim();
+                logAuthStatus(menuName);
+            });
         });
     </script>
     {% block scripts %}{% endblock %}

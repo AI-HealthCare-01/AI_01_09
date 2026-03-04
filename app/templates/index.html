@@ -131,6 +131,22 @@ body.zoom-large .dashboard-card {
   border-radius: 12px;
   border: 2px dashed #ddd;
 }
+
+.dashboard-card {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.dashboard-card.show {
+  display: block !important;
+  visibility: visible !important;
+  height: auto !important;
+  padding: 16px !important;
+  margin: 0 !important;
+}
 </style>
 {% endblock %}
 
@@ -336,7 +352,7 @@ async function loadWeatherInfo() {
 }
 
 function checkLoginStatus() {
-  const token = localStorage.getItem('auth_token');
+  const token = localStorage.getItem('access_token');
   const cardsContainer = document.getElementById('dashboard-cards');
   
   if (!token) {
@@ -347,8 +363,15 @@ function checkLoginStatus() {
         <p style="color: #999; font-size: 14px;">상단 우측의 사람 아이콘을 클릭하여 로그인하세요.</p>
       </div>
     `;
+  } else {
+    const cards = cardsContainer.querySelectorAll('.dashboard-card');
+    cards.forEach(card => card.classList.add('show'));
   }
 }
+
+window.addEventListener('pageshow', () => {
+  checkLoginStatus();
+});
 
 window.addEventListener('focus', () => {
   checkLoginStatus();
