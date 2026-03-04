@@ -1,346 +1,332 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-<meta charset="UTF-8" />
-<title>Cloud9 Care</title>
+{% extends "base.html" %}
 
+{% block title %}대시보드 - Cloud9 Care{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="/static/dashboard.css">
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
-body { height: 100vh; background: #f7f7f7; }
-
-/* ===== HEADER ===== */
-.header {
-  height: 64px;
-  border-bottom: 1px solid #ccc;
-  background: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
-}
-.header-left { font-size: 20px; font-weight: bold; }
-.header-right { display: flex; align-items: center; gap: 10px; }
-.search { border: 1px solid #aaa; border-radius: 20px; padding: 4px 10px; }
-
-/* ===== LAYOUT ===== */
-.container {
-  display: flex;
-  height: calc(100vh - 64px);
+/* 확대 기능 */
+body.zoom-large .slide-content h2 {
+  font-size: 38px;
 }
 
-/* ===== SIDEBAR ===== */
-.sidebar {
-  width: 220px;
-  border-right: 1px solid #ccc;
-  background: #fff;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
+body.zoom-large .slide-content p {
+  font-size: 24px;
 }
-.sidebar button {
-  margin-bottom: 10px;
-  padding: 8px;
-  border: 1px solid #333;
-  background: #fff;
-  cursor: pointer;
-  width: 100%;
-}
-.sidebar-footer { margin-top: auto; }
 
-/* ===== MAIN ===== */
-.main {
-  flex: 1;
+body.zoom-large .card h4 {
+  font-size: 22px;
+}
+
+body.zoom-large .metric-value {
+  font-size: 28px;
+}
+
+body.zoom-large .trend-value {
+  font-size: 26px;
+}
+
+body.zoom-large .insight-item {
+  font-size: 20px;
+}
+
+body.zoom-large .med-time,
+body.zoom-large .med-name {
+  font-size: 18px;
+}
+
+body.zoom-large .analysis-title {
+  font-size: 18px;
+}
+
+body.zoom-large .analysis-result {
+  font-size: 16px;
+}
+
+body.zoom-large .metric-label,
+body.zoom-large .trend-label {
+  font-size: 16px;
+}
+
+body.zoom-large .metric-status {
+  font-size: 14px;
+}
+
+body.zoom-large .dashboard-card h4 {
+  font-size: 22px;
+}
+
+body.zoom-large .metric-select {
+  font-size: 16px;
+}
+
+body.zoom-large #blood-pressure-data .metric-value,
+body.zoom-large #blood-sugar-data .metric-value {
+  font-size: 28px;
+}
+
+body.zoom-large #blood-pressure-data .metric-label,
+body.zoom-large #blood-sugar-data .metric-label {
+  font-size: 16px;
+}
+
+body.zoom-large #blood-pressure-data .metric-status,
+body.zoom-large #blood-sugar-data .metric-status {
+  font-size: 16px;
+}
+
+body.zoom-large .metric-chart {
+  font-size: 32px;
+}
+
+body.zoom-large .next-alarm small {
+  font-size: 16px;
+}
+
+body.zoom-large .slide-brand {
+  font-size: 28px;
+}
+
+body.zoom-large .slide-date {
+  font-size: 18px;
+}
+
+body.zoom-large .slide-footer small {
+  font-size: 18px;
+}
+
+body.zoom-large .score-badge {
+  font-size: 16px;
+}
+
+body.zoom-large .score-status {
+  font-size: 14px;
+}
+
+body.zoom-large .trend-change {
+  font-size: 16px;
+}
+
+body.zoom-large .dashboard-cards {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+body.zoom-large .dashboard-card {
+  min-height: 220px;
   padding: 24px;
-  overflow-y: auto;
 }
 
-/* ===== COMMON ===== */
-.banner {
-      height: 260px;
-      border: 1px solid #999;
-      margin-bottom: 20px;
-    }
-
-    .card-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
-    }
-
-    .card {
-      border: 1px solid #999;
-      padding: 12px;
-      height: 160px;
-      background: #fff;
-    }
-
-    .card h4 {
-      margin-bottom: 8px;
-      font-size: 14px;
-    }
-
-    .card p {
-      font-size: 13px;
-      color: #555;
-    }
-    .page { margin-bottom: 80px; }
-    .page-title { font-size: 22px; margin-bottom: 20px; }
-    .box { border: 1px solid #999; background: #fff; padding: 16px; margin-bottom: 16px; }
-    .flex { display: flex; gap: 20px; }
-    .column { flex: 1; }
-    .big-box { height: 200px; border: 1px solid #999; margin-bottom: 10px; }
-
-    /* ===== CARD ===== */
-    .card { border: 1px solid #999; padding: 12px; margin-bottom: 12px; }
-
-    /* ===== TOGGLE ===== */
-    .toggle {
-    width: 40px; height: 20px; border: 1px solid #666; border-radius: 10px;
-    }
-
-    /* ===== MODAL MOCK ===== */
-    .modal {
-    border: 1px solid #666;
-    padding: 12px;
-    background: #f1f1f1;
-    }
-    .modal button { margin-top: 8px; }
-
-    .dashboard{
-        display: none;
-    }
-    .dashboard.open{
-        display: block;
-    }
-    .guide{
-        display: none;
-    }
-    .guide.open{
-        display: block;
-    }
-    .alarm{
-        display: none;
-    }
-    .alarm.open{
-        display: block;
-    }
-    .upload{
-        display: none;
-    }
-    .upload.open{
-        display: block;
-    }
+body.zoom-large .hero-slider {
+  height: 320px;
+}
 </style>
-</head>
+{% endblock %}
 
-<body>
-
-<!-- HEADER -->
-<header class="header">
-  <div class="header-left">☁️ Cloud9 Care</div>
-  <div class="header-right">
-    <input class="search" placeholder="search">
-    <button>Button</button>
-    <button>➕</button>
-    <button>👤</button>
-  </div>
-</header>
-
-<div class="container">
-
-  <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <button class="dashboard-btn">대시보드</button>
-    <button class="guide-btn">생활 안내 가이드</button>
-    <button class="alarm-btn">복용 알람</button>
-    <button class="upload-btn">처방전 및 약물</button>
-
-    <div class="sidebar-footer">
-      <button>👤 마이페이지</button>
+{% block content %}
+<!-- 큰 슬라이드 박스 -->
+<div class="hero-slider" id="hero-slider">
+  <!-- 슬라이드 1: 브랜드 & 오늘의 분위기 -->
+  <div class="slide active" data-slide="1">
+    <div class="slide-header">
+      <div class="slide-brand">Cloud9 Care</div>
+      <div class="slide-date">
+        <div id="current-date">📅 2026년 3월 4일 수</div>
+        <div id="weather-info">🌤️ 18°C · 맑음</div>
+      </div>
     </div>
-  </aside>
-
-  <!-- MAIN -->
-  <main class="main">
-
-    <section class="dashboard open">
-        <!-- 큰 배너 -->
-        <div class="banner"></div>
-
-        <!-- 카드 영역 -->
-        <div class="card-grid">
-            <div class="card">
-            <h4>[ AI 맞춤 건강 요약 배너 ]</h4>
-            <p>안녕하세요, OOO님 👋</p>
-            <p>오늘 복약 2건 예정</p>
-            </div>
-
-            <div class="card">
-            <h4>[ 오늘의 복약 알림 카드 ]</h4>
-            <p>08:00 아침약</p>
-            <p>20:00 저녁약</p>
-            </div>
-
-            <div class="card">
-            <h4>[ 최근 분석 결과 ]</h4>
-            <p>처방전 분석 결과</p>
-            </div>
-
-            <div class="card">
-            <h4>[ AI 생활 가이드 ]</h4>
-            <p>요약 3줄</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- ================= 생활 안내 가이드 ================= -->
-    <section class="guide">
-      <div class="page-title">생활 안내 가이드</div>
-
-      <div class="flex">
-        <div class="column box">
-          <h4>나의 건강 상태 요약</h4>
-          <div class="card">
-            <strong>만성질환</strong><br>고혈압, 당뇨
-          </div>
-          <div class="card">
-            <strong>알레르기</strong><br>땅콩, 갑각류
-          </div>
-          <div class="card">
-            <strong>복용 중인 약</strong><br>타이레놀, 게보린
-          </div>
-        </div>
-
-        <div class="column box">
-          <h4>권장 생활 가이드</h4>
-          <div class="card">
-            고혈압 관리 식단 안내
-          </div>
-          <div class="card">
-            당뇨 관리 운동 권장 사항
-          </div>
-          <div class="card">
-            알러지 및 복약 주의사항
-          </div>
-          <button>UPDATE</button>
-        </div>
+    <div class="slide-content">
+      <h2>구름 위에 오른 듯한 건강한 일상,<br>Cloud9 Care가 함께합니다.</h2>
+      <p>의료 기록을 이해하기 쉬운<br>맞춤형 건강 가이드로 연결합니다.</p>
+    </div>
+    <div class="slide-footer">
+      <small id="weather-tip">오늘은 가벼운 산책을 하기 좋은 날입니다.</small>
+    </div>
+  </div>
+  
+  <!-- 슬라이드 2: 오늘의 건강 인사이트 -->
+  <div class="slide" data-slide="2">
+    <div class="slide-header">
+      <h3>오늘의 건강 인사이트</h3>
+      <div class="health-score">
+        <span class="score-badge">건강 점수 82점</span>
+        <span class="score-status">(안정 상태)</span>
       </div>
-
-      <div class="box">⚠️ 본 서비스는 의료 진단을 제공하지 않습니다.</div>
-    </section>
-
-    <!-- ================= 복용 알람 ================= -->
-    <section class="alarm">
-      <div class="page-title">복용 알람</div>
-
-      <div class="flex">
-        <div class="column box">
-          <h4>현재 복용 중인 약물</h4>
-          <div class="card">약물 이름 1 <div class="toggle"></div></div>
-          <div class="card">약물 이름 2 <div class="toggle"></div></div>
-          <div class="card">약물 이름 3 <div class="toggle"></div></div>
-        </div>
-
-        <div class="column box">
-          <h4>약물 상세 정보</h4>
-          <div class="big-box"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ================= 처방전 / 약봉투 ================= -->
-    <section class="upload">
-      <div>
-        <div class="page-title">처방전 / 약봉투 및 복용약</div>
-
-      <div class="flex">
-        <div class="column">
-          <div class="big-box"></div>
-          <select>
-            <option>JPG</option>
-            <option>PDF</option>
-          </select>
-          <button>업로드</button>
-        </div>
-
-        <div class="column">
-          <div class="box">
-            <h4>분석 결과</h4>
-            <p>✔ 타이레놀 (0.94)</p>
-            <p>✔ 게보린 (0.72)</p>
-            <p>✔ 판콜 (0.61)</p>
-          </div>
-
-          <div class="modal">
-            다음 약을 현재 복용 약물에 연동하시겠습니까?
-            <br>
-            <button>네, 연동하겠습니다</button>
-            <button>아니오</button>
-          </div>
-        </div>
-        
-      </div>
-      </div>
-      <div>
-        <div class="page-title">처방전 / 약봉투 및 복용약</div>
-
-      <div class="flex">
-        <div class="column">
-          <div class="big-box"></div>
-          <select>
-            <option>JPG</option>
-            <option>PDF</option>
-          </select>
-          <button>업로드</button>
-        </div>
-
-        <div class="column">
-          <div class="box">
-            <h4>분석 결과</h4>
-            <p>✔ 타이레놀 (0.94)</p>
-            <p>✔ 게보린 (0.72)</p>
-            <p>✔ 판콜 (0.61)</p>
-          </div>
-
-          <div class="modal">
-            다음 약을 현재 복용 약물에 연동하시겠습니까?
-            <br>
-            <button>네, 연동하겠습니다</button>
-            <button>아니오</button>
-          </div>
-        </div>
-        
-      </div>
-      </div>
-    </section>
-
-  </main>
+    </div>
+    <div class="slide-content insight-content">
+      <div class="insight-item" id="insight-1">최근 7일 평균 혈압은 안정 범위입니다.</div>
+      <div class="insight-item" id="insight-2">수면 시간이 평균보다 40분 감소했습니다.</div>
+      <div class="insight-item" id="insight-3">체중은 큰 변화 없이 유지되고 있습니다.</div>
+    </div>
+  </div>
+  
+  <!-- 슬라이드 인디케이터 -->
+  <div class="slide-indicators">
+    <span class="indicator active" data-slide="1"></span>
+    <span class="indicator" data-slide="2"></span>
+  </div>
 </div>
-</body>
+
+<!-- 작은 카드 4개 -->
+<div class="dashboard-cards">
+  <!-- 1. 건강 지표 -->
+  <div class="dashboard-card health-metrics">
+    <div class="card-header">
+      <h4>📈 건강 지표</h4>
+      <select id="health-metric-select" class="metric-select">
+        <option value="blood-pressure">혈압</option>
+        <option value="blood-sugar">혈당</option>
+      </select>
+    </div>
+    <div class="card-content">
+      <div id="blood-pressure-data" class="metric-data active">
+        <div class="metric-value">132 / 84 mmHg</div>
+        <div class="metric-label">최근 7일 평균</div>
+        <div class="metric-chart">📊</div>
+        <div class="metric-status">지난주 대비 큰 변동 없음</div>
+      </div>
+      <div id="blood-sugar-data" class="metric-data">
+        <div class="metric-value">108 mg/dL</div>
+        <div class="metric-label">최근 7일 평균 공복</div>
+        <div class="metric-chart">📊</div>
+        <div class="metric-status">최근 3일 소폭 상승</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. 오늘의 복약 & 알림 -->
+  <div class="dashboard-card medication">
+    <div class="card-header">
+      <h4>💊 오늘의 복약 & 알림</h4>
+    </div>
+    <div class="card-content">
+      <div class="medication-item">
+        <div class="med-time">08:00</div>
+        <div class="med-name">아침약</div>
+        <div class="med-status completed">🟢</div>
+      </div>
+      <div class="medication-item">
+        <div class="med-time">20:00</div>
+        <div class="med-name">저녁약</div>
+        <div class="med-status pending">🔴</div>
+      </div>
+      <div class="next-alarm">
+        <small>다음 알림까지 3시간 12분 남음</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. 최근 분석 결과 -->
+  <div class="dashboard-card analysis">
+    <div class="card-header">
+      <h4>🧾 최근 분석 결과</h4>
+    </div>
+    <div class="card-content">
+      <div class="analysis-status">
+        <div class="analysis-title">처방전 분석 완료</div>
+        <div class="analysis-result safe">약물 상호작용 없음</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. 생활 변화 트렌드 -->
+  <div class="dashboard-card trends">
+    <div class="card-header">
+      <h4>🌙 생활 변화 트렌드</h4>
+      <select id="trend-select" class="metric-select">
+        <option value="sleep">수면</option>
+        <option value="weight">체중</option>
+      </select>
+    </div>
+    <div class="card-content">
+      <div id="sleep-data" class="trend-data active">
+        <div class="trend-value">6시간 12분</div>
+        <div class="trend-label">평균 수면 시간</div>
+        <div class="trend-change decrease">⬇ 감소 (−40분)</div>
+      </div>
+      <div id="weight-data" class="trend-data">
+        <div class="trend-value">68.2kg</div>
+        <div class="trend-label">현재 체중</div>
+        <div class="trend-change stable">➖ 변화 없음</div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/dashboard.js"></script>
 <script>
-    document.querySelector(".dashboard-btn").addEventListener("click",()=>{
-        document.querySelector(".dashboard").classList.add("open")
-        document.querySelector(".guide").classList.remove("open")
-        document.querySelector(".alarm").classList.remove("open")
-        document.querySelector(".upload").classList.remove("open")
-    })
-    document.querySelector(".guide-btn").addEventListener("click",()=>{
-        document.querySelector(".dashboard").classList.remove("open")
-        document.querySelector(".guide").classList.add("open")
-        document.querySelector(".alarm").classList.remove("open")
-        document.querySelector(".upload").classList.remove("open")
-    })
-    document.querySelector(".alarm-btn").addEventListener("click",()=>{
-        document.querySelector(".dashboard").classList.remove("open")
-        document.querySelector(".guide").classList.remove("open")
-        document.querySelector(".alarm").classList.add("open")
-        document.querySelector(".upload").classList.remove("open")
-    })
-    document.querySelector(".upload-btn").addEventListener("click",()=>{
-        document.querySelector(".dashboard").classList.remove("open")
-        document.querySelector(".guide").classList.remove("open")
-        document.querySelector(".alarm").classList.remove("open")
-        document.querySelector(".upload").classList.add("open")
-    })
+async function fetchWeather(url) {
+  console.log('[Weather] Fetching:', url);
+  const response = await fetch(url);
+  const data = await response.json();
+  
+  document.getElementById('current-date').textContent = data.date_text;
+  document.getElementById('weather-info').textContent = data.weather_text;
+  document.getElementById('weather-tip').textContent = data.tip;
+  console.log('[Weather] Rendered:', data);
+}
+
+async function loadHealthInsights() {
+  console.log('[Insights] Loading health insights...');
+  try {
+    const response = await fetch('/api/v1/insights/health');
+    if (!response.ok) {
+      console.error(`[Insights] API error: ${response.status} ${response.statusText}`);
+      return;
+    }
+    const data = await response.json();
+    
+    if (data.insights && data.insights.length === 3) {
+      document.getElementById('insight-1').textContent = data.insights[0];
+      document.getElementById('insight-2').textContent = data.insights[1];
+      document.getElementById('insight-3').textContent = data.insights[2];
+      console.log('[Insights] Successfully loaded:', data.insights);
+    } else {
+      console.warn('[Insights] Invalid response format:', data);
+    }
+  } catch (e) {
+    console.error('[Insights] Failed to load:', e.message);
+  }
+}
+
+async function loadWeatherInfo() {
+  console.log('[Weather] Initializing...');
+  if (navigator.geolocation) {
+    console.log('[Weather] Geolocation available, requesting permission...');
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+        console.log('[Weather] GPS Success:', { latitude: lat, longitude: lon });
+        try {
+          await fetchWeather(`/api/v1/weather/current?lat=${lat}&lon=${lon}`);
+          console.log('[Weather] GPS-based weather loaded successfully');
+        } catch (e) {
+          console.error('[Weather] GPS API failed, falling back to Seoul:', e);
+          await fetchWeather('/api/v1/weather/current?city=Seoul');
+          console.log('[Weather] Fallback to Seoul successful');
+        }
+      },
+      async (error) => {
+        console.warn('[Weather] GPS Permission denied or error:', error.message);
+        console.log('[Weather] Using default city: Seoul');
+        await fetchWeather('/api/v1/weather/current?city=Seoul');
+        console.log('[Weather] Seoul weather loaded successfully');
+      },
+      { timeout: 5000, maximumAge: 600000 }
+    );
+  } else {
+    console.log('[Weather] Geolocation not available, using Seoul');
+    await fetchWeather('/api/v1/weather/current?city=Seoul');
+    console.log('[Weather] Seoul weather loaded successfully');
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadWeatherInfo();
+  loadHealthInsights();
+});
 </script>
-</html>
+{% endblock %}

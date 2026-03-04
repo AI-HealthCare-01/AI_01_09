@@ -1,16 +1,19 @@
 from typing import Annotated
+
 from fastapi import APIRouter, Depends, status
+
 from app.dependencies.security import get_request_user
 from app.models.user import User
 from app.services.ocr import OCRService
 
 analysis_router = APIRouter(prefix="/analysis", tags=["analysis"])
 
+
 @analysis_router.post("/prescriptions", status_code=status.HTTP_201_CREATED)
 async def analyze_prescription(
     upload_id: int,
     user: Annotated[User, Depends(get_request_user)],
-    ocr_service: Annotated[OCRService, Depends(OCRService)]
+    ocr_service: Annotated[OCRService, Depends(OCRService)],
 ):
     """
     [ANALYSIS] 처방전 분석(OCR->정제).
@@ -24,9 +27,17 @@ async def analyze_prescription(
         "hospital_name": "서울대학교병원",
         "prescribed_date": "2024-02-24",
         "drugs": [
-            {"id": 501, "standard_drug_name": "타이레놀", "dosage_amount": 500.0, "daily_frequency": 3, "duration_days": 3, "is_linked_to_meds": False}
-        ]
+            {
+                "id": 501,
+                "standard_drug_name": "타이레놀",
+                "dosage_amount": 500.0,
+                "daily_frequency": 3,
+                "duration_days": 3,
+                "is_linked_to_meds": False,
+            }
+        ],
     }
+
 
 @analysis_router.post("/pills", status_code=status.HTTP_201_CREATED)
 async def analyze_pills(
@@ -44,9 +55,5 @@ async def analyze_pills(
         "pill_recognition_id": 201,
         "primary_pill_name": "아스피린",
         "confidence": 0.98,
-        "candidates": [
-            {"pill_name": "아스피린", "confidence": 0.98},
-            {"pill_name": "부르펜", "confidence": 0.02}
-        ]
+        "candidates": [{"pill_name": "아스피린", "confidence": 0.98}, {"pill_name": "부르펜", "confidence": 0.02}],
     }
-

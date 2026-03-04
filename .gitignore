@@ -13,3 +13,7 @@ wheels/
 *.coverage
 .coverage.*
 .DS_Store
+
+# Firebase 서비스 계정 JSON 키 (private key 포함)
+Firebase*/
+*firebase-adminsdk*.json

@@ -20,8 +20,8 @@ services:
     container_name: mysql
     restart: always
     environment:
-    # ${환경변수명} 문법은 OS 환경변수 혹은 .env에서 해당 환경변수명과 일치하는 항목이 있으면 대입합니다.
-    # 반드시 사전에 .env에 해당 항목이 존재하는지 확인해야 합니다.
+      # ${환경변수명} 문법은 OS 환경변수 혹은 .env에서 해당 환경변수명과 일치하는 항목이 있으면 대입합니다.
+      # 반드시 사전에 .env에 해당 항목이 존재하는지 확인해야 합니다.
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       MYSQL_DATABASE: ${DB_NAME}
       MYSQL_USER: ${DB_USER}
@@ -32,13 +32,14 @@ services:
     networks:
       - ws
     volumes:
-      - mysql_data:/var/lib/mysql  # 컨테이너가 삭제돼도 데이터는 호스트 파일시스템에 남음
-    command: # 한글 저장을 위한 문자셋 설정 (필수!)
+      - mysql_data:/var/lib/mysql # 컨테이너가 삭제돼도 데이터는 호스트 파일시스템에 남음
+    command:
+      # 한글 저장을 위한 문자셋 설정 (필수!)
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
       - --port=${DB_PORT}
     healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -47,18 +48,19 @@ services:
   fastapi:
     container_name: fastapi
     build:
-      context: .  # 프로젝트 루트를 빌드 컨텍스트로 지정
-      dockerfile: app/Dockerfile  # Dockerfile 위치 지정
+      context: . # 프로젝트 루트를 빌드 컨텍스트로 지정
+      dockerfile: app/Dockerfile # Dockerfile 위치 지정
       platforms:
         - linux/amd64
         - linux/arm64
-    image: ${DOCKER_USER}/${DOCKER_REPOSITORY}:app-${APP_VERSION}  # APP_VERSION은 빌드된 이미지의 버전관리를 위함입니다. v1.0.0 형식으로 사용합니다.
+    image: ${DOCKER_USER}/${DOCKER_REPOSITORY}:app-${APP_VERSION} # APP_VERSION은 빌드된 이미지의 버전관리를 위함입니다. v1.0.0 형식으로 사용합니다.
     env_file: .env
-    command: | 
+    command: |
       sh -c "uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
     volumes:
-      - ./app:/app/app  # 로컬의 app 디렉토리를 컨테이너의 /app/app에 마운트(수정사항 즉시 반영)
+      - ./app:/app/app # 로컬의 app 디렉토리를 컨테이너의 /app/app에 마운트(수정사항 즉시 반영)
       - static_volume:/app/templates
+      - ./uploads:/app/uploads
     restart: always
     ports:
       - "8000:8000"
@@ -74,12 +76,12 @@ services:
   ai-worker:
     container_name: ai-worker
     build:
-      context: .  # 프로젝트 루트를 빌드 컨텍스트로 지정
-      dockerfile: ai_worker/Dockerfile  # Dockerfile 위치 지정
+      context: . # 프로젝트 루트를 빌드 컨텍스트로 지정
+      dockerfile: ai_worker/Dockerfile # Dockerfile 위치 지정
       platforms:
         - linux/amd64
         - linux/arm64
-    image: ${DOCKER_USER}/${DOCKER_REPOSITORY}:ai-${AI_WORKER_VERSION}  # AI_WORKER_VERSION은 빌드된 이미지의 버전관리를 위함입니다. V1.0.0 형식으로 사용합니다.
+    image: ${DOCKER_USER}/${DOCKER_REPOSITORY}:ai-${AI_WORKER_VERSION} # AI_WORKER_VERSION은 빌드된 이미지의 버전관리를 위함입니다. V1.0.0 형식으로 사용합니다.
     env_file: .env
     restart: always
     mem_limit: 4G
@@ -108,6 +110,7 @@ services:
 volumes:
   mysql_data:
   static_volume:
+
 
 networks:
   ws:

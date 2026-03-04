@@ -12,6 +12,7 @@ class Env(StrEnum):
     """
     애플리케이션의 실행 환경(로컬, 개발, 운영)을 정의하는 열거형 클래스입니다.
     """
+
     LOCAL = "local"
     DEV = "dev"
     PROD = "prod"
@@ -22,6 +23,7 @@ class Config(BaseSettings):
     애플리케이션의 모든 환경 변수 및 설정을 관리하는 클래스입니다.
     Pydantic Settings를 기반으로 .env 파일 및 시스템 환경 변수를 로드합니다.
     """
+
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="allow")
 
     ENV: Env = Env.LOCAL
@@ -37,14 +39,18 @@ class Config(BaseSettings):
     DB_CONNECT_TIMEOUT: int = 5
     DB_CONNECTION_POOL_MAXSIZE: int = 10
 
-    SMTP_USER: str = ""          # .env의 SMTP_USER와 매칭
-    SMTP_PASSWORD: str = ""      # .env의 SMTP_PASSWORD와 매칭
+    SMTP_USER: str = ""  # .env의 SMTP_USER와 매칭
+    SMTP_PASSWORD: str = ""  # .env의 SMTP_PASSWORD와 매칭
     SMTP_HOST: str = "smtp.naver.com"
     SMTP_PORT: int = 587
     MAIL_STARTTLS: bool = True
     MAIL_SSL_TLS: bool = False
+    MAIL_FROM: str = ""
 
     COOKIE_DOMAIN: str = "localhost"
+
+    # OpenAI API
+    OPENAI_API_KEY: str = ""
 
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
@@ -64,3 +70,13 @@ class Config(BaseSettings):
 
     # Security & Encryption
     AES_SECRET_KEY: str = f"aes-default-secret-{uuid.uuid4().hex[:16]}"
+
+    # Firebase FCM
+    FIREBASE_PROJECT_ID: str = ""
+    FIREBASE_CLIENT_EMAIL: str = ""
+    FIREBASE_PRIVATE_KEY: str = ""
+    VAPID_PUBLIC_KEY: str = ""
+
+    # Naver Clova OCR
+    CLOVA_OCR_INVOKE_URL: str = ""
+    CLOVA_OCR_SECRET_KEY: str = ""

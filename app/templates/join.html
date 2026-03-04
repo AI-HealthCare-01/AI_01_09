@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>회원가입 및 이메일 인증</title>
+    <link rel="stylesheet" href="/static/chatbot.css">
     <style>
         body {
             font-family: sans-serif;
@@ -23,6 +24,12 @@
 
         .form-group {
             margin-bottom: 15px;
+        }
+
+        .form-group .head {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
         }
 
         label {
@@ -117,6 +124,95 @@
             cursor: pointer;
             font-weight: 500;
         }
+
+        .result-btn {
+            display: flex;
+            gap: 10px;
+        }
+
+        .birthday-gender-age {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .birthday-gender-age span {
+            flex-shrink: 0;
+        }
+
+        .birthday-gender-age input {}
+
+        .birthday-gender-age select {
+            height: 38px;
+        }
+
+        .custom-select {
+            position: relative;
+            width: 200px;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+
+        .selected {
+            height: 28px;
+            line-height: 25px;
+            padding: 0 10px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+        }
+
+        .custom-select .options {
+            display: none;
+            position: absolute;
+            width: 100%;
+            border: 1px solid #ccc;
+            background: #fff;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 0px;
+        }
+
+        .custom-select .options li {
+            padding: 10px;
+            list-style: none;
+            padding-top: 0px;
+        }
+
+        .custom-select .options li ul {
+            padding-left: 0px;
+        }
+
+        .custom-select .options li ul li {
+            padding: 5px;
+            cursor: pointer;
+        }
+
+        .custom-select .options li ul li::before {
+            content: "- ";
+            /* 점 대신 하이픈 추가 */
+            margin-right: 5px;
+            /* 하이픈과 텍스트 사이 간격 */
+        }
+
+        .custom-select .options li ul li:hover {
+            background: #f0f0f0;
+        }
+
+        .alarm_tf {
+            display: flex;
+            align-items: center;
+        }
+
+        .alarm_tf input {
+            width: 13px;
+            height: 100%;
+        }
+
+        .alarm_tf label {
+            margin: 0px;
+            margin-bottom: 2px;
+            padding: 0px;
+        }
     </style>
 </head>
 
@@ -160,24 +256,30 @@
                 <input type="text" name="phone_number" id="phone_number" maxlength="11" value="01012341234"
                     placeholder="01012345678" required>
             </div>
-            <div class="form-group">
-                <label>주민번호</label>
-                <input type="text" name="resident_registration_number" id="resident_registration_number" maxlength="14"
-                    placeholder="900101-1234567" value="123456-1234567" required>
+            <div class="form-group birthday-gender-age">
+                <span>생년월일</span>
+                <input type="date" class="birthday" id="birthday">
+                <select class="gender" id="gender">
+                    <option disabled selected style="display: none;">성별</option>
+                    <option>남자</option>
+                    <option>여자</option>
+                </select>
+            </div>
+            <div class="form-group alarm_tf">
+                <input type="checkbox">
+                <label>알람 전체 실행</label>
             </div>
             <div class="agreement-section">
                 <div class="agreement-item all-agree">
                     <input type="checkbox" id="checkAll"> 전체 동의하기
                 </div>
                 <div class="agreement-item">
-                    <input type="checkbox" class="agree-item" id="is_terms_agreed" name="is_terms_agreed" checked
-                        required>
+                    <input type="checkbox" class="agree-item" id="is_terms_agreed" name="is_terms_agreed">
                     <span>이용약관 동의<span class="required">(필수)</span></span>
                     <span class="item-open">보기</span>
                 </div>
                 <div class="agreement-item">
-                    <input type="checkbox" class="agree-item" id="is_privacy_agreed" name="is_privacy_agreed" checked
-                        required>
+                    <input type="checkbox" class="agree-item" id="is_privacy_agreed" name="is_privacy_agreed">
                     <span>개인정보 처리방침 동의<span class="required">(필수)</span></span>
                     <span class="item-open">보기</span>
                 </div>
@@ -186,12 +288,21 @@
                     <span>마케팅 정보 수신 동의(선택)</span>
                     <span class="item-open">보기</span>
                 </div>
+                <div class="agreement-item">
+                    <input type="checkbox" class="agree-item" id="is_alarm_agreed" name="is_alarm_agreed">
+                    <span>약 복용 알람 정보 수신 동의(선택)</span>
+                    <span class="item-open">보기</span>
+                </div>
             </div>
-            <button type="button" class="ok">회원가입 완료</button>
+            <div class="result-btn">
+                <button type="button" class="cancel">회원가입 취소</button>
+                <button type="button" class="ok">회원가입 완료</button>
+            </div>
         </form>
     </div>
 
     <script>
+
         // 1. 인증번호 발송 함수
         async function sendCode() {
             const userId = document.getElementById('id').value;
@@ -203,27 +314,26 @@
                     method: 'GET'
                 });
 
-                // 이메일 중복 (정상 처리)
-                if (response.status === 409) {
-                    const result = await response.json();
-                    alert(result.detail);
-                    return;
-                }
-
                 // 다른 HTTP 에러만 콘솔 출력
                 if (!response.ok) {
                     console.error("API Error:", response.status);
                     alert("에러가 발생했습니다.");
                     return;
+                } else {
+                    const result = await response.json();
+                    if (result.detail.includes("이미")) {
+                        alert(result);
+                        return;
+                    }
                 }
 
                 // 정상일 때 인증코드 발송
-                const response1 = await fetch('/api/v1/email/send-code', {
+                const response1 = await fetch('/api/v1/common/send-code', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ id: userId })
+                    body: JSON.stringify({ email: userId })
                 });
 
                 if (!response1.ok) {
@@ -233,7 +343,7 @@
                 }
 
                 const result1 = await response1.json();
-                alert(result1.message || result1.detail);
+                alert(result1.message);
 
             } catch (e) {
                 alert("발송 실패");
@@ -248,12 +358,12 @@
 
             try {
                 // 정상일 때 인증코드 확인
-                const response = await fetch('/api/v1/email/verify-code', {
+                const response = await fetch('/api/v1/common/verify-code', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ id: userId, code: code })
+                    body: JSON.stringify({ email: userId, code: code })
                 });
 
                 // 인증 틀림 (정상 처리)
@@ -270,7 +380,7 @@
                 }
 
                 const result = await response.json();
-                alert(result.message || result.detail);
+                alert(result.message);
                 document.querySelector("#code").nextElementSibling.textContent = '인증 완료'
 
             } catch (e) {
@@ -306,8 +416,20 @@
                 alert("전화번호를 입력해주세요.")
                 return;
             }
-            if (document.getElementById('resident_registration_number').value == '') {
-                alert("주민번호를 입력해주세요.")
+            if (document.querySelector('.birthday').value == '') {
+                alert("생년월일 입력해주세요.")
+                return;
+            }
+            if (document.querySelector(".gender").value == '성별') {
+                alert("성별 입력해주세요.")
+                return;
+            }
+            if (document.getElementById('password').value != document.getElementById('password_check').value) {
+                alert("비밀번호가 다릅니다..")
+                return;
+            }
+            if (document.querySelector("#code").nextElementSibling.textContent != '인증 완료') {
+                alert("이메일 인증해주시기 바랍니다.")
                 return;
             }
 
@@ -322,16 +444,18 @@
                 password: document.getElementById('password').value,
                 name: document.getElementById('name').value,
                 nickname: document.getElementById('nickname').value,
+                birthday: document.getElementById('birthday').value,
+                gender: document.getElementById('gender').value,
                 phone_number: document.getElementById('phone_number').value,
-                resident_registration_number: document.getElementById('resident_registration_number').value,
+                alarm_tf: document.querySelector(".alarm_tf input").checked,
                 is_terms_agreed: document.getElementById('is_terms_agreed').checked,
                 is_privacy_agreed: document.getElementById('is_privacy_agreed').checked,
                 is_marketing_agreed: document.getElementById('is_marketing_agreed').checked,
+                is_alarm_agreed: document.getElementById('is_alarm_agreed').checked,
             }
 
-            console.log(data)
             try {
-                const response = await fetch('/api/v1/users/signup', {
+                const response = await fetch('/api/v1/users', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json' // JSON을 보낸다고 서버에 알림
@@ -353,14 +477,44 @@
                 }
 
                 const result = await response.json();
-                alert(result.message || result.detail);
+                alert(result.detail);
                 location.href = "/login"
             } catch (e) {
                 alert("가입 실패");
             }
         });
 
+        document.querySelector(".cancel").addEventListener("click", () => {
+            if (confirm("정말 취소하시겠습니까??")) {
+                location.href = "login"
+            } else {
+                return false;
+            }
+        })
+
+        document.getElementById("checkAll").addEventListener("click", (e) => {
+            document.querySelectorAll(".agree-item").forEach(el => {
+                el.checked = e.target.checked
+            })
+        })
+
+
     </script>
 </body>
+
+<!-- 챗봇 UI -->
+<button id="chatbot-button" class="chatbot-button">🤖</button>
+<div id="chatbot-container" class="chatbot-container">
+  <div class="chatbot-header">
+    <h3>💬 Cloud9 Care 챗봇</h3>
+    <button id="chatbot-close" class="chatbot-close">×</button>
+  </div>
+  <div id="chatbot-messages" class="chatbot-messages"></div>
+  <div class="chatbot-input">
+    <input id="chatbot-input" type="text" placeholder="메시지를 입력하세요..." autocomplete="off">
+    <button id="chatbot-send" class="chatbot-send">➤</button>
+  </div>
+</div>
+<script src="/static/chatbot.js"></script>
 
 </html>

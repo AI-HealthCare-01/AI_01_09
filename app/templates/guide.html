@@ -1,0 +1,512 @@
+{% extends "base.html" %}
+
+{% block title %}Cloud9 Care - 생활 안내 가이드{% endblock %}
+
+{% block head %}
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+    .glassmorphism {
+        background: rgba(255, 255, 255, 0.75);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        box-shadow: 0 10px 40px 0 rgba(31, 38, 135, 0.08);
+    }
+
+    .section-card {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .section-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.1);
+    }
+
+    .progress-bar-fill {
+        transition: width 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+    }
+
+    /* Accordion custom styles */
+    .accordion-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.4s ease-out;
+    }
+
+    .accordion-active .accordion-content {
+        max-height: 500px;
+    }
+
+    .accordion-icon {
+        transition: transform 0.3s ease;
+    }
+
+    .accordion-active .accordion-icon {
+        transform: rotate(180deg);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="guide-page-container p-8">
+    <div class="flex justify-between items-center mb-8 bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+        <h2 class="text-2xl font-bold text-gray-800">생활 안내 가이드</h2>
+        <div class="flex items-center gap-6 text-sm font-semibold text-gray-500">
+            <span class="text-indigo-600 border-b-2 border-indigo-600 pb-2 cursor-pointer">맞춤 가이드</span>
+            <span class="hover:text-indigo-600 transition cursor-pointer">기록 확인</span>
+        </div>
+    </div>
+
+    <div class="flex flex-col lg:flex-row gap-8">
+        <!-- Left Column: Health Profile -->
+        <section class="w-full lg:w-[350px] flex flex-col gap-6">
+            <div class="flex items-center gap-2.5 px-1">
+                <div class="p-2 bg-blue-500 rounded-lg text-white text-sm">📈</div>
+                <h2 class="text-lg font-bold text-gray-700">나의 건강 요약</h2>
+            </div>
+
+            <div class="glassmorphism p-6 rounded-3xl flex flex-col gap-6 border border-white shadow-xl">
+                <!-- Chronic Diseases -->
+                <div class="bg-white/50 p-5 rounded-2xl border border-gray-100">
+                    <div class="flex items-center gap-2 mb-4">
+                        <span class="w-1.5 h-6 bg-blue-400 rounded-full"></span>
+                        <h3 class="font-bold text-gray-700">보유 질환</h3>
+                    </div>
+                    <div id="chronic-disease-container" class="min-h-[60px]">
+                        <ul class="flex flex-wrap gap-2" id="chronic-disease-list"></ul>
+                    </div>
+                </div>
+
+                <!-- Allergies -->
+                <div class="bg-white/50 p-5 rounded-2xl border border-gray-100">
+                    <div class="flex items-center gap-2 mb-4">
+                        <span class="w-1.5 h-6 bg-amber-400 rounded-full"></span>
+                        <h3 class="font-bold text-gray-700">보유 알레르기</h3>
+                    </div>
+                    <div id="allergy-container" class="min-h-[60px]">
+                        <ul class="flex flex-wrap gap-2" id="allergy-list"></ul>
+                    </div>
+                </div>
+
+                <!-- Physical Info -->
+                <div class="bg-white/50 p-5 rounded-2xl border border-gray-100">
+                    <div class="flex items-center gap-2 mb-4">
+                        <span class="w-1.5 h-6 bg-emerald-400 rounded-full"></span>
+                        <h3 class="font-bold text-gray-700">신체 정보</h3>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3 text-sm" id="physical-info-container">
+                        <div class="bg-white/60 p-3 rounded-xl border border-gray-50">
+                            <p class="text-[10px] text-gray-400 font-bold mb-1">HEIGHT/WEIGHT</p>
+                            <p class="font-bold text-gray-700" id="height-weight-text">-</p>
+                        </div>
+                        <div class="bg-white/60 p-3 rounded-xl border border-gray-50">
+                            <p class="text-[10px] text-gray-400 font-bold mb-1">BMI</p>
+                            <p class="font-bold text-gray-700" id="bmi-text">-</p>
+                        </div>
+                        <div class="bg-white/60 p-3 rounded-xl border border-gray-50 col-span-2">
+                            <p class="text-[10px] text-gray-400 font-bold mb-1">SLEEP</p>
+                            <p class="font-bold text-gray-700" id="sleep-text">-</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Life Habits -->
+                <div class="bg-white/50 p-5 rounded-2xl border border-gray-100">
+                    <div class="flex items-center gap-2 mb-4">
+                        <span class="w-1.5 h-6 bg-purple-400 rounded-full"></span>
+                        <h3 class="font-bold text-gray-700">생활 습관</h3>
+                    </div>
+                    <div class="space-y-3 text-sm" id="habits-container">
+                        <div class="flex justify-between items-center py-1 border-b border-gray-50">
+                            <span class="text-gray-500">흡연/음주</span>
+                            <span class="font-bold text-gray-700" id="smoking-drinking-text">-</span>
+                        </div>
+                        <div class="flex justify-between items-center py-1 border-b border-gray-50">
+                            <span class="text-gray-500">운동 빈도</span>
+                            <span class="font-bold text-gray-700" id="exercise-text">-</span>
+                        </div>
+                        <div class="flex justify-between items-center py-1">
+                            <span class="text-gray-500">식습관</span>
+                            <span class="font-bold text-gray-700 text-right" id="diet-text">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Active Medications -->
+                <div class="bg-white/50 p-5 rounded-2xl border border-gray-100">
+                    <div class="flex items-center gap-2 mb-4">
+                        <span class="w-1.5 h-6 bg-indigo-400 rounded-full"></span>
+                        <h3 class="font-bold text-gray-700">현재 복용 약</h3>
+                    </div>
+                    <div id="medication-container" class="min-h-[60px]">
+                        <div class="space-y-2.5" id="medication-list"></div>
+                    </div>
+                </div>
+
+                <button id="update-btn"
+                    class="w-full py-4 bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-2xl font-bold shadow-lg shadow-indigo-100 hover:shadow-indigo-200 transition-all active:scale-[0.98] mt-2">
+                    🔄 가이드 새로고침
+                </button>
+            </div>
+        </section>
+
+        <!-- Right Column: Recommended Life Guide -->
+        <section class="flex-1 flex flex-col gap-6">
+            <div class="flex justify-between items-center px-1">
+                <div class="flex items-center gap-2.5">
+                    <div class="p-2 bg-rose-500 rounded-lg text-white text-sm">✨</div>
+                    <h2 class="text-lg font-bold text-gray-700">AI 맞춤 생활 안내 가이드</h2>
+                </div>
+                <button id="tts-btn"
+                    class="px-5 py-2.5 border border-indigo-200 rounded-xl bg-white hover:bg-indigo-50 text-indigo-700 font-bold transition shadow-sm flex items-center gap-2">
+                    <span id="tts-icon">📢</span> <span id="tts-text">가이드 읽어주기</span>
+                </button>
+            </div>
+
+            <div id="guide-container" class="flex flex-col gap-6 w-full min-h-[500px]">
+                <div id="guide-skeleton" class="glassmorphism p-8 rounded-3xl animate-pulse space-y-6">
+                    <div class="h-10 bg-gray-200 rounded-xl w-1/4"></div>
+                    <div class="space-y-3">
+                        <div class="h-4 bg-gray-200 rounded w-full"></div>
+                        <div class="h-4 bg-gray-200 rounded w-full"></div>
+                        <div class="h-4 bg-gray-200 rounded w-3/4"></div>
+                    </div>
+                    <div class="h-40 bg-gray-200 rounded-2xl w-full"></div>
+                </div>
+
+                <div id="guide-sections" class="hidden flex flex-col gap-6">
+                    <!-- Section 1 -->
+                    <div id="section-1" class="section-card glassmorphism p-8 rounded-3xl border-l-8 border-l-blue-500">
+                        <div class="flex justify-between items-start mb-4">
+                            <h3 class="text-xl font-bold text-gray-800">1) 복약 안전성 및 주의사항</h3>
+                            <span id="safety-status-tag"
+                                class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider"></span>
+                        </div>
+                        <p id="safety-content" class="text-gray-600 leading-relaxed mb-6"></p>
+                        <div class="bg-white/40 p-5 rounded-2xl border border-white/50">
+                            <h4 class="text-sm font-bold text-gray-500 mb-3 flex items-center gap-2">
+                                <span class="text-blue-500">⏰</span> 일반 주의사항
+                            </h4>
+                            <ul id="general-cautions-list" class="space-y-2 text-sm text-gray-600 list-disc pl-5"></ul>
+                        </div>
+                    </div>
+
+                    <!-- Section 2 -->
+                    <div id="section-2"
+                        class="section-card glassmorphism p-8 rounded-3xl border-l-8 border-l-emerald-500">
+                        <h3 class="text-xl font-bold text-gray-800 mb-6">2) 질환 기반 생활습관 가이드</h3>
+                        <div id="disease-guides-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6"></div>
+                        <div class="bg-emerald-50/50 p-5 rounded-2xl border border-emerald-100 flex gap-3">
+                            <span class="text-emerald-500 text-xl font-bold">🔄</span>
+                            <div>
+                                <h4 class="text-sm font-bold text-emerald-800 mb-1">통합 관리 포인트</h4>
+                                <p id="integrated-point" class="text-sm text-emerald-700 leading-relaxed"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Section 3 -->
+                    <div id="section-3"
+                        class="section-card glassmorphism p-8 rounded-3xl border-l-8 border-l-indigo-500">
+                        <div class="flex justify-between items-end mb-6">
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-800 mb-1">3) 오늘의 실행 플랜</h3>
+                                <p class="text-sm text-gray-500">체크한 항목은 나의 관리 기록으로 저장됩니다.</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-2xl font-black text-indigo-600" id="progress-percent">0%</span>
+                                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-tighter">SUCCESS RATE
+                                </p>
+                            </div>
+                        </div>
+                        <div class="w-full h-3 bg-gray-100 rounded-full mb-8 overflow-hidden">
+                            <div id="progress-bar"
+                                class="progress-bar-fill h-full bg-gradient-to-r from-indigo-500 to-blue-500 rounded-full w-0">
+                            </div>
+                        </div>
+                        <div id="checklist-container" class="space-y-3"></div>
+                    </div>
+
+                    <!-- Section 4 -->
+                    <div id="section-4"
+                        class="accordion section-card glassmorphism p-6 rounded-3xl border border-gray-100">
+                        <button onclick="toggleAccordion('section-4')"
+                            class="w-full flex justify-between items-center group">
+                            <h3 class="text-lg font-bold text-gray-700 flex items-center gap-2">
+                                <span class="bg-gray-100 p-1.5 rounded-lg text-sm">4)</span> 왜 이런 가이드가 생성되었나요?
+                            </h3>
+                            <span class="accordion-icon text-gray-400 group-hover:text-indigo-600 transition">▼</span>
+                        </button>
+                        <div class="accordion-content">
+                            <div class="pt-6 border-t border-gray-100 mt-5">
+                                <p id="explain-reason" class="text-sm text-gray-500 leading-relaxed italic"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        initGuide();
+    });
+
+    // State
+    let currentStatus = { diseases: [], allergies: [], meds: [], profile: null };
+    let guideData = null;
+    let isSpeaking2 = false;
+    const synthesis2 = window.speechSynthesis;
+
+    async function initGuide() {
+        await fetchHealthProfile();
+        await generateNewGuide();
+        setupGuideEventListeners();
+    }
+
+    // 공통 API 요청 함수 (토큰 만료 시 자동 갱신 로직 포함)
+    async function fetchWithAuth(url, options = {}) {
+        let accessToken = localStorage.getItem("access_token");
+        const id = localStorage.getItem("user_id");
+        if (!options.headers) options.headers = {};
+        if (accessToken) {
+            options.headers["Authorization"] = `Bearer ${accessToken}`;
+        }
+        let response = await fetch(url, options);
+        // 토큰이 만료되었을 때 (401) 자동 갱신 시도
+        if (response.status === 401) {
+            console.log("액세스 토큰 만료, 갱신 시도 중...");
+            const refreshResponse = await fetch('/api/v1/users/token/refresh', { method: 'GET' });
+            if (refreshResponse.ok) {
+                const result = await refreshResponse.json();
+                accessToken = result.access_token;
+                localStorage.setItem("access_token", accessToken);
+                // 새 토큰으로 원래 요청 재시도
+                options.headers["Authorization"] = `Bearer ${accessToken}`;
+                response = await fetch(url, options);
+            } else {
+                // 리프레시 토큰도 만료된 경우
+                alert("세션이 만료되었습니다. 다시 로그인해주세요.");
+                localStorage.removeItem("access_token");
+                localStorage.removeItem("user_id");
+                location.href = "/login";
+                return null;
+            }
+        }
+        return response;
+    }
+
+    async function fetchHealthProfile() {
+        const id = localStorage.getItem("user_id");
+        if (!id) {
+            location.href = "/login";
+            return;
+        }
+
+        try {
+            const healthRes = await fetchWithAuth(`/api/v1/health`, { method: 'GET' });
+
+            if (!healthRes || !healthRes.ok) throw new Error("Fetch failed");
+            const health = await healthRes.json();
+
+            // ✅ Unpack consolidated response
+            currentStatus.diseases = health.chronic_diseases || [];
+            currentStatus.allergies = health.allergies || [];
+            currentStatus.meds = health.current_meds || [];
+            currentStatus.profile = health.health_profile || null;
+
+            renderHealthProfile();
+        } catch (err) {
+            console.error("Profile Load Error:", err);
+            currentStatus.diseases = [];
+            currentStatus.allergies = [];
+            currentStatus.meds = [];
+            currentStatus.profile = null;
+            renderHealthProfile();
+        }
+    }
+    async function generateNewGuide() {
+        const skeleton = document.getElementById('guide-skeleton');
+        const content = document.getElementById('guide-sections');
+        skeleton.classList.remove('hidden');
+        content.classList.add('hidden');
+        try {
+            const res = await fetch('/api/v1/guides', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const data = await res.json();
+            if (data.guide_data) {
+                guideData = data.guide_data;
+                renderGuide();
+                skeleton.classList.add('hidden');
+                content.classList.remove('hidden');
+            }
+        } catch (err) {
+            console.error("Guide Gen Error:", err);
+        }
+    }
+
+    function renderHealthProfile() {
+        const diseaseList = document.getElementById('chronic-disease-list');
+        diseaseList.innerHTML =
+            currentStatus.diseases.length > 0
+                ? currentStatus.diseases.map(d => `<li class="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-bold border border-blue-100">${d.disease_name}</li>`).join('')
+                : '<li class="text-gray-400 text-xs italic">등록된 질환이 없습니다.</li>';
+
+        const allergyList = document.getElementById('allergy-list');
+        allergyList.innerHTML =
+            currentStatus.allergies.length > 0
+                ? currentStatus.allergies.map(a => `<li class="px-3 py-1 bg-amber-50 text-amber-700 rounded-full text-xs font-bold border border-amber-100">${a.any_allergy}</li>`).join('')
+                : '<li class="text-gray-400 text-xs italic">등록된 알레르기가 없습니다.</li>';
+
+        const medList = document.getElementById('medication-list');
+        medList.innerHTML =
+            currentStatus.meds.length > 0
+                ? currentStatus.meds.map(m => `
+                    <div class="flex justify-between items-center p-2.5 bg-indigo-50/30 rounded-xl border border-indigo-100/50">
+                        <span class="text-sm font-bold text-indigo-900">${m.medication_name}</span>
+                        <span class="text-[10px] text-indigo-400 font-medium">${m.start_date || '기록없음'}</span>
+                    </div>`).join('')
+                : '<p class="text-gray-400 text-xs italic text-center py-2">등록된 약물이 없습니다.</p>';
+
+        // Render Profile Details
+        const prof = currentStatus.profile;
+        if (prof) {
+            // Physical Info
+            const hwText = document.getElementById('height-weight-text');
+            hwText.innerText = (prof.height_cm && prof.weight_kg)
+                ? `${prof.height_cm}cm / ${prof.weight_kg}kg`
+                : '-';
+
+            const bmiText = document.getElementById('bmi-text');
+            if (prof.height_cm && prof.weight_kg) {
+                const bmi = (prof.weight_kg / ((prof.height_cm / 100) ** 2)).toFixed(1);
+                let status = '';
+                if (bmi < 18.5) status = '(저체중)';
+                else if (bmi < 23) status = '(정상)';
+                else if (bmi < 25) status = '(과체중)';
+                else status = '(비만)';
+                bmiText.innerHTML = `${bmi} <span class="text-[10px] font-normal">${status}</span>`;
+            } else {
+                bmiText.innerText = '-';
+            }
+
+            const sleepText = document.getElementById('sleep-text');
+            sleepText.innerText = prof.sleep_hours ? `${prof.sleep_hours}시간/일 (${prof.sleep_change || '변화없음'})` : '-';
+
+            // Habits
+            const sdText = document.getElementById('smoking-drinking-text');
+            const smoke = prof.smoking_status === 'NEVER' ? '비흡연' : '흡연';
+            const drink = prof.drinking_status === 'NEVER' ? '비음주' : '음주';
+            sdText.innerText = `${smoke} / ${drink}`;
+
+            const exText = document.getElementById('exercise-text');
+            exText.innerText = prof.exercise_frequency || '-';
+
+            const dietText = document.getElementById('diet-text');
+            dietText.innerText = prof.diet_type || '-';
+        }
+    }
+
+    function renderGuide() {
+        if (!guideData) return;
+        const s1 = guideData.section1;
+        const statusTag = document.getElementById('safety-status-tag');
+        statusTag.innerText = s1.status;
+        if (s1.status.includes('위험')) {
+            statusTag.className = "px-3 py-1 rounded-full text-[10px] font-black bg-rose-100 text-rose-600 border border-rose-200";
+            document.getElementById('section-1').className = "section-card glassmorphism p-8 rounded-3xl border-l-8 border-l-rose-500";
+        } else if (s1.status.includes('주의')) {
+            statusTag.className = "px-3 py-1 rounded-full text-[10px] font-black bg-amber-100 text-amber-600 border border-amber-200";
+            document.getElementById('section-1').className = "section-card glassmorphism p-8 rounded-3xl border-l-8 border-l-amber-500";
+        } else {
+            statusTag.className = "px-3 py-1 rounded-full text-[10px] font-black bg-emerald-100 text-emerald-600 border border-emerald-200";
+            document.getElementById('section-1').className = "section-card glassmorphism p-8 rounded-3xl border-l-8 border-l-emerald-500";
+        }
+        document.getElementById('safety-content').innerText = s1.content;
+        document.getElementById('general-cautions-list').innerHTML = s1.general_cautions.map(c => `<li>${c}</li>`).join('');
+        const s2 = guideData.section2;
+        document.getElementById('disease-guides-container').innerHTML = s2.disease_guides.map(dg => `
+            <div class="bg-white/60 p-5 rounded-2xl border border-white hover:bg-white transition">
+                <h4 class="font-bold text-gray-800 border-b pb-2 mb-3 flex justify-between items-center">
+                    ${dg.name}
+                    <span class="text-[10px] text-gray-400 px-2 py-0.5 border rounded">CARE</span>
+                </h4>
+                <ul class="space-y-2">
+                    ${dg.tips.map(tip => `<li class="text-xs text-gray-600 flex items-start gap-2">
+                        <span class="text-emerald-500">•</span> ${tip}
+                    </li>`).join('')}
+                </ul>
+            </div>
+        `).join('');
+        document.getElementById('integrated-point').innerText = s2.integrated_point;
+        const s3 = guideData.section3;
+        document.getElementById('checklist-container').innerHTML = s3.checklist.map((item, idx) => `
+            <label class="flex items-center gap-4 p-4 bg-white/60 rounded-2xl border border-white hover:border-indigo-200 transition cursor-pointer group">
+                <input type="checkbox" onchange="updateProgress()" class="plan-checkbox w-6 h-6 text-indigo-600 border-gray-200 rounded-lg focus:ring-indigo-500">
+                <div class="flex flex-col">
+                    <span class="font-bold text-gray-700 group-hover:text-indigo-600 transition">${item}</span>
+                    <span class="text-[10px] text-gray-400 uppercase font-black">Daily Action</span>
+                </div>
+            </label>
+        `).join('');
+        updateProgress();
+        document.getElementById('explain-reason').innerText = guideData.section4.reason;
+    }
+
+    function updateProgress() {
+        const checks = document.querySelectorAll('.plan-checkbox');
+        const checked = Array.from(checks).filter(c => c.checked).length;
+        const percent = checks.length > 0 ? Math.round((checked / checks.length) * 100) : 0;
+        document.getElementById('progress-bar').style.width = percent + '%';
+        document.getElementById('progress-percent').innerText = percent + '%';
+    }
+
+    function toggleAccordion(id) {
+        document.getElementById(id).classList.toggle('accordion-active');
+    }
+
+    function setupGuideEventListeners() {
+        document.getElementById('update-btn').addEventListener('click', async () => {
+            const btn = document.getElementById('update-btn');
+            btn.innerHTML = `갱신 중...`;
+            btn.disabled = true;
+            await generateNewGuide();
+            btn.innerHTML = `🔄 가이드 새로고침`;
+            btn.disabled = false;
+        });
+        document.getElementById('tts-btn').addEventListener('click', toggleTTS);
+    }
+
+    function toggleTTS() {
+        const btnText = document.getElementById('tts-text');
+        const btnIcon = document.getElementById('tts-icon');
+        const btn = document.getElementById('tts-btn');
+        if (isSpeaking2) {
+            synthesis2.cancel();
+            isSpeaking2 = false;
+            btnText.innerText = '가이드 읽어주기';
+            btnIcon.innerText = '📢';
+            return;
+        }
+        const fullText = `복약 안전성 안내입니다. ${guideData.section1.status} 상태이며, ${guideData.section1.content}. 오늘의 실행 플랜입니다. ${guideData.section3.checklist.join(', ')}를 잊지 마세요.`;
+        const utterance = new SpeechSynthesisUtterance(fullText);
+        utterance.lang = 'ko-KR';
+        utterance.onstart = () => {
+            isSpeaking2 = true;
+            btnText.innerText = '읽기 중지';
+            btnIcon.innerText = '⏹';
+        };
+        utterance.onend = () => {
+            isSpeaking2 = false;
+            btnText.innerText = '가이드 읽어주기';
+            btnIcon.innerText = '📢';
+        };
+        synthesis2.speak(utterance);
+    }
+</script>
+{% endblock %}

@@ -1,4 +1,4 @@
-from httpx import ASGITransport, AsyncClient
+from httpx import ASGITransport, AsyncClient  # type: ignore[import-untyped, import-not-found]
 from starlette import status
 from tortoise.contrib.test import TestCase
 
@@ -16,7 +16,7 @@ class TestLoginAPI(TestCase):
             "phone_number": "01011112222",
             "resident_registration_number": "900101-1234567",
             "is_terms_agreed": True,
-            "is_privacy_agreed": True
+            "is_privacy_agreed": True,
         }
         login_data = {"username": "login_test@example.com", "password": "Password123!", "remember_me": False}
 

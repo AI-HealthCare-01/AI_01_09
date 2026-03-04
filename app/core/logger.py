@@ -9,11 +9,11 @@ def setup_logger(
     """
     애플리케이션 전역에서 사용할 표준 로거를 설정하고 반환합니다.
     표준 출력(sys.stdout)을 통해 로그를 기록하며, 중복 핸들러 생성을 방지합니다.
-    
+
     Args:
         name (str): 로거 이름
         level (int): 로깅 레벨 (DEBUG, INFO, WARNING, ERROR, CRITICAL)
-        
+
     Returns:
         logging.Logger: 설정된 로거 인스턴스
     """

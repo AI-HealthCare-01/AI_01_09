@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>로그인</title>
+    <link rel="stylesheet" href="/static/chatbot.css">
     <style>
         body {
             font-family: sans-serif;
@@ -187,9 +188,9 @@
         </form>
 
         <div class="login-links">
-            <a href="/find_account.html">아이디/비밀번호 찾기</a>
+            <a href="/find-account">아이디/비밀번호 찾기</a>
             <span>|</span>
-            <a href="/signup.html">회원가입</a>
+            <a href="/signup">회원가입</a>
         </div>
 
         <div class="divider">또는 소셜 계정으로 로그인</div>
@@ -217,7 +218,7 @@
             formData.append('remember_me', document.getElementById('remember_me').checked);
 
             try {
-                const response = await fetch('/api/v1/users/login', {
+                const response = await fetch('/api/v1/auth/login', {
                     method: 'POST',
                     headers: {
                         // JSON이 아니라 Form 형식을 지정해야 합니다.
@@ -250,5 +251,20 @@
         };
     </script>
 </body>
+
+<!-- 챗봇 UI -->
+<button id="chatbot-button" class="chatbot-button">🤖</button>
+<div id="chatbot-container" class="chatbot-container">
+  <div class="chatbot-header">
+    <h3>💬 Cloud9 Care 챗봇</h3>
+    <button id="chatbot-close" class="chatbot-close">×</button>
+  </div>
+  <div id="chatbot-messages" class="chatbot-messages"></div>
+  <div class="chatbot-input">
+    <input id="chatbot-input" type="text" placeholder="메시지를 입력하세요..." autocomplete="off">
+    <button id="chatbot-send" class="chatbot-send">➤</button>
+  </div>
+</div>
+<script src="/static/chatbot.js"></script>
 
 </html>

@@ -7,8 +7,9 @@ from pydantic import BaseModel
 class AlarmCreateRequest(BaseModel):
     user_id: str
     drug_name: str
-    alarm_time: str # HH:MM
+    alarm_time: str  # HH:MM
     is_active: bool = True
+
 
 class AlarmResponse(BaseModel):
     id: int

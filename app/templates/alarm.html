@@ -1,0 +1,407 @@
+{% extends "base.html" %}
+
+{% block title %}Cloud9 Care - 생활 안내 가이드{% endblock %}
+
+{% block head %}
+<style>
+    .page-title { font-size: 22px; font-weight: bold; margin-bottom: 20px; }
+
+    /* 탭 */
+    .tab-bar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 14px;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      background: white;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 600;
+      color: #6b7280;
+      transition: all 0.2s;
+      text-align: center;
+    }
+    .tab-btn:hover { border-color: #4f46e5; color: #4f46e5; }
+    .tab-btn.active { background: #4f46e5; border-color: #4f46e5; color: white; }
+    .tab-btn .tab-icon { font-size: 22px; display: block; margin-bottom: 4px; }
+
+    /* 탭 패널 */
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* 복약 알람 */
+    .flex { display: flex; gap: 16px; }
+    .column { flex: 1; }
+    .box {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      border: 1px solid #e5e7eb;
+      min-height: 400px;
+    }
+    .box h4 { font-size: 16px; font-weight: bold; margin-bottom: 16px; color: #374151; }
+    .med-item {
+      padding: 12px;
+      margin: 8px 0;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background 0.2s;
+    }
+    .med-item:hover { background: #f3f4f6; }
+    .med-item.selected { background: #eef2ff; border-color: #4f46e5; }
+    .alarm-time-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      margin: 8px 0;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+    }
+    .toggle-switch {
+      position: relative;
+      width: 50px;
+      height: 26px;
+      background: #d1d5db;
+      border-radius: 13px;
+      cursor: pointer;
+      transition: background 0.3s;
+      flex-shrink: 0;
+    }
+    .toggle-switch.active { background: #4f46e5; }
+    .toggle-switch::after {
+      content: '';
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      background: white;
+      border-radius: 50%;
+      top: 2px;
+      left: 2px;
+      transition: left 0.3s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+    .toggle-switch.active::after { left: 26px; }
+    .btn-delete {
+      background: #ef4444;
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .btn-add-time {
+      width: 100%;
+      background: #4f46e5;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      margin-top: 8px;
+    }
+    .btn-add-time:hover { background: #4338ca; }
+
+    /* 혈압/혈당 공통 */
+    .health-panel { max-width: 700px; margin: 0 auto; background: white; border-radius: 12px; padding: 24px; border: 1px solid #e5e7eb; }
+    .guide-card {
+      background: #f0f4ff;
+      border: 1px solid #c7d2fe;
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+    }
+    .guide-card h5 { font-size: 14px; font-weight: bold; color: #4f46e5; margin-bottom: 8px; }
+    .guide-card p, .guide-card li { font-size: 13px; color: #374151; line-height: 1.7; }
+    .guide-card ul { padding-left: 16px; }
+    .alarm-slots { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+    .alarm-slot {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .alarm-slot-info h5 { font-size: 15px; font-weight: bold; margin-bottom: 4px; }
+    .alarm-slot-info p { font-size: 12px; color: #6b7280; }
+    .alarm-slot-right { display: flex; align-items: center; gap: 12px; }
+    .alarm-slot-right input[type="time"] {
+      padding: 6px 10px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    /* 혈당 수치 카드 */
+    .normal-range-card {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+    }
+    .normal-range-card h5 { font-size: 14px; font-weight: bold; color: #16a34a; margin-bottom: 8px; }
+    .range-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .range-item {
+      background: white;
+      border-radius: 8px;
+      padding: 10px 14px;
+      border: 1px solid #d1fae5;
+    }
+    .range-item .label { font-size: 12px; color: #6b7280; margin-bottom: 2px; }
+    .range-item .value { font-size: 14px; font-weight: bold; color: #16a34a; }
+  </style>
+{% endblock %}
+
+{% block content %}
+<div class="page-title">알람</div>
+
+<!-- 탭 바 -->
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('med')">
+    <span class="tab-icon">💊</span>복약 알람
+  </button>
+  <button class="tab-btn" onclick="switchTab('bp')">
+    <span class="tab-icon">🩺</span>혈압 알람
+  </button>
+  <button class="tab-btn" onclick="switchTab('bs')">
+    <span class="tab-icon">🩸</span>혈당 알람
+  </button>
+</div>
+
+      <!-- 복약 알람 탭 -->
+      <div id="tab-med" class="tab-panel active">
+        <div class="flex">
+          <div class="column box">
+            <h4>현재 복용 중인 약물</h4>
+            <div id="med-list">
+              <p style="text-align: center; color: #6b7280;">로딩 중...</p>
+            </div>
+          </div>
+          <div class="column box">
+            <h4 id="detail-title">약물을 선택하세요</h4>
+            <div id="alarm-detail">
+              <p style="text-align: center; color: #6b7280; padding: 40px;">왼쪽에서 약물을 선택하면 알람을 설정할 수 있습니다.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 혈압 알람 탭 -->
+      <div id="tab-bp" class="tab-panel">
+        <div class="health-panel">
+          <div class="guide-card">
+            <h5>📋 올바른 혈압 측정 방법</h5>
+            <ul>
+              <li>등받이 의자에 바르게 앉아 다리를 꼬지 않기</li>
+              <li>5분 안정 후 측정</li>
+              <li>측정 30분 전 카페인·흡연 금지</li>
+            </ul>
+          </div>
+
+          <div class="alarm-slots">
+            <div class="alarm-slot">
+              <div class="alarm-slot-info">
+                <h5>🌅 아침 혈압 측정</h5>
+                <p>기상 후 1시간 내 · 약 복용 전</p>
+              </div>
+              <div class="alarm-slot-right">
+                <input type="time" id="bp-morning-time" value="07:00">
+                <div class="toggle-switch" id="bp-morning-toggle" onclick="toggleBpAlarm('morning')"></div>
+              </div>
+            </div>
+            <div class="alarm-slot">
+              <div class="alarm-slot-info">
+                <h5>🌙 저녁 혈압 측정</h5>
+                <p>잠들기 전 · 1~2분 안정 후</p>
+              </div>
+              <div class="alarm-slot-right">
+                <input type="time" id="bp-evening-time" value="21:00">
+                <div class="toggle-switch" id="bp-evening-toggle" onclick="toggleBpAlarm('evening')"></div>
+              </div>
+            </div>
+          </div>
+
+          <button class="btn-add-time" onclick="saveBpAlarms()">💾 혈압 알람 저장</button>
+        </div>
+      </div>
+
+      <!-- 혈당 알람 탭 -->
+      <div id="tab-bs" class="tab-panel">
+        <div class="health-panel">
+          <div class="normal-range-card">
+            <h5>✅ 정상 혈당 수치</h5>
+            <div class="range-grid">
+              <div class="range-item">
+                <div class="label">공복 혈당</div>
+                <div class="value">70 ~ 100 mg/dL</div>
+              </div>
+              <div class="range-item">
+                <div class="label">식후 2시간</div>
+                <div class="value">140 mg/dL 미만</div>
+              </div>
+              <div class="range-item">
+                <div class="label">취침 전</div>
+                <div class="value">100 ~ 140 mg/dL</div>
+              </div>
+              <div class="range-item">
+                <div class="label">당뇨 진단 기준</div>
+                <div class="value">공복 126↑ / 식후 200↑</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="alarm-slots">
+            <div class="alarm-slot">
+              <div class="alarm-slot-info">
+                <h5>🌅 아침 공복 혈당</h5>
+                <p>기상 직후 · 식사 전 측정</p>
+              </div>
+              <div class="alarm-slot-right">
+                <input type="time" id="bs-fasting-time" value="07:00">
+                <div class="toggle-switch" id="bs-fasting-toggle" onclick="toggleBsAlarm('fasting')"></div>
+              </div>
+            </div>
+            <div class="alarm-slot">
+              <div class="alarm-slot-info">
+                <h5>🍽️ 식후 2시간 혈당</h5>
+                <p>식사 시작 후 2시간 뒤 측정</p>
+              </div>
+              <div class="alarm-slot-right">
+                <input type="time" id="bs-postmeal-time" value="09:00">
+                <div class="toggle-switch" id="bs-postmeal-toggle" onclick="toggleBsAlarm('postmeal')"></div>
+              </div>
+            </div>
+            <div class="alarm-slot">
+              <div class="alarm-slot-info">
+                <h5>🌙 취침 전 혈당</h5>
+                <p>잠들기 전 측정</p>
+              </div>
+              <div class="alarm-slot-right">
+                <input type="time" id="bs-bedtime-time" value="22:00">
+                <div class="toggle-switch" id="bs-bedtime-toggle" onclick="toggleBsAlarm('bedtime')"></div>
+              </div>
+            </div>
+          </div>
+
+          <button class="btn-add-time" onclick="saveBsAlarms()">💾 혈당 알람 저장</button>
+        </div>
+      </div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/common.js"></script>
+  <script src="/static/chatbot.js"></script>
+  <script src="/static/alarm.js?v=1"></script>
+  <script>
+    // 탭 전환
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('tab-' + tab).classList.add('active');
+      event.currentTarget.classList.add('active');
+    }
+
+    // 혈압/혈당 알람 상태 저장소
+    const healthAlarms = {};
+
+    async function loadHealthAlarms() {
+      const token = localStorage.getItem('access_token');
+      const res = await fetch('/api/v1/alarms?alarm_type=BP_MORNING', { headers: { Authorization: `Bearer ${token}` } });
+      const types = ['BP_MORNING','BP_EVENING','BS_FASTING','BS_POSTMEAL','BS_BEDTIME'];
+      for (const t of types) {
+        const r = await fetch(`/api/v1/alarms?alarm_type=${t}`, { headers: { Authorization: `Bearer ${token}` } });
+        if (r.ok) {
+          const data = await r.json();
+          if (data.length > 0) healthAlarms[t] = data[0];
+        }
+      }
+      applyHealthAlarmState();
+    }
+
+    function applyHealthAlarmState() {
+      const map = {
+        'BP_MORNING': 'bp-morning', 'BP_EVENING': 'bp-evening',
+        'BS_FASTING': 'bs-fasting', 'BS_POSTMEAL': 'bs-postmeal', 'BS_BEDTIME': 'bs-bedtime'
+      };
+      for (const [type, prefix] of Object.entries(map)) {
+        const alarm = healthAlarms[type];
+        if (alarm) {
+          document.getElementById(prefix + '-time').value = alarm.alarm_time;
+          if (alarm.is_active) document.getElementById(prefix + '-toggle').classList.add('active');
+          else document.getElementById(prefix + '-toggle').classList.remove('active');
+        }
+      }
+    }
+
+    async function toggleHealthAlarm(type, prefix) {
+      const token = localStorage.getItem('access_token');
+      const el = document.getElementById(prefix + '-toggle');
+      const isActive = !el.classList.contains('active');
+
+      if (healthAlarms[type]) {
+        const r = await fetch(`/api/v1/alarms/${healthAlarms[type].id}/toggle`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ is_active: isActive })
+        });
+        if (r.ok) { healthAlarms[type] = await r.json(); applyHealthAlarmState(); }
+      } else {
+        const time = document.getElementById(prefix + '-time').value;
+        const r = await fetch('/api/v1/alarms', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ alarm_type: type, alarm_time: time })
+        });
+        if (r.ok) { healthAlarms[type] = await r.json(); applyHealthAlarmState(); }
+      }
+    }
+
+    async function saveHealthAlarms(types, prefix_map) {
+      const token = localStorage.getItem('access_token');
+      for (const [type, prefix] of Object.entries(prefix_map)) {
+        const time = document.getElementById(prefix + '-time').value;
+        const isActive = document.getElementById(prefix + '-toggle').classList.contains('active');
+        if (healthAlarms[type]) {
+          await fetch(`/api/v1/alarms/${healthAlarms[type].id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ alarm_time: time, is_active: isActive })
+          });
+        } else {
+          const r = await fetch('/api/v1/alarms', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ alarm_type: type, alarm_time: time })
+          });
+          if (r.ok) healthAlarms[type] = await r.json();
+        }
+      }
+      alert('저장되었습니다.');
+    }
+
+    function toggleBpAlarm(slot) { toggleHealthAlarm('BP_' + slot.toUpperCase(), 'bp-' + slot); }
+    function toggleBsAlarm(slot) {
+      const map = { fasting: 'BS_FASTING', postmeal: 'BS_POSTMEAL', bedtime: 'BS_BEDTIME' };
+      toggleHealthAlarm(map[slot], 'bs-' + slot);
+    }
+    function saveBpAlarms() { saveHealthAlarms(null, { BP_MORNING: 'bp-morning', BP_EVENING: 'bp-evening' }); }
+    function saveBsAlarms() { saveHealthAlarms(null, { BS_FASTING: 'bs-fasting', BS_POSTMEAL: 'bs-postmeal', BS_BEDTIME: 'bs-bedtime' }); }
+
+    loadHealthAlarms();
+  </script>
+{% endblock %}

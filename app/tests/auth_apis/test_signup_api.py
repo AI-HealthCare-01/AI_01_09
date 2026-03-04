@@ -1,4 +1,4 @@
-from httpx import ASGITransport, AsyncClient
+from httpx import ASGITransport, AsyncClient  # type: ignore[import-untyped, import-not-found]
 from starlette import status
 from tortoise.contrib.test import TestCase
 
@@ -15,7 +15,7 @@ class TestSignupAPI(TestCase):
             "phone_number": "01012345678",
             "resident_registration_number": "900101-1234567",
             "is_terms_agreed": True,
-            "is_privacy_agreed": True
+            "is_privacy_agreed": True,
         }
 
         async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
@@ -32,7 +32,7 @@ class TestSignupAPI(TestCase):
             "phone_number": "01012345678",
             "resident_registration_number": "900101-1234567",
             "is_terms_agreed": True,
-            "is_privacy_agreed": True
+            "is_privacy_agreed": True,
         }
         async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             response = await client.post("/api/v1/auth/signup", json=signup_data)
