@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.dependencies.security import get_request_user
-from app.dtos.health import CurrentMedCreateRequest, CurrentMedResponse
+from app.dtos.health import CurrentMedResponse, CurrentMedSaveRequest
 from app.models.current_med import CurrentMed
 from app.models.user import User
 
@@ -27,7 +27,7 @@ async def get_current_meds(user: Annotated[User, Depends(get_request_user)]) -> 
 
 @current_med_router.post("", status_code=status.HTTP_201_CREATED, response_model=CurrentMedResponse)
 async def create_current_med(
-    request: CurrentMedCreateRequest, user: Annotated[User, Depends(get_request_user)]
+    request: CurrentMedSaveRequest, user: Annotated[User, Depends(get_request_user)]
 ) -> CurrentMedResponse:
     """현재 복용약 수기 등록"""
     from datetime import date

@@ -23,3 +23,16 @@ class CurrentMedRepository:
             list[CurrentMed]: 현재 복용 약물 리스트
         """
         return cast(list[CurrentMed], await self._model.filter(user_id=user_id).all())
+
+    async def delete_by_user_id(self, user_id: str):
+        """
+        사용자 아이디에 해당하는 모든 복용 약물 정보를 삭제합니다.
+        """
+        await self._model.filter(user_id=user_id).delete()
+
+    async def create_many(self, user_id: str, medications: list[dict]):
+        """
+        여러 개의 복용 약물 정보를 한꺼번에 생성합니다.
+        """
+        objs = [self._model(user_id=user_id, **data) for data in medications]
+        await self._model.bulk_create(objs)

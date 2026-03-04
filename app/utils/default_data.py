@@ -13,6 +13,7 @@ from app.models.health_profile import (
     DietType,
     DrinkingStatus,
     ExerciseFrequency,
+    FamilyHistory,
     HealthProfile,
     SleepChange,
     SmokingStatus,
@@ -207,9 +208,8 @@ class DefaultData:
 
         # 10. 건강 프로필 생성 (health_profiles) - [MODIFIED] weight_change, exercise_frequency 값 조정
         health_profile_defaults = {
-            "family_history": True,
-            "family_history_father_note": "고혈압",
-            "family_history_mother_note": "당뇨",
+            "family_history": FamilyHistory.MAN,
+            "family_history_note": "고혈압",
             "height_cm": 175.5,
             "weight_kg": 72.0,
             "weight_change": WeightChange.NO_CHANGE,

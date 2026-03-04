@@ -22,3 +22,10 @@ class HealthProfileRepository:
         """
         health_profile: HealthProfile | None = await self._model.filter(user_id=user_id).first()
         return health_profile
+
+    async def update_or_create(self, user_id: str, data: dict) -> HealthProfile:
+        """
+        사용자 아이디를 이용해 건강 프로필을 업데이트하거나 생성합니다.
+        """
+        health_profile, created = await self._model.update_or_create(user_id=user_id, defaults=data)
+        return health_profile

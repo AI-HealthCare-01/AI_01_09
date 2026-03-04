@@ -23,3 +23,16 @@ class ChronicDiseaseRepository:
             list[ChronicDisease]: 질환 객체 리스트
         """
         return cast(list[ChronicDisease], await self._model.filter(user_id=user_id).all())
+
+    async def delete_by_user_id(self, user_id: str):
+        """
+        사용자 아이디에 해당하는 모든 기저 질환 정보를 삭제합니다.
+        """
+        await self._model.filter(user_id=user_id).delete()
+
+    async def create_many(self, user_id: str, chronic_diseases: list[dict]):
+        """
+        여러 개의 기저 질환 정보를 한꺼번에 생성합니다.
+        """
+        objs = [self._model(user_id=user_id, **data) for data in chronic_diseases]
+        await self._model.bulk_create(objs)
