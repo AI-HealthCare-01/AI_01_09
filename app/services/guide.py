@@ -1,6 +1,7 @@
 import json
 import os
 from datetime import datetime
+from pathlib import Path
 
 from openai import AsyncOpenAI
 
@@ -13,8 +14,75 @@ from app.models.user import User
 
 
 class GuideService:
+    def load_rag_docs(self) -> list[dict[str, str]]:
+        """
+        [RAG] 로컬 문서 로드.
+        app/data/docs/ 아래의 모든 .txt 파일을 읽어와
+        파일명과 본문을 함께 반환합니다.
+        """
+        docs_dir = Path("app/data/docs")
+        docs: list[dict[str, str]] = []
+
+        if not docs_dir.exists():
+            return docs
+
+        for path in docs_dir.glob("*.txt"):
+            text = path.read_text(encoding="utf-8")
+            docs.append({"filename": path.name, "text": text})
+
+        return docs
+
+    def _score_document(self, doc_text: str, doc_filename: str, keywords: list[str]) -> int:
+        score = 0
+        doc_filename_lower = doc_filename.lower()
+
+        mapping = {
+            "고혈압": "hypertension",
+            "당뇨병": "diabetes",
+            "복용": "medication",
+            "저염식": "low_salt",
+            "운동": "exercise",
+        }
+
+        for keyword in keywords:
+            if not keyword:
+                continue
+
+            if keyword in doc_text:
+                score += 1
+
+            keyword_lower = keyword.lower()
+            if keyword_lower in doc_filename_lower:
+                score += 2
+
+            if keyword in mapping and mapping[keyword] in doc_filename_lower:
+                score += 2
+
+        return score
+
+    def select_relevant_docs(
+        self,
+        rag_docs: list[dict[str, str]],
+        disease_list: list[str],
+        med_list: list[str],
+    ) -> list[dict[str, str]]:
+        keywords = []
+        keywords.extend(disease_list)
+        keywords.extend(med_list)
+        keywords.extend(["운동", "복용", "저염식", "혈압", "혈당"])
+
+        scored_docs = []
+        for doc in rag_docs:
+            score = self._score_document(doc["text"], doc["filename"], keywords)
+            scored_docs.append((score, doc))
+
+        scored_docs.sort(key=lambda x: x[0], reverse=True)
+        selected_docs = [doc for score, doc in scored_docs if score > 0]
+
+        return selected_docs[:3] if selected_docs else rag_docs[:3]
+
     # ==========================================
-    # [추가된 기능] 필수 1: LLM 기반 안내 가이드 생성
+    # 필수 1: LLM 기반 안내 가이드 생성
     # ==========================================
     async def generate_guide(self, user: User | None = None) -> dict:
         """
@@ -92,6 +160,10 @@ class GuideService:
             bp_list = ["120/80 mmHg"]
             bs_list = ["95 mg/dL (FASTING)"]
 
+        rag_docs = self.load_rag_docs()
+        selected_docs = self.select_relevant_docs(rag_docs, disease_list, med_list)
+        rag_context = "\n\n".join(docs["text"] for docs in selected_docs) if selected_docs else "참고 문서 없음"
+
         client = AsyncOpenAI(api_key=api_key)
 
         prompt = f"""
@@ -104,12 +176,16 @@ class GuideService:
     - 최근 혈압 기록: {", ".join(bp_list) if bp_list else "없음"}
     - 최근 혈당 기록: {", ".join(bs_list) if bs_list else "없음"}
 
+    [참고 문서]
+    {rag_context}
+
     [작성 가이드라인]
     1. 과한 확정 진단(예: ~병입니다)은 피하고, '권장합니다', '주의가 필요합니다' 등의 조언 톤을 유지할 것.
     2. 약물 상호작용 및 알레르기 성분을 최우선으로 체크할 것.
     3. 반드시 아래의 JSON 구조로 응답할 것.
     4. 만성 질환이 2개 이상이면 disease_guides를 질환 개수만큼 반드시 생성할 것(누락 금지).
     5. disease_guides의 name은 입력된 만성 질환명(disease_list)에 있는 문자열을 그대로 사용할 것.
+    6. 참고 문서의 내용을 우선 반영하여 생활습관 및 복약 안내를 작성할 것.
 
     [응답 JSON 구조]
     {{
@@ -177,6 +253,7 @@ class GuideService:
                 "id": 1,
                 "guide_data": content_json,
                 "created_at": datetime.now().isoformat(),
+                "rag_docs_used": [f"{doc['filename']}: {doc['text'][:120]}..." for doc in selected_docs],
             }
         except Exception as e:
             print(f"OpenAI Error: {e}")

@@ -92,7 +92,7 @@
 <div class="health-profile-page-container">
     <!-- 왼쪽 그래프 -->
     <div class="bp-chart-card">
-        <h3>최근 30일 혈압</h3>
+        <h3>최근 15일 혈당</h3>
         <canvas id="bpChart"></canvas>
     </div>
     
@@ -286,7 +286,7 @@
                             label: function(context) {
                                 const index = context.dataIndex;
                                 const data = result[index];
-                                const label = data.measure_type || "기록"; // '공복' 또는 '식후 2시간' 등
+                                const label = data.measure_type || "기록"; // '공복' 또는 '점심 후 2시간' 등
                                 const value = context.parsed.y;
                                 
                                 return ` ${label}: ${value} mg/dL`;

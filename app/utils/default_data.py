@@ -258,7 +258,7 @@ class DefaultData:
         base_time = datetime.now()
         bp_records = []
 
-        for i in range(30):
+        for i in range(15):
             # i가 커질수록 12시간씩 과거로 감
             past_time = base_time - timedelta(hours=i * 12)
 
@@ -267,10 +267,11 @@ class DefaultData:
                     "systolic": 120 + random.randint(-5, 15),
                     "diastolic": 75 + random.randint(-5, 10),
                     "pulse": 70 + random.randint(-5, 15),
-                    "measure_type": RecordTime.MORNING if i % 2 == 0 else RecordTime.RANDOM,
+                    "measure_type": RecordTime.MORNING if i % 2 == 0 else RecordTime.DINNER,
                     "created_at": past_time.isoformat(),  # 이 값을 프론트로 보냄
                 }
             )
+
         print(bp_records)
         if await BloodPressureRecord.filter(user=user).count() == 0:
             for bp in bp_records:
@@ -302,6 +303,16 @@ class DefaultData:
                     "glucose_mg_dl": float(140 + random.randint(-20, 30)),  # 120~170 범위
                     "measure_type": GlucoseMeasureType.AFTER_MEAL,
                     "created_at": after_meal_time.isoformat(),
+                }
+            )
+
+            # 2. 취침 전
+            last_time = current_date.replace(hour=22, minute=random.randint(0, 59))
+            bs_records.append(
+                {
+                    "glucose_mg_dl": float(100 + random.randint(-20, 30)),  # 120~170 범위
+                    "measure_type": GlucoseMeasureType.BEDTIME,
+                    "created_at": last_time.isoformat(),
                 }
             )
         if await BloodSugarRecord.filter(user=user).count() == 0:
