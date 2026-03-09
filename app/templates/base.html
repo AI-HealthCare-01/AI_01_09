@@ -1292,10 +1292,10 @@
 
             <div class="nav-item">
                 <a href="/prescription-upload">
-                    <button class="upload-btn {% if request.url.path == '/prescription-upload' %}nav-active{% endif %}">처방전 및 약물</button>
+                    <button class="upload-btn {% if request.url.path == '/prescription-upload' %}nav-active{% endif %}">처방전 및 약물 업로드</button>
                 </a>
                 <div class="mega-panel" aria-hidden="true">
-                    <div class="mega-title">처방전 및 약물</div>
+                    <div class="mega-title">처방전 및 약물 업로드</div>
                     <div class="mega-desc">촬영 한 번으로 약 정보를 정리하고, 복약 안내까지 연결해요.</div>
                     <div class="mega-grid">
                         <div class="mega-card">
@@ -1329,6 +1329,40 @@
                         </div>
                     </div>
                     <div class="mega-hint">클릭하면 건강정보로 이동해요 →</div>
+                </div>
+            </div>
+
+            <div class="nav-item">
+                <a href="/blood-sugar">
+                    <button class="blood-sugar {% if request.url.path == '/blood-sugar' %}nav-active{% endif %}">혈당 수첩</button>
+                </a>
+                <div class="mega-panel" aria-hidden="true">
+                    <div class="mega-title">혈당 수첩</div>
+                    <div class="mega-desc">내 혈당 기록을 모아, 더 정확한 맞춤 가이드를 만들어요.</div>
+                    <div class="mega-grid">
+                        <div class="mega-card">
+                            <div class="mega-card-title">혈당수첩</div>
+                            <div class="mega-card-desc">최근 15일기록을 모아 변화 추이를 확인하고 관리할 수 있어요.</div>
+                        </div>
+                    </div>
+                    <div class="mega-hint">클릭하면 혈당 수첩으로 이동해요 →</div>
+                </div>
+            </div>
+
+            <div class="nav-item">
+                <a href="/blood-pressure">
+                    <button class="blood-pressure {% if request.url.path == '/blood-pressure' %}nav-active{% endif %}">혈압 수첩</button>
+                </a>
+                <div class="mega-panel" aria-hidden="true">
+                    <div class="mega-title">혈압 수첩</div>
+                    <div class="mega-desc">내 혈압 기록을 모아, 더 정확한 맞춤 가이드를 만들어요.</div>
+                    <div class="mega-grid">
+                        <div class="mega-card">
+                            <div class="mega-card-title">혈압 수첩</div>
+                            <div class="mega-card-desc">최근 15일 기록을 모아 변화 추이를 확인하고 관리할 수 있어요.</div>
+                        </div>
+                    </div>
+                    <div class="mega-hint">클릭하면 혈압 수첩으로 이동해요 →</div>
                 </div>
             </div>
 
